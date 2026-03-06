@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { MacroSet } from "@/lib/types";
+import { CountUp } from "./CountUp";
 import { cn } from "@/lib/utils";
 
 const RING_SPECS = [
@@ -38,15 +39,21 @@ export function MacroRings({
   animate = true,
   className,
 }: MacroRingsProps) {
+  const calRemaining = targets.calories - consumed.calories;
+  const calWithinFive =
+    targets.calories > 0 &&
+    Math.abs(consumed.calories - targets.calories) / targets.calories <= 0.05;
+
   return (
     <div className={cn("flex flex-col items-center gap-4", className)}>
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${SIZE_BASE} ${SIZE_BASE}`}
-        className="overflow-visible"
-      >
-        <g transform={`translate(${CENTER}, ${CENTER}) rotate(-90)`}>
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${SIZE_BASE} ${SIZE_BASE}`}
+          className="overflow-visible"
+        >
+          <g transform={`translate(${CENTER}, ${CENTER}) rotate(-90)`}>
           {RING_SPECS.map((spec, i) => {
             const targetVal = getTarget(targets, spec.key);
             const consumedVal = getConsumed(targets, consumed, spec.key);
@@ -94,7 +101,45 @@ export function MacroRings({
             );
           })}
         </g>
-      </svg>
+        </svg>
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+          style={{
+            fontFamily: "var(--font-body), DM Sans, sans-serif",
+          }}
+        >
+          <span
+            className="font-display text-white font-semibold"
+            style={{ fontSize: 48 }}
+          >
+            <CountUp value={consumed.calories} previousValue={0} />
+          </span>
+          <span
+            className="text-[var(--text-muted)]"
+            style={{ fontSize: 13, fontFamily: "var(--font-body), DM Sans, sans-serif" }}
+          >
+            / {targets.calories} cal
+          </span>
+          {calWithinFive ? (
+            <span
+              className="mt-1"
+              style={{ fontSize: 13, color: "var(--success)" }}
+            >
+              Goal hit!
+            </span>
+          ) : (
+            <span
+              className="mt-1"
+              style={{
+                fontSize: 13,
+                color: calRemaining >= 0 ? "var(--success)" : "var(--danger)",
+              }}
+            >
+              {Math.abs(calRemaining)} cal {calRemaining >= 0 ? "remaining" : "over"}
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
