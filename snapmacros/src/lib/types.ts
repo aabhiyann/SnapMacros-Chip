@@ -89,6 +89,17 @@ export interface ChipState {
   message: string | null;
 }
 
+export interface ChipContext {
+  isAnalyzing?: boolean;
+  isRoastTime?: boolean;
+  streakDays?: number;
+  singleMealCalories?: number;
+  missedDays?: number;
+  caloriesPercent?: number;
+  hourOfDay?: number;
+  todayLogsCount?: number;
+}
+
 export interface AnalysisResult {
   description: string;
   macros: MacroSet;
