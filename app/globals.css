@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0f0f14;
+  --card: #1a1a24;
+  --elevated: #22222f;
+  --primary: #ff6b35;
+  --secondary: #6c63ff;
+  --success: #2dd4bf;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --text: #ffffff;
+  --text-secondary: #a0a0b8;
+  --text-muted: #60607a;
+  --font-heading: "Bricolage Grotesque", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-body);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Minimum touch target for accessibility */
+.touch-target {
+  min-width: 48px;
+  min-height: 48px;
+}
