@@ -1,8 +1,22 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import type { ChipEmotion } from "@/lib/types";
 import { getChipConfig } from "./chip-states";
 import { cn } from "@/lib/utils";
+
+const CHIP_VARIANTS = {
+  initial: { opacity: 0 },
+  happy: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" as const } },
+  hype: { opacity: 1, y: -2, scale: 1.02, transition: { duration: 0.35, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" as const } },
+  shocked: { opacity: 1, scale: 1.08, transition: { duration: 0.25, ease: "easeOut" as const } },
+  laughing: { opacity: 1, x: [0, -1, 1, 0], transition: { duration: 0.5, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" as const } },
+  sad: { opacity: 1, y: 2, scale: 0.98, transition: { duration: 0.5, ease: "easeOut" as const } },
+  on_fire: { opacity: 1, scale: 1.05, rotate: [0, -2, 2, 0], transition: { duration: 0.4, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" as const } },
+  thinking: { opacity: 1, y: -1, rotate: [0, 1, -1, 0], transition: { duration: 1.2, repeat: Infinity, repeatType: "reverse" as const, ease: "easeInOut" as const } },
+  sleepy: { opacity: 1, y: 1, scale: 0.98, transition: { duration: 0.6, ease: "easeOut" as const } },
+  exit: { opacity: 0, transition: { duration: 0.35 } },
+};
 
 const VIEWBOX = 100;
 const CENTER_X = 50;
@@ -272,7 +286,18 @@ export function Chip({ emotion, size = 100, className }: ChipProps) {
       className={cn(className)}
       aria-hidden
     >
-      <ChipSVGLayers emotion={emotion} />
+      <AnimatePresence mode="wait">
+        <motion.g
+          key={emotion}
+          variants={CHIP_VARIANTS}
+          initial="initial"
+          animate={emotion}
+          exit="exit"
+          style={{ transformOrigin: "50px 50px" }}
+        >
+          <ChipSVGLayers emotion={emotion} />
+        </motion.g>
+      </AnimatePresence>
     </svg>
   );
 }
