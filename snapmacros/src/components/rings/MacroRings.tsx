@@ -1,9 +1,25 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { MacroSet } from "@/lib/types";
+import { MACRO_COLORS } from "@/lib/constants";
 import { CountUp } from "./CountUp";
 import { cn } from "@/lib/utils";
+
+const MACRO_LABELS: Record<keyof MacroSet, string> = {
+  calories: "Cal",
+  protein: "Protein",
+  carbs: "Carbs",
+  fat: "Fat",
+};
+
+const MACRO_EMOJI: Record<keyof MacroSet, string> = {
+  calories: "🔥",
+  protein: "💪",
+  carbs: "🌾",
+  fat: "🥑",
+};
 
 const RING_SPECS = [
   { key: "calories" as const, radius: 120, stroke: "#FF6B35", thickness: 16 },
@@ -39,10 +55,13 @@ export function MacroRings({
   animate = true,
   className,
 }: MacroRingsProps) {
+  const [expandedLabel, setExpandedLabel] = useState<keyof MacroSet | null>(null);
   const calRemaining = targets.calories - consumed.calories;
   const calWithinFive =
     targets.calories > 0 &&
     Math.abs(consumed.calories - targets.calories) / targets.calories <= 0.05;
+
+  const ringKeys: (keyof MacroSet)[] = ["calories", "protein", "carbs", "fat"];
 
   return (
     <div className={cn("flex flex-col items-center gap-4", className)}>
@@ -153,6 +172,66 @@ export function MacroRings({
             </span>
           )}
         </div>
+      </div>
+      <div className="flex gap-2 overflow-x-auto w-full pb-1" style={{ maxWidth: size }}>
+        {ringKeys.map((key) => {
+          const targetVal = getTarget(targets, key);
+          const consumedVal = getConsumed(targets, consumed, key);
+          const pct = targetVal > 0 ? Math.min((consumedVal / targetVal) * 100, 110) : 0;
+          const dots = 10;
+          const filledDots = Math.round((pct / 100) * dots);
+          const color = MACRO_COLORS[key];
+          const isExpanded = expandedLabel === key;
+          const bgColor = `color-mix(in srgb, ${color} 10%, transparent)`;
+          const borderColor = `color-mix(in srgb, ${color} 30%, transparent)`;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setExpandedLabel(isExpanded ? null : key)}
+              className={cn(
+                "flex-shrink-0 flex flex-col items-center gap-1 rounded-full border px-3 py-2 min-h-[48px] transition-colors",
+                isExpanded && "py-2"
+              )}
+              style={{
+                backgroundColor: bgColor,
+                borderColor,
+                color,
+                fontSize: 13,
+                fontFamily: "var(--font-body), DM Sans, sans-serif",
+              }}
+            >
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <span>{MACRO_EMOJI[key]}</span>
+                <span>
+                  {key === "calories"
+                    ? `${consumed.calories} / ${targets.calories} cal`
+                    : `${consumedVal}g / ${targetVal}g ${MACRO_LABELS[key]}`}
+                </span>
+              </span>
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex gap-0.5"
+                  >
+                    {Array.from({ length: dots }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{
+                          backgroundColor: i < filledDots ? color : "var(--bg-border)",
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
