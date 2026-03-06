@@ -53,7 +53,18 @@ export function MacroRings({
           viewBox={`0 0 ${SIZE_BASE} ${SIZE_BASE}`}
           className="overflow-visible"
         >
-          <g transform={`translate(${CENTER}, ${CENTER}) rotate(-90)`}>
+          <defs>
+          <filter id="ring-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+            <feFlood floodColor="#F87171" floodOpacity="0.6" result="color" />
+            <feComposite in="color" in2="blur" operator="in" result="glow" />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <g transform={`translate(${CENTER}, ${CENTER}) rotate(-90)`}>
           {RING_SPECS.map((spec, i) => {
             const targetVal = getTarget(targets, spec.key);
             const consumedVal = getConsumed(targets, consumed, spec.key);
@@ -62,6 +73,8 @@ export function MacroRings({
               110
             );
             const offset = 1 - percentage / 100;
+            const isOverTarget = percentage > 100;
+            const strokeColor = isOverTarget ? "#F87171" : spec.stroke;
 
             return (
               <g key={spec.key}>
@@ -83,12 +96,13 @@ export function MacroRings({
                   cy={0}
                   r={spec.radius}
                   fill="none"
-                  stroke={spec.stroke}
+                  stroke={strokeColor}
                   strokeWidth={spec.thickness}
                   strokeDasharray={1}
                   pathLength={1}
                   strokeLinecap="round"
                   style={{ vectorEffect: "non-scaling-stroke" }}
+                  filter={isOverTarget ? "url(#ring-glow)" : undefined}
                   initial={animate ? { strokeDashoffset: 1 } : { strokeDashoffset: offset }}
                   animate={{ strokeDashoffset: offset }}
                   transition={{
