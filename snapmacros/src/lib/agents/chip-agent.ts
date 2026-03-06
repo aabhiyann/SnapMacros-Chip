@@ -53,15 +53,9 @@ let lastSpeechLine: string | null = null;
 export function getSpeechLine(emotion: ChipEmotion, lastLine?: string | null): string {
   const pool = SPEECH_LINES[emotion];
   const avoid = lastLine ?? lastSpeechLine;
-  let chosen: string;
-  if (pool.length === 1) {
-    chosen = pool[0]!;
-  } else if (avoid && pool.includes(avoid)) {
-    const other = pool.filter((s) => s !== avoid);
-    chosen = other[Math.floor(Math.random() * other.length)]!;
-  } else {
-    chosen = pool[Math.floor(Math.random() * pool.length)]!;
-  }
+  const other =
+    avoid && pool.includes(avoid) ? pool.filter((s) => s !== avoid) : [...pool];
+  const chosen = other[Math.floor(Math.random() * other.length)]!;
   lastSpeechLine = chosen;
   return chosen;
 }
