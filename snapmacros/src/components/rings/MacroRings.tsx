@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { MacroSet } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +47,7 @@ export function MacroRings({
         className="overflow-visible"
       >
         <g transform={`translate(${CENTER}, ${CENTER}) rotate(-90)`}>
-          {RING_SPECS.map((spec) => {
+          {RING_SPECS.map((spec, i) => {
             const targetVal = getTarget(targets, spec.key);
             const consumedVal = getConsumed(targets, consumed, spec.key);
             const percentage = Math.min(
@@ -70,7 +71,7 @@ export function MacroRings({
                   pathLength={1}
                   style={{ vectorEffect: "non-scaling-stroke" }}
                 />
-                <circle
+                <motion.circle
                   cx={0}
                   cy={0}
                   r={spec.radius}
@@ -78,10 +79,16 @@ export function MacroRings({
                   stroke={spec.stroke}
                   strokeWidth={spec.thickness}
                   strokeDasharray={1}
-                  strokeDashoffset={offset}
                   pathLength={1}
                   strokeLinecap="round"
                   style={{ vectorEffect: "non-scaling-stroke" }}
+                  initial={animate ? { strokeDashoffset: 1 } : { strokeDashoffset: offset }}
+                  animate={{ strokeDashoffset: offset }}
+                  transition={{
+                    duration: 0.8,
+                    delay: animate ? i * 0.1 : 0,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                 />
               </g>
             );
