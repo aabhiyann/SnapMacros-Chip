@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { generateWeeklyRoast } from "@/lib/claude";
+import { DEMO_USER_ID } from "@/lib/auth";
 
 const querySchema = z.object({
   weekStart: z.string().datetime().optional(),
@@ -17,16 +18,18 @@ export async function GET(request: Request) {
     let summary = "No meals logged this week.";
     try {
       const supabase = createClient();
-      const { data: meals } = await supabase
-        .from("meals")
-        .select("description, calories, protein, carbs, fat, created_at")
+      const { data: logs, error } = await supabase
+        .from("logs")
+        .select("meal_name, calories, protein, carbs, fat, created_at")
+        .eq("user_id", DEMO_USER_ID)
         .order("created_at", { ascending: false })
         .limit(50);
-      if (meals && meals.length > 0) {
-        summary = meals
+
+      if (logs && logs.length > 0) {
+        summary = logs
           .map(
             (m) =>
-              `- ${(m as { description?: string }).description ?? "Meal"} | ${(m as { calories?: number }).calories ?? "?"} cal, P: ${(m as { protein?: number }).protein ?? "?"}, C: ${(m as { carbs?: number }).carbs ?? "?"}, F: ${(m as { fat?: number }).fat ?? "?"}`
+              `- ${m.meal_name ?? "Meal"} | ${m.calories ?? "?"} cal, P: ${m.protein ?? "?"}, C: ${m.carbs ?? "?"}, F: ${m.fat ?? "?"}`
           )
           .join("\n");
       }
