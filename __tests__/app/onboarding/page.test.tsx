@@ -1,6 +1,18 @@
 import { render, screen, act, fireEvent, waitFor } from "@testing-library/react";
 import OnboardingPage from "@/app/onboarding/page";
 
+// Mock next/navigation
+jest.mock("next/navigation", () => ({
+    useRouter() {
+        return {
+            push: jest.fn(),
+            replace: jest.fn(),
+            prefetch: jest.fn(),
+            back: jest.fn(),
+        };
+    },
+}));
+
 // Mock framer-motion to execute immediately
 jest.mock("framer-motion", () => {
     const React = require("react");
@@ -151,11 +163,65 @@ describe("Onboarding Controller (Flow 3)", () => {
         // Let the debounce propagate and re-render
         await act(async () => { jest.runAllTimers(); });
 
-        require('fs').writeFileSync('/Users/abhiyansainju/Developer/SnapMacros-Chip/test-output.html', document.body.innerHTML);
-
         // Should now be enabled
         await waitFor(() => {
             expect(screen.getByText("Continue").closest("button")).not.toBeDisabled();
         });
+    });
+
+    it("renders Activity Level step (Step 3) with pre-selected default and advances", async () => {
+        render(<OnboardingPage />);
+
+        // Advance to Step 3 rapidly
+        fireEvent.click(screen.getByText("Let's Get Started →"));
+
+        fireEvent.click(screen.getByText("Cut").closest("button")!);
+        await waitFor(() => expect(screen.getByText("Continue").closest("button")).not.toBeDisabled());
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        const nameInput = screen.getByPlaceholderText("Your first name");
+        fireEvent.change(nameInput, { target: { value: "Alex" } });
+        const ageInput = screen.getByPlaceholderText("25");
+        fireEvent.change(ageInput, { target: { value: "30" } });
+
+        fireEvent.click(screen.getByText("CM").closest("button")!);
+        const heightInput = await screen.findByPlaceholderText("175");
+        fireEvent.change(heightInput, { target: { value: "180" } });
+
+        fireEvent.click(screen.getByText("KG").closest("button")!);
+        const weightInput = await screen.findByPlaceholderText("0");
+        fireEvent.change(weightInput, { target: { value: "70" } });
+
+        fireEvent.click(screen.getByText("Male").closest("button")!);
+
+        await act(async () => { jest.runAllTimers(); });
+        await waitFor(() => expect(screen.getByText("Continue").closest("button")).not.toBeDisabled());
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        // Assert Step 3 is reached
+        expect(screen.getByText("How active are you?")).toBeInTheDocument();
+        expect(screen.getByText("Be honest. I won't judge. Much. 👀")).toBeInTheDocument();
+
+        // 5 cards should render
+        expect(screen.getByText("Sedentary")).toBeInTheDocument();
+        expect(screen.getByText("Lightly Active")).toBeInTheDocument();
+        expect(screen.getByText("Moderately Active")).toBeInTheDocument();
+        expect(screen.getByText("Very Active")).toBeInTheDocument();
+        expect(screen.getByText("Athlete")).toBeInTheDocument();
+
+        // Continue should NOT be disabled (it has a default 'moderate')
+        expect(screen.getByText("Continue").closest("button")).not.toBeDisabled();
+
+        // Option selection works
+        fireEvent.click(screen.getByText("Athlete").closest("button")!);
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Let state settle
+        await act(async () => { jest.runAllTimers(); });
+
+        // Go to next step
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        // For now, the next step hasn't been implemented specifically, but it's empty state or generic UI will render
     });
 });
