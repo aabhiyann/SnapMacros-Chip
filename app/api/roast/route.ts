@@ -1,45 +1,60 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { generateWeeklyRoast } from "@/lib/claude";
 import { DEMO_USER_ID } from "@/lib/auth";
+import { buildRoastContext, getRoastType, generateRoast } from "@/lib/agents/roast-agent";
+import { getRateLimit } from "@/lib/rate-limit";
 
-const querySchema = z.object({
-  weekStart: z.string().datetime().optional(),
-});
+// Use week_start (Sunday) to unify roasts
+function getWeekStart(d: Date) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day; // Sunday is 0
+  date.setDate(diff);
+  return date.toISOString().split("T")[0];
+}
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const parsed = querySchema.safeParse({ weekStart: searchParams.get("weekStart") ?? undefined });
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid query", details: parsed.error.flatten() }, { status: 400 });
-    }
-    let summary = "No meals logged this week.";
-    try {
-      const supabase = createClient();
-      const { data: logs, error } = await supabase
-        .from("logs")
-        .select("meal_name, calories, protein, carbs, fat, created_at")
-        .eq("user_id", DEMO_USER_ID)
-        .order("created_at", { ascending: false })
-        .limit(50);
+    const supabase = createClient();
+    const userId = DEMO_USER_ID;
 
-      if (logs && logs.length > 0) {
-        summary = logs
-          .map(
-            (m) =>
-              `- ${m.meal_name ?? "Meal"} | ${m.calories ?? "?"} cal, P: ${m.protein ?? "?"}, C: ${m.carbs ?? "?"}, F: ${m.fat ?? "?"}`
-          )
-          .join("\n");
-      }
-    } catch {
-      // Supabase not configured or table missing; use default summary
+    // 1. Rate Limit: 3 roasts per week per user
+    // We use our existing in-memory limiter but segment by week string
+    const weekStart = getWeekStart(new Date());
+    const limitKey = `roast-${userId}-${weekStart}`;
+
+    const limitInfo = getRateLimit(limitKey, 3);
+    if (!limitInfo.allowed) {
+      return NextResponse.json({ error: "Rate limit reached. Only 3 roasts per week!" }, { status: 429 });
     }
-    const roast = await generateWeeklyRoast(summary);
-    return NextResponse.json({ roast });
+
+    // 2. Build AI Context
+    const ctx = await buildRoastContext(userId);
+    const roastType = getRoastType(ctx);
+
+    // 3. Generate AI response
+    const aiOutput = await generateRoast(ctx, roastType);
+
+    // 4. Secure Upsert to weekly_roasts
+    const { data: newRoast, error } = await supabase
+      .from("weekly_roasts")
+      .upsert({
+        user_id: userId,
+        week_start: weekStart,
+        roast_title: aiOutput.roast_title,
+        roast_text: aiOutput.roast_text,
+        tip_text: aiOutput.tip_text,
+        mascot_mood: aiOutput.mascot_mood
+      }, { onConflict: "user_id, week_start" })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json({ success: true, roast: newRoast });
+
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("Roast Generation Error:", err);
+    return NextResponse.json({ error: "Failed to generate roast" }, { status: 500 });
   }
 }
