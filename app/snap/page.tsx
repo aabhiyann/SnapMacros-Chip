@@ -3,14 +3,14 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
 import { useRouter } from "next/navigation";
-import { X, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon, Zap, ZapOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BottomSheet } from "@/components/BottomSheet";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 
 const PLACEHOLDERS = [
+    "e.g., grilled salmon with rice and broccoli",
     "A double cheeseburger with medium fries...",
-    "Grilled chicken salad with vinaigrette...",
     "Two slices of pepperoni pizza...",
     "A bowl of oatmeal with blueberries...",
 ];
@@ -25,6 +25,11 @@ export default function SnapPage() {
     const [placeholderIdx, setPlaceholderIdx] = useState(0);
     const [description, setDescription] = useState("");
 
+    // Flash / Torch state
+    const [torchSupported, setTorchSupported] = useState(false);
+    const [isTorchOn, setIsTorchOn] = useState(false);
+    const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
     useEffect(() => {
         const timer = setInterval(() => {
             setPlaceholderIdx((prev) => (prev + 1) % PLACEHOLDERS.length);
@@ -32,7 +37,35 @@ export default function SnapPage() {
         return () => clearInterval(timer);
     }, []);
 
-    const handleUserMedia = () => setHasCamera(true);
+    const handleUserMedia = (stream: MediaStream) => {
+        setHasCamera(true);
+        // Check for torch support
+        const track = stream.getVideoTracks()[0];
+        if (track) {
+            const capabilities = track.getCapabilities && track.getCapabilities();
+            // @ts-ignore - TS doesn't officially fully type all capabilities everywhere yet
+            if (capabilities && capabilities.torch) {
+                setTorchSupported(true);
+            }
+        }
+    };
+
+    const toggleTorch = useCallback(async () => {
+        if (!webcamRef.current || !webcamRef.current.stream) return;
+        const track = webcamRef.current.stream.getVideoTracks()[0];
+        if (track) {
+            try {
+                const newTorchState = !isTorchOn;
+                await track.applyConstraints({
+                    advanced: [{ torch: newTorchState } as any]
+                });
+                setIsTorchOn(newTorchState);
+            } catch (error) {
+                console.error("Failed to toggle torch", error);
+            }
+        }
+    }, [isTorchOn]);
+
     const handleUserMediaError = () => setHasCamera(false);
 
     const capture = useCallback(() => {
@@ -43,9 +76,14 @@ export default function SnapPage() {
                 setIsFlashing(true);
                 setTimeout(() => setIsFlashing(false), 80);
 
-                // Save to session and push
+                // Save to session 
                 sessionStorage.setItem("snap_image", imageSrc);
-                router.push("/snap/result");
+                setCapturedImage(imageSrc);
+
+                // wait 600ms for thumbnail animation before routing
+                setTimeout(() => {
+                    router.push("/snap/result");
+                }, 600);
             }
         }
     }, [webcamRef, router]);
@@ -70,6 +108,26 @@ export default function SnapPage() {
         router.push("/snap/result");
     };
 
+    // Shared "Describe Meal" JSX for both Sheet and Fallback
+    const renderDescribeForm = () => (
+        <>
+            <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={PLACEHOLDERS[placeholderIdx]}
+                className="w-full bg-black/20 border border-[#2A2A3A] rounded-[12px] p-4 text-[#FFFFFF] font-['DM_Sans'] text-[16px] h-[120px] resize-none focus:outline-none focus:border-[#FF6B35] transition-colors"
+                style={{ backgroundColor: "rgba(255,255,255,0.03)" }}
+            />
+            <button
+                onClick={handleDescribeSubmit}
+                disabled={!description.trim()}
+                className="mt-4 w-full h-[56px] rounded-[14px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-transform"
+            >
+                Analyze This &rarr;
+            </button>
+        </>
+    );
+
     // ---------------------------------------------------------------------------
     // RENDER: No Camera Fallback
     // ---------------------------------------------------------------------------
@@ -87,25 +145,13 @@ export default function SnapPage() {
 
                 <div className="flex flex-col items-center justify-center flex-grow pb-[72px]">
                     <Chip emotion="thinking" size={100} />
-                    <h1 className="font-['Bricolage_Grotesque'] text-[28px] font-bold mt-6 mb-2">No camera found.</h1>
+                    <h2 className="font-['Bricolage_Grotesque'] text-[28px] font-bold mt-6 mb-2">No camera found.</h2>
                     <p className="text-[#A0A0B8] mb-8 text-center font-['DM_Sans'] text-[16px]">
-                        We couldn't access your camera. Describe your meal instead.
+                        Describe your meal below and Chip will analyze it.
                     </p>
 
                     <div className="w-full relative">
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder={PLACEHOLDERS[placeholderIdx]}
-                            className="w-full bg-[#22222F] border border-[#2A2A3A] rounded-[12px] p-4 text-[#FFFFFF] font-['DM_Sans'] text-[16px] h-[120px] resize-none focus:outline-none focus:border-[#FF6B35]"
-                        />
-                        <button
-                            onClick={handleDescribeSubmit}
-                            disabled={!description.trim()}
-                            className="mt-4 w-full h-[56px] rounded-[14px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-semibold disabled:opacity-50"
-                        >
-                            Analyze This
-                        </button>
+                        {renderDescribeForm()}
                     </div>
                 </div>
             </main>
@@ -127,16 +173,17 @@ export default function SnapPage() {
                 onUserMedia={handleUserMedia}
                 onUserMediaError={handleUserMediaError}
                 className="w-full h-full object-cover"
+                style={{ objectFit: 'cover' }}
             />
 
             {/* 2. Vignette */}
             <div
                 className="absolute inset-0 pointer-events-none z-10"
-                style={{ background: "radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.5) 100%)" }}
+                style={{ background: "radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%)" }}
             />
 
             {/* 3. Top Bar */}
-            <div className="absolute top-0 left-0 right-0 z-50 px-[20px] pt-[48px] flex justify-between items-center">
+            <div className="absolute top-[env(safe-area-inset-top)] left-0 right-0 z-50 px-[20px] pt-4 flex justify-between items-center">
                 <button
                     onClick={() => router.push("/dashboard")}
                     className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
@@ -144,19 +191,29 @@ export default function SnapPage() {
                     <X size={20} className="text-white" />
                 </button>
 
-                <label className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 cursor-pointer">
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileUpload}
-                    />
-                    <ImageIcon size={20} className="text-white" />
-                </label>
+                <div className="flex gap-3">
+                    {torchSupported && (
+                        <button
+                            onClick={toggleTorch}
+                            className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
+                        >
+                            {isTorchOn ? <Zap size={20} className="text-[#FF6B35]" /> : <ZapOff size={20} className="text-white" />}
+                        </button>
+                    )}
+                    <label className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 cursor-pointer">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                        />
+                        <ImageIcon size={20} className="text-white" />
+                    </label>
+                </div>
             </div>
 
             {/* 4. Capture Frame */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] z-20 flex flex-col items-center pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center pointer-events-none">
                 <div className="w-[280px] h-[280px] relative mb-4">
                     <motion.div
                         animate={{ opacity: [0.5, 1.0, 0.5] }}
@@ -177,33 +234,51 @@ export default function SnapPage() {
                         <div className="absolute bottom-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] rounded-full" />
                     </motion.div>
                 </div>
-                <div className="px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-white text-[13px] font-['DM_Sans']">
+                <div className="text-white text-[13px] font-['DM_Sans'] drop-shadow-md tracking-wide">
                     Point at your food
                 </div>
             </div>
 
-            {/* 5. Bottom Bar */}
+            {/* Captured Thumbnail bouncing in */}
+            <AnimatePresence>
+                {capturedImage && (
+                    <motion.div
+                        initial={{ scale: 0, opacity: 0, y: -20, x: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0, x: 0 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="absolute top-[calc(env(safe-area-inset-top)+80px)] right-[20px] z-50 w-[48px] h-[48px] rounded-[14px] overflow-hidden border-2 border-white shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                    >
+                        <img src={capturedImage} alt="Thumbnail preview" className="w-full h-full object-cover" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* 5. Bottom Section */}
             <div
-                className="absolute bottom-0 left-0 right-0 z-30 pt-16 pb-[calc(72px+env(safe-area-inset-bottom))] flex flex-col items-center"
+                className="absolute bottom-0 left-0 right-0 z-30 pt-16 pb-[calc(20px+env(safe-area-inset-bottom))] flex flex-col items-center"
                 style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)" }}
             >
-                <button
-                    onClick={capture}
-                    className="relative w-[80px] h-[80px] flex items-center justify-center rounded-full border-[3px] border-white group"
-                >
-                    <motion.div
-                        whileTap={{ scale: 1.15 }}
+                <div className="relative w-[80px] h-[80px] flex items-center justify-center rounded-full border-[3px] border-white/80">
+                    <motion.button
+                        onPointerDown={() => {
+                            if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
+                        }}
+                        onClick={capture}
+                        whileTap={{ scale: 1.25 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
-                        className="w-[64px] h-[64px] bg-white rounded-full"
+                        className="w-[64px] h-[64px] bg-white rounded-full focus:outline-none"
                     />
-                </button>
+                </div>
 
-                <button
-                    onClick={() => setIsSheetOpen(true)}
-                    className="mt-6 text-[14px] text-[#A0A0B8] font-['DM_Sans'] active:text-white"
-                >
-                    or describe your meal
-                </button>
+                <div className="mt-6 flex justify-center items-center h-[44px]">
+                    <button
+                        onClick={() => setIsSheetOpen(true)}
+                        className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] active:text-white px-4 py-2"
+                    >
+                        or describe your meal
+                    </button>
+                </div>
             </div>
 
             {/* Flash Effect */}
@@ -220,9 +295,13 @@ export default function SnapPage() {
             </AnimatePresence>
 
             {/* Describe Meal Bottom Sheet */}
-            <BottomSheet isOpen={isSheetOpen} onClose={() => setIsSheetOpen(false)}>
+            <BottomSheet
+                isOpen={isSheetOpen}
+                onClose={() => setIsSheetOpen(false)}
+                className="bg-[#22222F]"
+            >
                 <div className="relative pt-4 pb-6">
-                    <div className="absolute -top-12 -right-2">
+                    <div className="absolute -top-14 right-2">
                         <Chip emotion="thinking" size={48} />
                     </div>
 
@@ -230,20 +309,7 @@ export default function SnapPage() {
                         Describe your meal
                     </h2>
 
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder={PLACEHOLDERS[placeholderIdx]}
-                        className="w-full bg-[#22222F] border border-[#2A2A3A] rounded-[12px] p-4 text-[#FFFFFF] font-['DM_Sans'] text-[16px] h-[120px] resize-none focus:outline-none focus:border-[#FF6B35]"
-                    />
-
-                    <button
-                        onClick={handleDescribeSubmit}
-                        disabled={!description.trim()}
-                        className="mt-4 w-full h-[56px] rounded-[14px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                        Analyze This &rarr;
-                    </button>
+                    {renderDescribeForm()}
                 </div>
             </BottomSheet>
         </main>
