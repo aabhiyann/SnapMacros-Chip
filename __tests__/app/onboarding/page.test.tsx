@@ -13,6 +13,11 @@ jest.mock("next/navigation", () => ({
     },
 }));
 
+// Mock canvas-confetti
+jest.mock("canvas-confetti", () => {
+    return jest.fn();
+});
+
 // Mock framer-motion to execute immediately
 jest.mock("framer-motion", () => {
     const React = require("react");
@@ -223,5 +228,63 @@ describe("Onboarding Controller (Flow 3)", () => {
         fireEvent.click(screen.getByText("Continue").closest("button")!);
 
         // For now, the next step hasn't been implemented specifically, but it's empty state or generic UI will render
+    });
+
+    it("verifies Step 4 (Results Reveal) animations, text, and data display", async () => {
+        render(<OnboardingPage />);
+
+        // Fast forward through Step 0 -> Step 3
+        fireEvent.click(screen.getByText("Let's Get Started →"));
+
+        fireEvent.click(screen.getByText("Cut").closest("button")!);
+        await waitFor(() => expect(screen.getByText("Continue").closest("button")).not.toBeDisabled());
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        // Fill Step 2
+        const nameInput = screen.getByPlaceholderText("Your first name");
+        fireEvent.change(nameInput, { target: { value: "Alex" } });
+        const ageInput = screen.getByPlaceholderText("25");
+        fireEvent.change(ageInput, { target: { value: "30" } });
+
+        fireEvent.click(screen.getByText("CM").closest("button")!);
+        const heightInput = await screen.findByPlaceholderText("175");
+        fireEvent.change(heightInput, { target: { value: "180" } });
+
+        fireEvent.click(screen.getByText("KG").closest("button")!);
+        const weightInput = await screen.findByPlaceholderText("0");
+        fireEvent.change(weightInput, { target: { value: "70" } });
+
+        fireEvent.click(screen.getByText("Male").closest("button")!);
+
+        await act(async () => { jest.runAllTimers(); });
+        await waitFor(() => expect(screen.getByText("Continue").closest("button")).not.toBeDisabled());
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        // In Step 3, wait, click continue
+        await waitFor(() => expect(screen.getByText("Continue").closest("button")).not.toBeDisabled());
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        // STEP 4 Should mount
+        // Initially, the checking state renders
+        expect(screen.getByText("Calculating your targets...")).toBeInTheDocument();
+
+        // Advance past the 600ms boundary
+        await act(async () => { jest.advanceTimersByTime(600); });
+        await act(async () => { jest.runAllTimers(); });
+
+        // Wait for the text to appear after the crossfade (requires wait)
+        await waitFor(() => {
+            expect(screen.getByText("Alex, you're all set! 🎉")).toBeInTheDocument();
+        });
+
+        // Test the target macros mount (Protein, Carbs, Fat)
+        expect(screen.getByText("💜 Protein")).toBeInTheDocument();
+        expect(screen.getByText("💚 Carbs")).toBeInTheDocument();
+        expect(screen.getByText("🟡 Fat")).toBeInTheDocument();
+        expect(screen.getByText("daily calories")).toBeInTheDocument();
+        expect(screen.getByText("To support your Cut goal")).toBeInTheDocument();
+
+        // Continue button should read "Start Tracking 🚀"
+        expect(screen.getByText("Start Tracking 🚀")).toBeInTheDocument();
     });
 });
