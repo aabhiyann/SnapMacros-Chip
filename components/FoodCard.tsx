@@ -1,104 +1,114 @@
 "use client";
 
-import { motion, useAnimation, PanInfo } from "framer-motion";
+import React, { useRef, useState } from "react";
+import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion";
 import { Trash2 } from "lucide-react";
-import React, { useState } from "react";
 
 export interface FoodLog {
     id: string;
-    food_name: string;
+    description: string;
     calories: number;
     protein: number;
     carbs: number;
     fat: number;
     created_at: string;
+    image_url?: string;
+    meal_type?: "breakfast" | "lunch" | "dinner" | "snack" | "other" | string;
 }
 
 interface FoodCardProps {
     log: FoodLog;
-    onDelete: (id: string) => void;
-    index: number;
+    onDelete?: (id: string) => void;
+    index?: number; // Used for staggered entry animation
 }
 
-export const FoodCard = React.memo(function FoodCard({ log, onDelete, index }: FoodCardProps) {
+const MEAL_COLORS: Record<string, string> = {
+    breakfast: "from-[#FBBF24] to-[#F59E0B]",
+    lunch: "from-[#2DD4BF] to-[#0D9488]",
+    dinner: "from-[#6C63FF] to-[#4F46E5]",
+    snack: "from-[#FF6B35] to-[#E85D2C]",
+    other: "from-[#A0A0B8] to-[#60607A]"
+};
+
+export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
+    const x = useMotionValue(0);
     const controls = useAnimation();
+    const containerRef = useRef<HTMLDivElement>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDragEnd = async (e: any, info: PanInfo) => {
-        const offset = info.offset.x;
-        const velocity = info.velocity.x;
+    // Dynamic swipe threshold based on width
+    const SWIPE_THRESHOLD = -80; // Negative X threshold to trigger delete
+    const deleteOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
 
-        if (offset < -75 || velocity < -500) {
-            // Swipe left passed threshold -> delete
-            controls.start({ x: "-100%", opacity: 0, transition: { duration: 0.2 } });
-            setTimeout(() => onDelete(log.id), 200);
+    const handleDragEnd = async (e: any, { offset, velocity }: any) => {
+        if (offset.x < SWIPE_THRESHOLD || velocity.x < -500) {
+            // Trigger Delete
+            setIsDeleting(true);
+            await controls.start({ x: -1000, opacity: 0, transition: { duration: 0.2 } });
+            if (onDelete) onDelete(log.id);
         } else {
-            // Spring back
-            controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 20 } });
+            // Snap back
+            controls.start({ x: 0, transition: { type: "spring", stiffness: 400, damping: 25 } });
         }
     };
 
-    // Generate deterministic gradient from id
-    const colors = [
-        "from-[#FF6B35] to-[#FFA735]",
-        "from-[#6C63FF] to-[#8F88FF]",
-        "from-[#2DD4BF] to-[#5EEAD4]",
-        "from-[#FBBF24] to-[#FCD34D]"
-    ];
-    const colorIndex = log.id.charCodeAt(0) % colors.length;
-    const gradient = colors[colorIndex];
+    if (isDeleting) return null;
+
+    const bgGradient = log.meal_type ? MEAL_COLORS[log.meal_type] || MEAL_COLORS.other : MEAL_COLORS.other;
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.65 + (index * 0.06), duration: 0.3, ease: "easeOut" }}
-            className="relative mb-3 rounded-2xl overflow-hidden bg-[#2A2A3A]" // Background for reveal
+            className="relative mb-3 rounded-2xl overflow-hidden bg-[#E85D2C]" // Deep red background reveals on swipe
+            ref={containerRef}
         >
             {/* Background delete action */}
-            <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end pr-6 bg-[#EF4444] z-0">
-                <Trash2 className="text-white" size={24} />
+            <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center p-4">
+                <motion.div style={{ opacity: deleteOpacity }} className="flex flex-col items-center">
+                    <Trash2 size={24} className="text-white" />
+                </motion.div>
             </div>
 
-            {/* Foreground Card */}
+            {/* Draggable Card View */}
             <motion.div
                 drag="x"
-                dragDirectionLock
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={{ left: 0.5, right: 0 }}
+                dragConstraints={{ left: -100, right: 0 }}
+                dragElastic={0.1}
                 onDragEnd={handleDragEnd}
                 animate={controls}
-                className="relative z-10 flex items-center p-4 bg-[#1A1A24] rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.30)] w-full touch-pan-y"
+                style={{ x }}
+                className="relative bg-[#1A1A24] p-4 rounded-2xl flex items-center justify-between z-10 w-full touch-pan-y"
             >
-                {/* Left: Thumbnail gradient */}
-                <div className={`w-[48px] h-[48px] rounded-[14px] bg-gradient-to-br ${gradient} flex items-center justify-center shadow-inner shrink-0 mr-4`}>
-                    <span className="text-white font-bold text-lg leading-none uppercase drop-shadow-sm">
-                        {log.food_name.charAt(0)}
-                    </span>
-                </div>
-
-                {/* Center: Info */}
-                <div className="flex-1 min-w-0 pr-4">
-                    <h3 className="text-[15px] font-semibold text-white truncate font-['DM_Sans'] leading-tight mb-1">
-                        {log.food_name}
-                    </h3>
-                    <p className="text-[13px] text-[#A0A0B8] font-['DM_Sans'] truncate">
-                        {new Date(log.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                    </p>
-                </div>
-
-                {/* Right: Macros */}
-                <div className="flex flex-col items-end shrink-0">
-                    <div className="text-[18px] font-bold text-white font-['Bricolage_Grotesque'] leading-none mb-2">
-                        {Math.round(log.calories)}
+                <div className="flex items-center gap-4 flex-1 overflow-hidden">
+                    <div className={`w-[48px] h-[48px] rounded-[14px] shrink-0 bg-gradient-to-br ${bgGradient} flex items-center justify-center text-[20px] shadow-inner`}>
+                        {log.image_url ? (
+                            <img src={log.image_url} alt="Food" className="w-full h-full object-cover rounded-[14px]" />
+                        ) : (
+                            <span>{log.description.charAt(0).toUpperCase()}</span>
+                        )}
                     </div>
-                    <div className="flex gap-1.5">
-                        <div className="w-[6px] h-[6px] rounded-full bg-[#6C63FF]" title="Protein" />
-                        <div className="w-[6px] h-[6px] rounded-full bg-[#2DD4BF]" title="Carbs" />
-                        <div className="w-[6px] h-[6px] rounded-full bg-[#FBBF24]" title="Fat" />
+
+                    <div className="flex-1 min-w-0 pr-2">
+                        <h4 className="text-[15px] font-semibold text-white font-['DM_Sans'] truncate">{log.description}</h4>
+                        <div className="flex items-center gap-1 mt-0.5">
+                            <span className="text-[13px] text-[#A0A0B8] font-['DM_Sans'] truncate capitalize">
+                                {log.meal_type || "Snack"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-end shrink-0 pl-2">
+                    <span className="text-[18px] font-bold text-white font-['Bricolage_Grotesque'] leading-none mb-1.5">{log.calories}</span>
+                    <div className="flex gap-1.5 mt-auto pb-0.5">
+                        <div className="w-2 h-2 rounded-full bg-[#6C63FF]" title={`Protein: ${log.protein}g`} />
+                        <div className="w-2 h-2 rounded-full bg-[#2DD4BF]" title={`Carbs: ${log.carbs}g`} />
+                        <div className="w-2 h-2 rounded-full bg-[#FBBF24]" title={`Fat: ${log.fat}g`} />
                     </div>
                 </div>
             </motion.div>
         </motion.div>
     );
-});
+}

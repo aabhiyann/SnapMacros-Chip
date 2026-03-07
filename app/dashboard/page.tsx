@@ -5,8 +5,8 @@ import { AppShell } from "@/components/AppShell";
 import { Chip } from "@/components/Chip";
 import { MacroRings } from "@/components/MacroRings";
 import { MealTimeline } from "@/components/MealTimeline";
-import { FoodLog } from "@/components/FoodCard";
-import { motion, AnimatePresence } from "framer-motion";
+import { CountUp } from "@/components/rings/CountUp";
+import { motion } from "framer-motion";
 
 // Helper component for the spec-driven skeleton
 function DashboardSkeleton() {
@@ -159,16 +159,20 @@ export default function DashboardPage() {
 
     return (
         <AppShell>
-            {/* 1. Header */}
-            <div className="pt-[48px] px-[20px] mb-8 relative">
+            {/* 1. Fixed Header (app wrapper handles scrolling, but visually top) */}
+            <div className="pt-[48px] px-[20px] mb-6 relative">
                 <div className="flex justify-between items-start">
                     <div>
                         <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{greeting}</span>
                         <h1 className="text-white text-[22px] font-bold font-['DM_Sans'] leading-tight">{data.profile.name}</h1>
                     </div>
-                    {data.profile.streak_days > 0 && (
-                        <div className="bg-[#FF6B35]/20 text-[#FF6B35] px-3 py-1 rounded-full flex items-center gap-1.5 border border-[#FF6B35]/30">
+                    {data.profile.streak_days > 0 ? (
+                        <div className="bg-[#FF6B35]/10 text-[#FF6B35] px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-[#FF6B35]/50">
                             <span className="text-[12px] font-bold font-['DM_Sans']">🔥 {data.profile.streak_days} days</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1.5 pt-1">
+                            <span className="text-[12px] text-[#A0A0B8] font-['DM_Sans']">Start a streak 🔥</span>
                         </div>
                     )}
                 </div>
@@ -193,28 +197,60 @@ export default function DashboardPage() {
                 >
                     <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45 z-0" />
                     <p className="text-[14px] text-white font-['DM_Sans'] relative z-10 italic">
-                        "{data.chip.message}"
+                        &quot;{data.chip.message}&quot;
                     </p>
                 </motion.div>
             </div>
 
-            {/* 3. Macro Rings (Handles 400ms fill stagger + 500ms 0->value count cascade) */}
-            <div className="flex justify-center mb-4">
+            {/* 3. Macro Rings (280px, centered, 20px padding) */}
+            <div className="flex justify-center px-[20px] mb-6">
                 <MacroRings
                     calories={{ current: data.current.calories, target: data.targets.calories }}
                     protein={{ current: data.current.protein, target: data.targets.protein }}
                     carbs={{ current: data.current.carbs, target: data.targets.carbs }}
                     fat={{ current: data.current.fat, target: data.targets.fat }}
                     animate={true}
-                />
+                    size={280}
+                >
+                    <div className="flex flex-col items-center justify-center">
+                        <CountUp value={data.current.calories} className="text-[48px] font-['Bricolage_Grotesque'] font-bold text-white leading-none tracking-tight" delay={0.5} duration={0.6} />
+                        <span className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] mt-1">/ {data.targets.calories} cal</span>
+                    </div>
+                </MacroRings>
             </div>
 
-            {/* Labels below rings */}
-            <div className="flex justify-center gap-4 px-4 mb-10">
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#FF6B35]" /><span className="text-[11px] text-[#A0A0B8] uppercase">Cal</span></div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#6C63FF]" /><span className="text-[11px] text-[#A0A0B8] uppercase">Pro</span></div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#2DD4BF]" /><span className="text-[11px] text-[#A0A0B8] uppercase">Car</span></div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#FBBF24]" /><span className="text-[11px] text-[#A0A0B8] uppercase">Fat</span></div>
+            {/* 4. Macro Pill Row (Horizontal Scroll) */}
+            <div className="w-full overflow-x-auto hide-scrollbar pb-2 mb-8 px-[20px]">
+                <div className="flex gap-3 min-w-max">
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#2DD4BF]/10 border border-[#2DD4BF]/30">
+                        <span className="text-[14px]">💜</span>
+                        <div className="flex flex-col">
+                            <span className="text-[#2DD4BF] font-bold text-[14px] font-['Bricolage_Grotesque'] leading-tight">{data.current.protein} <span className="text-[#2DD4BF]/70 font-normal">/ {data.targets.protein}g</span></span>
+                            <span className="text-[#2DD4BF]/70 text-[10px] uppercase font-bold tracking-wider">Protein</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FBBF24]/10 border border-[#FBBF24]/30">
+                        <span className="text-[14px]">💚</span>
+                        <div className="flex flex-col">
+                            <span className="text-[#FBBF24] font-bold text-[14px] font-['Bricolage_Grotesque'] leading-tight">{data.current.carbs} <span className="text-[#FBBF24]/70 font-normal">/ {data.targets.carbs}g</span></span>
+                            <span className="text-[#FBBF24]/70 text-[10px] uppercase font-bold tracking-wider">Carbs</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F87171]/10 border border-[#F87171]/30">
+                        <span className="text-[14px]">🟡</span>
+                        <div className="flex flex-col">
+                            <span className="text-[#F87171] font-bold text-[14px] font-['Bricolage_Grotesque'] leading-tight">{data.current.fat} <span className="text-[#F87171]/70 font-normal">/ {data.targets.fat}g</span></span>
+                            <span className="text-[#F87171]/70 text-[10px] uppercase font-bold tracking-wider">Fat</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF6B35]/10 border border-[#FF6B35]/30">
+                        <span className="text-[14px]">🔥</span>
+                        <div className="flex flex-col">
+                            <span className="text-[#FF6B35] font-bold text-[14px] font-['Bricolage_Grotesque'] leading-tight">{data.current.calories} <span className="text-[#FF6B35]/70 font-normal">/ {data.targets.calories}</span></span>
+                            <span className="text-[#FF6B35]/70 text-[10px] uppercase font-bold tracking-wider">Calories</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* 4. Meal Timeline (Mount Fades In Stacked Elements from 650ms) */}

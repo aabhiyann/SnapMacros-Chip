@@ -21,6 +21,7 @@ export interface MacroRingsProps {
     strokeWidth?: number;
     className?: string;
     animate?: boolean;
+    children?: React.ReactNode;
 }
 
 export const MacroRings = React.memo(function MacroRings({
@@ -28,14 +29,15 @@ export const MacroRings = React.memo(function MacroRings({
     protein,
     carbs,
     fat,
-    size = 200,
-    strokeWidth = 14,
+    size = 280, // Default to spec size
+    strokeWidth = 16, // Thicker default relative to 280
     className = "",
     animate = true,
+    children
 }: MacroRingsProps) {
     const center = size / 2;
     // Reduce radius by strokeWidth for each inner ring
-    const ringGap = strokeWidth + 4;
+    const ringGap = strokeWidth + 6; // slightly larger gap for 280
 
     const rings: RingData[] = [
         { label: "Calories", ...calories, color: "#FF6B35", radius: center - strokeWidth },
@@ -108,7 +110,7 @@ export const MacroRings = React.memo(function MacroRings({
                                 fill="none"
                                 stroke={ring.color}
                                 strokeWidth={strokeWidth}
-                                strokeOpacity={0.2}
+                                strokeOpacity={0.15}
                                 strokeLinecap="round"
                             />
                             {/* Progress ring */}
@@ -134,8 +136,12 @@ export const MacroRings = React.memo(function MacroRings({
                 })}
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-text">
-                <CountUp value={calories.current} className="text-2xl font-heading font-bold" delay={animate ? 0.5 : 0} duration={animate ? 0.6 : 0.01} />
-                <span className="text-xs text-text-secondary">kcal</span>
+                {children || (
+                    <>
+                        <CountUp value={calories.current} className="text-2xl font-heading font-bold" delay={animate ? 0.5 : 0} duration={animate ? 0.6 : 0.01} />
+                        <span className="text-xs text-text-secondary">kcal</span>
+                    </>
+                )}
             </div>
         </div>
     );
