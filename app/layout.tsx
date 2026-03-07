@@ -20,6 +20,15 @@ export const metadata: Metadata = {
   title: "SnapMacros",
   description: "AI nutrition tracker — photograph food, get instant macro breakdown. Chip is your mascot.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SnapMacros",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
+  }
 };
 
 export const viewport = {

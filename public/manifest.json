@@ -1,12 +1,11 @@
 {
   "name": "SnapMacros",
   "short_name": "SnapMacros",
-  "description": "AI nutrition tracker — photograph food, get instant macro breakdown.",
-  "start_url": "/",
+  "description": "Snap your food. Know your macros. Get roasted by Chip.",
+  "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0F0F14",
   "theme_color": "#FF6B35",
-  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -19,6 +18,11 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ]
 }
