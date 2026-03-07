@@ -1,8 +1,9 @@
 "use client";
 import { TapButton } from "@/components/ui/TapButton";
-
 import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
 
 interface ActivityStepProps {
     data: OnboardingData;
@@ -11,67 +12,95 @@ interface ActivityStepProps {
 }
 
 const ACTIVITIES = [
-    { id: "sedentary", title: "Sedentary", desc: "Desk job, little to no exercise." },
-    { id: "light", title: "Lightly Active", desc: "Light exercise 1-3 days/week." },
-    { id: "moderate", title: "Moderately Active", desc: "Moderate exercise 3-5 days/week." },
-    { id: "active", title: "Active", desc: "Hard exercise 6-7 days/week." },
-    { id: "very_active", title: "Very Active", desc: "Very hard exercise & physical job." },
+    { id: "sedentary", emoji: "🛋️", title: "Sedentary", desc: "Desk job, very little movement" },
+    { id: "light", emoji: "🚶", title: "Lightly Active", desc: "1–3 workouts per week" },
+    { id: "moderate", emoji: "🏃", title: "Moderately Active", desc: "3–5 workouts per week" },
+    { id: "active", emoji: "🏋️", title: "Very Active", desc: "6–7 intense workouts / week" },
+    { id: "very_active", emoji: "⚡", title: "Athlete", desc: "Twice-daily training or physical labor" },
 ];
 
 export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
-    return (
-        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto">
 
-            <div className="mb-8 w-full">
-                <h2 className="text-[32px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-3">
-                    How active are you?
-                </h2>
-                <p className="text-[#A0A0B8] text-[15px] font-['DM_Sans']">
-                    This helps calculate your total daily energy expenditure (TDEE).
-                </p>
+    // Pre-select moderate if empty
+    useEffect(() => {
+        if (!data.activityLevel) {
+            updateData({ activityLevel: "moderate" });
+        }
+    }, [data.activityLevel, updateData]);
+
+    const currentActivity = data.activityLevel || "moderate";
+
+    return (
+        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto relative">
+
+            {/* Chip top right */}
+            <div className="absolute top-[80px] right-[20px] z-10 flex flex-col items-end">
+                <Chip emotion="happy" size={80} />
+                <AnimatePresence>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-3 shadow-xl max-w-[180px] mt-2 relative mr-2"
+                    >
+                        <div className="absolute -top-2 right-6 w-4 h-4 bg-[#1A1A24] border-t border-l border-[#2A2A3A] rotate-45" />
+                        <p className="text-[#FFFFFF] text-[12px] font-medium font-['DM_Sans'] relative z-10 text-center">
+                            Be honest. I won't judge. Much. 👀
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
-            <div className="flex flex-col gap-3 mb-auto">
+            {/* Header */}
+            <div className="mb-8 w-full pr-[90px]">
+                <h1 className="text-[28px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-2">
+                    How active are you?
+                </h1>
+            </div>
+
+            <div className="flex flex-col gap-3 flex-1 pb-8">
                 {ACTIVITIES.map((act) => {
-                    const isSelected = data.activityLevel === act.id;
+                    const isSelected = currentActivity === act.id;
                     return (
                         <TapButton
                             key={act.id}
                             onClick={() => updateData({ activityLevel: act.id as any })}
-                            className={`flex items-center p-4 rounded-[16px] border-2 transition-all ${isSelected
-                                ? "bg-[#22222F] border-[#FF6B35] shadow-[0_0_24px_rgba(255,107,53,0.15)]"
-                                : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#22222F]"
+                            className={`flex items-center h-[72px] rounded-[16px] border-l-[4px] border border-y-[#2A2A3A] border-r-[#2A2A3A] transition-all duration-200 relative overflow-hidden ${isSelected
+                                ? "bg-[rgba(255,107,53,0.08)] border-l-[#FF6B35] border-y-[#FF6B35] border-r-[#FF6B35] border-y-2 border-r-2 shadow-[0_0_24px_rgba(255,107,53,0.15)]"
+                                : "bg-[#1A1A24] border-l-transparent hover:bg-[#22222F]"
                                 }`}
                         >
-                            <div className={`w-5 h-5 rounded-full border-2 mr-4 flex flex-col items-center justify-center shrink-0 ${isSelected ? "border-[#FF6B35]" : "border-[#60607A]"}`}>
-                                {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#FF6B35]" />}
+                            {/* Emoji */}
+                            <div className="pl-[16px] text-[28px]">
+                                {act.emoji}
                             </div>
-                            <div className="text-left flex-1">
-                                <h3 className={`text-[15px] font-bold font-['DM_Sans'] ${isSelected ? "text-white" : "text-[#E0E0E0]"}`}>
+
+                            {/* Content */}
+                            <div className="text-left flex-1 pl-4 pr-3">
+                                <h3 className={`text-[16px] font-[600] font-['DM_Sans'] ${isSelected ? "text-[#FF6B35]" : "text-white"}`}>
                                     {act.title}
                                 </h3>
                                 <p className="text-[#A0A0B8] text-[13px] font-['DM_Sans'] mt-0.5">
                                     {act.desc}
                                 </p>
                             </div>
+
+                            {/* Indicator */}
+                            <div className="pr-4 flex items-center justify-center">
+                                <div className={`w-[16px] h-[16px] rounded-full border-2 transition-colors duration-200 flex items-center justify-center ${isSelected ? "border-[#FF6B35]" : "border-[#60607A]"}`}>
+                                    {isSelected && <div className="w-2 h-2 rounded-full bg-[#FF6B35]" />}
+                                </div>
+                            </div>
                         </TapButton>
-                    )
+                    );
                 })}
             </div>
 
             <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
-                <div className="flex items-center gap-4 bg-[#1A1A24] rounded-[20px] p-4 mb-4 border border-[#2A2A3A]">
-                    <Chip emotion="thinking" size={48} />
-                    <p className="text-[#FFFFFF] text-[14px] italic font-['DM_Sans'] flex-1">
-                        "Be honest. I won't judge. Much. 👀"
-                    </p>
-                </div>
-
                 <TapButton
                     onClick={onNext}
                     className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98]"
                 >
-                    See My Targets &rarr;
+                    Continue
                 </TapButton>
             </div>
         </div>
