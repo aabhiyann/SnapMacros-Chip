@@ -1,6 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CountUp } from "@/components/rings/CountUp";
 
 interface RingData {
     label: string;
@@ -40,8 +42,53 @@ export function MacroRings({
         { label: "Fat", ...fat, color: "#F87171", radius: center - strokeWidth - ringGap * 3 },
     ];
 
+    const [milestonesInfo, setMilestonesInfo] = useState<{ label: string, color: string }[]>([]);
+    const previouslyHit = useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+        const newHits: { label: string, color: string }[] = [];
+        rings.forEach(ring => {
+            const safeTarget = ring.target > 0 ? ring.target : 1;
+            if (ring.current >= safeTarget && safeTarget > 0) {
+                if (!previouslyHit.current.has(ring.label)) {
+                    previouslyHit.current.add(ring.label);
+                    newHits.push({ label: ring.label, color: ring.color });
+                    if (typeof navigator !== "undefined" && navigator.vibrate) {
+                        navigator.vibrate([80, 40, 80]);
+                    }
+                }
+            }
+        });
+
+        if (newHits.length > 0) {
+            setMilestonesInfo(prev => [...prev, ...newHits]);
+            newHits.forEach(hit => {
+                setTimeout(() => {
+                    setMilestonesInfo(current => current.filter(m => m.label !== hit.label));
+                }, 2500); // 1.5s display + margin
+            });
+        }
+    }, [calories.current, protein.current, carbs.current, fat.current]);
+
     return (
         <div className={`relative inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
+
+            <AnimatePresence>
+                {milestonesInfo.map((m, idx) => (
+                    <motion.div
+                        key={`${m.label}-${idx}`}
+                        initial={{ opacity: 0, y: -40, scale: 0.9 }}
+                        animate={{ opacity: 1, y: -size / 2 - 40 - (idx * 40), scale: 1 }}
+                        exit={{ opacity: 0, y: -size / 2 - 60, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        className="absolute z-50 whitespace-nowrap rounded-full px-4 py-2 font-bold font-['DM_Sans'] text-[14px] shadow-lg flex items-center gap-2 border"
+                        style={{ backgroundColor: "#1A1A24", borderColor: m.color, color: m.color }}
+                    >
+                        {m.label} goal hit! 💥
+                    </motion.div>
+                ))}
+            </AnimatePresence>
+
             <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
                 {rings.map((ring, i) => {
                     const circumference = 2 * Math.PI * ring.radius;
@@ -75,6 +122,9 @@ export function MacroRings({
                                 initial={{ strokeDashoffset: circumference }}
                                 animate={{ strokeDashoffset: offset }}
                                 transition={{ duration: 1, ease: "easeOut", delay: i * 0.1 }}
+                                style={{
+                                    filter: ring.current >= safeTarget ? `drop-shadow(0 0 8px ${ring.color})` : "none",
+                                }}
                             />
                         </g>
                     );
@@ -82,7 +132,7 @@ export function MacroRings({
             </svg>
             {/* Center text could go here, but since all 4 rings are dense, it might be better handled outside or in a tooltip */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-text">
-                <span className="text-2xl font-heading font-bold">{calories.current}</span>
+                <CountUp value={calories.current} className="text-2xl font-heading font-bold" />
                 <span className="text-xs text-text-secondary">kcal</span>
             </div>
         </div>
