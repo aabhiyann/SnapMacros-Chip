@@ -5,9 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { initialData, OnboardingData } from "@/components/onboarding/types";
 import { WelcomeStep } from "@/components/onboarding/WelcomeStep";
-// Coming up:
-// import { GoalStep } from "@/components/onboarding/GoalStep";
-// import { AboutStep } from "@/components/onboarding/AboutStep";
+import { GoalStep } from "@/components/onboarding/GoalStep";
+import { AboutStep } from "@/components/onboarding/AboutStep";
 // import { ActivityStep } from "@/components/onboarding/ActivityStep";
 // import { ResultsStep } from "@/components/onboarding/ResultsStep";
 
