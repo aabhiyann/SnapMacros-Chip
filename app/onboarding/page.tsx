@@ -7,8 +7,8 @@ import { initialData, OnboardingData } from "@/components/onboarding/types";
 import { WelcomeStep } from "@/components/onboarding/WelcomeStep";
 import { GoalStep } from "@/components/onboarding/GoalStep";
 import { AboutStep } from "@/components/onboarding/AboutStep";
-// import { ActivityStep } from "@/components/onboarding/ActivityStep";
-// import { ResultsStep } from "@/components/onboarding/ResultsStep";
+import { ActivityStep } from "@/components/onboarding/ActivityStep";
+import { ResultsStep } from "@/components/onboarding/ResultsStep";
 
 export default function OnboardingPage() {
     const [step, setStep] = useState(0);
