@@ -52,7 +52,7 @@ export const FoodCard = React.memo(function FoodCard({ log, onDelete, index }: F
         <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.3, ease: "easeOut" }}
+            transition={{ delay: 0.65 + (index * 0.06), duration: 0.3, ease: "easeOut" }}
             className="relative mb-3 rounded-2xl overflow-hidden bg-[#2A2A3A]" // Background for reveal
         >
             {/* Background delete action */}
