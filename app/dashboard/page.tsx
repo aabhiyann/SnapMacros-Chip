@@ -2,11 +2,72 @@
 
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { MacroRings } from "@/components/MacroRings";
 import { MealTimeline } from "@/components/MealTimeline";
 import { FoodLog } from "@/components/FoodCard";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Helper component for the spec-driven skeleton
+function DashboardSkeleton() {
+    return (
+        <AppShell>
+            {/* Header placeholder (fixed 60px equiv) */}
+            <div className="pt-[48px] px-[20px] mb-8 relative">
+                <div className="w-[100px] h-3 bg-[#2A2A3A] rounded mb-2 overflow-hidden relative">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                </div>
+                <div className="w-[150px] h-6 bg-[#2A2A3A] rounded overflow-hidden relative">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                </div>
+            </div>
+
+            {/* Gray Mascot Oval placeholder */}
+            <div className="px-[20px] mb-6 flex items-center gap-4 min-h-[120px]">
+                <div className="w-[100px] h-[100px] rounded-[50px] bg-[#2A2A3A] shrink-0 overflow-hidden relative">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                </div>
+                <div className="flex-1 bg-[#1A1A24] rounded-[14px] p-4 h-[80px] border border-[#2A2A3A] relative overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                </div>
+            </div>
+
+            {/* 4 Gray Circles in Ring Positions placeholder */}
+            <div className="flex justify-center mb-10 overflow-hidden relative">
+                <div className="w-[280px] h-[280px] rounded-full border-8 border-[#2A2A3A] flex items-center justify-center relative shadow-inner">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    {/* Inner rings approximation */}
+                    <div className="w-[240px] h-[240px] rounded-full border-8 border-[#2A2A3A] absolute" />
+                    <div className="w-[200px] h-[200px] rounded-full border-8 border-[#2A2A3A] absolute" />
+                    <div className="w-[160px] h-[160px] rounded-full border-8 border-[#2A2A3A] absolute" />
+                </div>
+            </div>
+
+            {/* 3 Gray Card bars placeholder */}
+            <div className="px-[20px]">
+                <div className="w-[120px] h-5 bg-[#2A2A3A] rounded mb-4 overflow-hidden relative">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                </div>
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="w-full h-[70px] bg-[#1A1A24] rounded-2xl mb-3 border border-[#2A2A3A] flex items-center px-4 overflow-hidden relative">
+                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                        <div className="w-[40px] h-[40px] bg-[#2A2A3A] rounded-[10px] mr-4" />
+                        <div className="flex-1">
+                            <div className="w-[60%] h-4 bg-[#2A2A3A] rounded mb-2" />
+                            <div className="w-[40%] h-3 bg-[#2A2A3A] rounded" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <style jsx global>{`
+                @keyframes shimmer {
+                    100% { transform: translateX(100%); }
+                }
+            `}</style>
+        </AppShell>
+    );
+}
 
 export default function DashboardPage() {
     const [data, setData] = useState<any>(null);
@@ -65,30 +126,7 @@ export default function DashboardPage() {
     // RENDER: Skeleton Loading
     // ---------------------------------------------------------------------------
     if (isLoading || !data) {
-        return (
-            <AppShell>
-                {/* Skeleton Header */}
-                <div className="pt-[48px] px-[20px] mb-8 animate-pulse">
-                    <div className="w-1/3 h-4 bg-[#2A2A3A] rounded mb-2"></div>
-                    <div className="w-1/2 h-8 bg-[#2A2A3A] rounded mb-1"></div>
-                    <div className="w-1/4 h-3 bg-[#2A2A3A] rounded mt-2"></div>
-                </div>
-
-                {/* Skeleton Chip Row */}
-                <div className="px-[20px] h-[120px] mb-6 flex gap-4 animate-pulse">
-                    <div className="w-[80px] h-[80px] rounded-full bg-[#2A2A3A] shrink-0" />
-                    <div className="flex-1 bg-[#1A1A24] rounded-[14px] p-4 h-[80px]" />
-                </div>
-
-                {/* Skeleton Rings */}
-                <div className="flex justify-center mb-12">
-                    <div className="w-[280px] h-[280px] rounded-full border-8 border-[#2A2A3A] animate-pulse" />
-                </div>
-
-                {/* Skeleton Timeline */}
-                <MealTimeline logs={[]} isLoading={true} onDeleteLog={() => { }} />
-            </AppShell>
-        );
+        return <DashboardSkeleton />;
     }
 
     // ---------------------------------------------------------------------------
@@ -121,7 +159,7 @@ export default function DashboardPage() {
 
     return (
         <AppShell>
-            {/* 1. Header (60px fixed equivalent) */}
+            {/* 1. Header */}
             <div className="pt-[48px] px-[20px] mb-8 relative">
                 <div className="flex justify-between items-start">
                     <div>
@@ -137,12 +175,12 @@ export default function DashboardPage() {
                 <p className="text-[#60607A] text-[13px] font-['DM_Sans'] mt-2 tracking-wide uppercase">{todayDate}</p>
             </div>
 
-            {/* 2. Chip + Speech Row */}
+            {/* 2. Chip + Speech Row | Mount: x:-40->0 spring (300ms delay) */}
             <div className="px-[20px] mb-6 flex items-center gap-4 min-h-[120px]">
                 <motion.div
                     initial={{ x: -40, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.3 }}
                     className="shrink-0 relative z-10"
                 >
                     <Chip emotion={data.chip.emotion} size={100} />
@@ -150,7 +188,7 @@ export default function DashboardPage() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.15 }}
+                    transition={{ delay: 0.85 }} // Fades in at 850ms per spec
                     className="flex-1 bg-[#1A1A24] rounded-[14px] p-4 border border-[#2A2A3A] relative shadow-lg z-0"
                 >
                     <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45 z-0" />
@@ -160,13 +198,13 @@ export default function DashboardPage() {
                 </motion.div>
             </div>
 
-            {/* 3. Macro Rings */}
+            {/* 3. Macro Rings (Handles 400ms fill stagger + 500ms 0->value count cascade) */}
             <div className="flex justify-center mb-4">
                 <MacroRings
-                    calories={data.current.calories} targetCalories={data.targets.calories}
-                    protein={data.current.protein} targetProtein={data.targets.protein}
-                    carbs={data.current.carbs} targetCarbs={data.targets.carbs}
-                    fat={data.current.fat} targetFat={data.targets.fat}
+                    calories={{ current: data.current.calories, target: data.targets.calories }}
+                    protein={{ current: data.current.protein, target: data.targets.protein }}
+                    carbs={{ current: data.current.carbs, target: data.targets.carbs }}
+                    fat={{ current: data.current.fat, target: data.targets.fat }}
                     animate={true}
                 />
             </div>
@@ -179,7 +217,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#FBBF24]" /><span className="text-[11px] text-[#A0A0B8] uppercase">Fat</span></div>
             </div>
 
-            {/* 4. Meal Timeline */}
+            {/* 4. Meal Timeline (Mount Fades In Stacked Elements from 650ms) */}
             <MealTimeline
                 logs={data.logs}
                 isLoading={false}

@@ -20,6 +20,7 @@ export interface MacroRingsProps {
     size?: number;
     strokeWidth?: number;
     className?: string;
+    animate?: boolean;
 }
 
 export const MacroRings = React.memo(function MacroRings({
@@ -30,6 +31,7 @@ export const MacroRings = React.memo(function MacroRings({
     size = 200,
     strokeWidth = 14,
     className = "",
+    animate = true,
 }: MacroRingsProps) {
     const center = size / 2;
     // Reduce radius by strokeWidth for each inner ring
@@ -121,7 +123,8 @@ export const MacroRings = React.memo(function MacroRings({
                                 strokeDasharray={circumference}
                                 initial={{ strokeDashoffset: circumference }}
                                 animate={{ strokeDashoffset: offset }}
-                                transition={{ duration: 1, ease: "easeOut", delay: i * 0.1 }}
+                                // Delay starting at 400ms (0.4s), incrementing 100ms per ring. 800ms duration.
+                                transition={{ duration: 0.8, ease: "easeOut", delay: animate ? 0.4 + (i * 0.1) : 0 }}
                                 style={{
                                     filter: ring.current >= safeTarget ? `drop-shadow(0 0 8px ${ring.color})` : "none",
                                 }}
@@ -130,9 +133,8 @@ export const MacroRings = React.memo(function MacroRings({
                     );
                 })}
             </svg>
-            {/* Center text could go here, but since all 4 rings are dense, it might be better handled outside or in a tooltip */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-text">
-                <CountUp value={calories.current} className="text-2xl font-heading font-bold" />
+                <CountUp value={calories.current} className="text-2xl font-heading font-bold" delay={animate ? 0.5 : 0} duration={animate ? 0.6 : 0.01} />
                 <span className="text-xs text-text-secondary">kcal</span>
             </div>
         </div>
