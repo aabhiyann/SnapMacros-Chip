@@ -89,8 +89,8 @@ export async function analyzeFood(
         messages: [{ role: "user", content: [imageBlock, { type: "text", text: userMessage }] }],
       });
       const text = response.content
-        .filter((c): c is { type: "text"; text: string } => c.type === "text")
-        .map((c) => c.text)
+        .filter((c) => c.type === "text")
+        .map((c) => (c as { type: "text"; text: string }).text)
         .join("");
       if (!text) throw new Error("Empty vision response");
       const result = parseVisionResponse(text);
