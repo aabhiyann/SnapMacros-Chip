@@ -1,3 +1,4 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,7 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, Settings, Award, ChevronRight, User as UserIcon, Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
 
 // Mock out our components for the UI shell building phase
@@ -17,15 +18,15 @@ const StatCard = ({ label, value }: { label: string, value: string | number }) =
 );
 
 const SettingRow = ({ icon: Icon, label, value, onClick, isDanger }: any) => (
-    <button
+    <TapButton
         onClick={onClick}
         className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
     >
         <div className="flex items-center gap-4 text-left">
-            <div className={\`w-10 h-10 rounded-full flex items-center justify-center \${isDanger ? 'bg-[#EF4444]/10 text-[#EF4444]' : 'bg-[#2A2A3A] text-white'}\`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center \${isDanger ? 'bg-[#EF4444]/10 text-[#EF4444]' : 'bg-[#2A2A3A] text-white'}`}>
             <Icon size={18} />
         </div>
-        <span className={\`font-['DM_Sans'] font-medium text-[16px] \${isDanger ? 'text-[#EF4444]' : 'text-white'}\`}>{label}</span>
+        <span className={`font-['DM_Sans'] font-medium text-[16px] \${isDanger ? 'text-[#EF4444]' : 'text-white'}`}>{label}</span>
     </div >
     <div className="flex items-center gap-3">
         {value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>}
@@ -105,9 +106,9 @@ export default function ProfilePage() {
                     <div className="bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A] p-5">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Daily Targets</h3>
-                            <button className="text-[#FF6B35] text-[13px] font-bold font-['DM_Sans'] px-3 py-1.5 bg-[#FF6B35]/10 rounded-full">
+                            <TapButton className="text-[#FF6B35] text-[13px] font-bold font-['DM_Sans'] px-3 py-1.5 bg-[#FF6B35]/10 rounded-full">
                                 Edit
-                            </button>
+                            </TapButton>
                         </div>
 
                         <div className="flex justify-between items-end border-b border-[#2A2A3A] pb-5 mb-5">
@@ -145,7 +146,7 @@ export default function ProfilePage() {
                 <div className="mb-10">
                     <div className="px-5 mb-4 flex items-center justify-between">
                         <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Roast History</h3>
-                        <button className="text-[#A0A0B8] text-[13px] font-medium font-['DM_Sans'] hover:text-white transition-colors">View All</button>
+                        <TapButton className="text-[#A0A0B8] text-[13px] font-medium font-['DM_Sans'] hover:text-white transition-colors">View All</TapButton>
                     </div>
 
                     <div className="w-full overflow-x-auto pb-4 hide-scrollbar px-5 flex gap-4">
@@ -208,18 +209,18 @@ export default function ProfilePage() {
                             </p>
 
                             <div className="flex gap-3">
-                                <button
+                                <TapButton
                                     onClick={() => setShowSignOutConf(false)}
                                     className="flex-1 py-4 rounded-xl bg-[#2A2A3A] text-white font-bold font-['DM_Sans']"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </TapButton>
+                                <TapButton
                                     onClick={handleSignOut}
                                     className="flex-1 py-4 rounded-xl bg-[#EF4444] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(239,68,68,0.3)]"
                                 >
                                     Sign Out
-                                </button>
+                                </TapButton>
                             </div>
                         </motion.div>
                     </motion.div>

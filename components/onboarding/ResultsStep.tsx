@@ -1,8 +1,9 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
 import { calculateFullProfile } from "@/lib/tdee";
 import confetti from "canvas-confetti";
@@ -16,26 +17,24 @@ interface ResultsStepProps {
 export function ResultsStep({ data }: ResultsStepProps) {
     const router = useRouter();
     const [phase, setPhase] = useState<"calculating" | "revealed">("calculating");
-    const [targets, setTargets] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        // 1. Calculate targets client-side
+    const targets = useMemo(() => {
         const weightKg = data.weightUnit === "kg" ? parseFloat(data.weight) : parseFloat(data.weight) * 0.453592;
         const heightCm = data.heightUnit === "cm" ? parseFloat(data.height) : parseFloat(data.height) * 30.48; // Rough ft to cm
 
-        const profile = calculateFullProfile({
-            weightKg,
-            heightCm,
-            age: parseInt(data.age),
-            gender: data.gender as "male" | "female",
-            activityLevel: data.activityLevel as any,
-            goalType: data.goal as any,
+        return calculateFullProfile({
+            weightKg: isNaN(weightKg) ? 70 : weightKg,
+            heightCm: isNaN(heightCm) ? 175 : heightCm,
+            age: parseInt(data.age) || 25,
+            gender: data.gender as "male" | "female" || "male",
+            activityLevel: data.activityLevel as any || "sedentary",
+            goalType: data.goal as any || "maintain",
         });
+    }, [data]);
 
-        setTargets(profile);
-
-        // 2. Sequence reveal per requirements
+    useEffect(() => {
+        // Sequence reveal per requirements
         const timer = setTimeout(() => {
             setPhase("revealed");
             if (navigator.vibrate) navigator.vibrate([100]);
@@ -141,13 +140,13 @@ export function ResultsStep({ data }: ResultsStepProps) {
                         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.2 }}
                         className="mt-8"
                     >
-                        <button
+                        <TapButton
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                             className="w-full h-[60px] bg-white rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-[#0F0F14] shadow-[0_8px_32px_rgba(255,255,255,0.15)] transition-transform active:scale-[0.98] disabled:opacity-50"
                         >
                             {isSubmitting ? "Launching..." : "Start Tracking 🚀"}
-                        </button>
+                        </TapButton>
                     </motion.div>
                 </div>
             )}

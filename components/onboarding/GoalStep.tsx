@@ -1,7 +1,8 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
 import { motion } from "framer-motion";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
 import { MoveDown, MoveRight, MoveUp } from "lucide-react";
 
@@ -48,7 +49,7 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                     const isSelected = data.goal === g.id;
                     const Icon = g.icon;
                     return (
-                        <button
+                        <TapButton
                             key={g.id}
                             onClick={() => updateData({ goal: g.id as any })}
                             className={`flex items-center p-5 rounded-[20px] border-2 transition-all ${isSelected
@@ -70,7 +71,7 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                                     {g.desc}
                                 </p>
                             </div>
-                        </button>
+                        </TapButton>
                     )
                 })}
             </div>
@@ -84,13 +85,13 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                     </p>
                 </div>
 
-                <button
+                <TapButton
                     onClick={onNext}
                     disabled={!data.goal}
                     className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:shadow-none"
                 >
                     Continue
-                </button>
+                </TapButton>
             </div>
         </div>
     );

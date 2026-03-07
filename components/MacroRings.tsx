@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CountUp } from "@/components/rings/CountUp";
 
@@ -22,7 +22,7 @@ export interface MacroRingsProps {
     className?: string;
 }
 
-export function MacroRings({
+export const MacroRings = React.memo(function MacroRings({
     calories,
     protein,
     carbs,
@@ -137,4 +137,4 @@ export function MacroRings({
             </div>
         </div>
     );
-}
+});

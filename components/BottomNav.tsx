@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Home, Camera, BarChart2, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,7 +11,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
 }
 
-export function BottomNav() {
+export const BottomNav = React.memo(function BottomNav() {
     const pathname = usePathname();
 
     // Hide the nav entirely on specific screens (like snap and result)
@@ -45,7 +46,7 @@ export function BottomNav() {
             </div>
         </div>
     );
-}
+});
 
 function NavItem({ tab, isActive }: { tab: any, isActive: boolean }) {
     const Icon = tab.icon;

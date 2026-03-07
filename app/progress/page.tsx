@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { ShareableRoast } from "@/components/roast/ShareableRoast";
 import { WeeklyRoast } from "@/lib/agents/roast-agent";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from "recharts";
@@ -118,7 +118,7 @@ export default function ProgressPage() {
                         <div className="w-[120px] h-2 bg-black/20 rounded-full mt-4 overflow-hidden relative">
                             <div
                                 className="absolute top-0 left-0 bottom-0 bg-white rounded-full transition-all duration-1000"
-                                style={{ width: \`\${Math.min(((data?.streak || 0) % 7) / 7 * 100, 100)}%\` }}
+                                style={{ width: `\${Math.min(((data?.streak || 0) % 7) / 7 * 100, 100)}%` }}
               />
                         </div>
                     </div>
@@ -159,10 +159,10 @@ export default function ProgressPage() {
 
                         return (
               <div key={idx} className="flex flex-col items-center gap-2">
-                <div className={\`w-[36px] h-[36px] rounded-full flex items-center justify-center \${fillClass} \${borderClass} transition-colors\`}>
+                <div className={`w-[36px] h-[36px] rounded-full flex items-center justify-center \${fillClass} \${borderClass} transition-colors`}>
                   {day.state === "hit" && <div className="w-2 h-2 bg-black rounded-full" />}
                 </div>
-                <span className={\`text-[11px] uppercase tracking-wider \${textClass}\`}>
+                <span className={`text-[11px] uppercase tracking-wider \${textClass}`}>
                     {day.dayStr}
                 </span>
             </div>
@@ -191,7 +191,7 @@ export default function ProgressPage() {
                 let color = "#2A2A3A"; // no logs
                 if (entry.state === "hit") color = "#2DD4BF";
                 if (entry.state === "logged") color = "#FF6B35";
-                return <Cell key={\`cell-\${index}\`} fill={color} />;
+                return <Cell key={`cell-\${index}`} fill={color} />;
               })}
             </Bar>
           </BarChart>
