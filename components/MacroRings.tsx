@@ -119,16 +119,16 @@ export const MacroRings = React.memo(function MacroRings({
                                 cy={center}
                                 r={ring.radius}
                                 fill="none"
-                                stroke={ring.color}
+                                stroke={ring.current > safeTarget ? "#EF4444" : ring.color}
                                 strokeWidth={strokeWidth}
                                 strokeLinecap="round"
                                 strokeDasharray={circumference}
                                 initial={{ strokeDashoffset: circumference }}
-                                animate={{ strokeDashoffset: offset }}
+                                animate={{ strokeDashoffset: ring.current > safeTarget ? 0 : offset }}
                                 // Delay starting at 400ms (0.4s), incrementing 100ms per ring. 800ms duration.
                                 transition={{ duration: 0.8, ease: "easeOut", delay: animate ? 0.4 + (i * 0.1) : 0 }}
                                 style={{
-                                    filter: ring.current >= safeTarget ? `drop-shadow(0 0 8px ${ring.color})` : "none",
+                                    filter: ring.current >= safeTarget ? `drop-shadow(0 0 8px ${ring.current > safeTarget ? '#EF4444' : ring.color})` : "none",
                                 }}
                             />
                         </g>

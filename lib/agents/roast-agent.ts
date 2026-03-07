@@ -1,7 +1,7 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const MODEL = "claude-3-5-sonnet-20241022";
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
 export interface RoastContext {
     user_name: string;
@@ -134,11 +134,6 @@ export function getRoastType(ctx: RoastContext): RoastType {
 }
 
 export async function generateRoast(ctx: RoastContext, roastType: RoastType): Promise<WeeklyRoast> {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error("Missing ANTHROPIC_API_KEY");
-
-    const client = new Anthropic({ apiKey });
-
     const prompt = `
 Generate a weekly roast for a user based on this 7-day data:
 Name: ${ctx.user_name}
@@ -160,21 +155,12 @@ Return ONLY a JSON matching this exact schema:
   "mascot_mood": "happy" | "hype" | "shocked" | "laughing" | "sad" | "on_fire" | "thinking" | "sleepy"
 }`;
 
-    const response = await client.messages.create({
-        model: MODEL,
-        system: SYSTEM_PROMPT,
-        max_tokens: 400,
-        messages: [{ role: "user", content: prompt }]
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const fullPrompt = `${SYSTEM_PROMPT}\n\n${prompt}`;
 
-    const textBlock = response.content.find((c) => c.type === "text");
-    if (!textBlock || textBlock.type !== "text") throw new Error("No text response from Claude");
+    const result = await model.generateContent(fullPrompt);
+    const rawText = result.response.text();
+    const cleaned = rawText.replace(/```json\n?|```\n?/g, '').trim();
 
-    let rawText = textBlock.text.trim();
-    if (rawText.startsWith("\`\`\`json")) rawText = rawText.replace(/^\`\`\`json/, "");
-    if (rawText.startsWith("\`\`\`")) rawText = rawText.replace(/^\`\`\`/, "");
-    if (rawText.endsWith("\`\`\`")) rawText = rawText.replace(/\`\`\`$/, "");
-    rawText = rawText.trim();
-
-    return JSON.parse(rawText) as WeeklyRoast;
+    return JSON.parse(cleaned) as WeeklyRoast;
 }
