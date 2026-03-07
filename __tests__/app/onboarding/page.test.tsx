@@ -47,7 +47,7 @@ describe("Onboarding Controller (Flow 3)", () => {
         fireEvent.click(screen.getByText("Let's Get Started →"));
 
         // Header from GoalStep should exist
-        expect(screen.getByText("What's the main goal?")).toBeInTheDocument();
+        expect(screen.getByText("What's your goal?")).toBeInTheDocument();
 
         // Check for 5 pills in the progress bar
         // We know they are divs inside a flex-1 flex justify-center gap-2
@@ -65,7 +65,7 @@ describe("Onboarding Controller (Flow 3)", () => {
 
         // Go 0 -> 1
         fireEvent.click(screen.getByText("Let's Get Started →"));
-        expect(screen.getByText("What's the main goal?")).toBeInTheDocument();
+        expect(screen.getByText("What's your goal?")).toBeInTheDocument();
 
         // Click Back Button
         const backButton = document.querySelector('button');
@@ -85,7 +85,7 @@ describe("Onboarding Controller (Flow 3)", () => {
         expect(screen.getByText("Continue").closest("button")).toBeDisabled();
 
         // Select an option (click the parent button to ensure the mock triggers)
-        const optionBtn = screen.getByText("Lose Weight").closest("button");
+        const optionBtn = screen.getByText("Cut").closest("button");
         fireEvent.click(optionBtn!);
 
         // Button should be enabled

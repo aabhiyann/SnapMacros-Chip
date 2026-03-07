@@ -1,5 +1,5 @@
 export interface OnboardingData {
-    goal: "cut" | "maintain" | "bulk" | "";
+    goal: "bulk" | "lean_bulk" | "maintain" | "fat_loss" | "cut" | "";
     name: string;
     age: string;
     weight: string;

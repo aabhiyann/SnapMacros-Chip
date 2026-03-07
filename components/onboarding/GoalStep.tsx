@@ -1,10 +1,10 @@
 "use client";
 import { TapButton } from "@/components/ui/TapButton";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
-import { MoveDown, MoveRight, MoveUp } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface GoalStepProps {
     data: OnboardingData;
@@ -13,78 +13,100 @@ interface GoalStepProps {
 }
 
 const GOALS = [
-    { id: "cut", title: "Lose Weight", desc: "Burn fat & lean out.", icon: MoveDown, color: "#2DD4BF" },
-    { id: "maintain", title: "Maintain", desc: "Keep current shape.", icon: MoveRight, color: "#6C63FF" },
-    { id: "bulk", title: "Build Muscle", desc: "Grow overall size.", icon: MoveUp, color: "#FF6B35" },
+    { id: "bulk", emoji: "🏋️", title: "Bulk", desc: "Build maximum muscle" },
+    { id: "lean_bulk", emoji: "💪", title: "Lean Bulk", desc: "Muscle with minimal fat gain" },
+    { id: "maintain", emoji: "⚖️", title: "Maintain", desc: "Stay exactly where you are" },
+    { id: "fat_loss", emoji: "🔥", title: "Fat Loss", desc: "Lose fat, keep muscle" },
+    { id: "cut", emoji: "✂️", title: "Cut", desc: "Aggressive definition phase" },
 ];
 
 export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
     const getChipResponse = () => {
         switch (data.goal) {
-            case "cut": return { text: "Oh, we're cutting? I'll hide the donuts.", emotion: "shocked" as const };
-            case "maintain": return { text: "Steady and consistent. I respect it.", emotion: "thinking" as const };
-            case "bulk": return { text: "Time to eat BIG. Let's goooo!", emotion: "hype" as const };
-            default: return { text: "What are we aiming for here?", emotion: "happy" as const };
+            case "bulk": return { text: "Big plates incoming. Let's BUILD. 🏋️", emotion: "hype" as const };
+            case "lean_bulk": return { text: "The smart choice. Strength + aesthetics.", emotion: "happy" as const };
+            case "maintain": return { text: "Honestly the hardest goal. Mad respect.", emotion: "thinking" as const };
+            case "fat_loss": return { text: "Deficit mode. Protein stays high. Let's go.", emotion: "hype" as const };
+            case "cut": return { text: "Discipline mode. Chip is locked in with you.", emotion: "shocked" as const };
+            default: return null;
         }
     };
 
     const chip = getChipResponse();
 
     return (
-        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto">
+        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto relative">
+
+            {/* Chip floating top-right */}
+            <div className="absolute top-[80px] right-[20px] z-10 flex flex-col items-end">
+                <Chip emotion={chip?.emotion || "happy"} size={80} />
+                <AnimatePresence>
+                    {chip && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, x: 20 }}
+                            className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-3 shadow-xl max-w-[200px] mt-2 relative mr-4"
+                        >
+                            <div className="absolute -top-2 right-6 w-4 h-4 bg-[#1A1A24] border-t border-l border-[#2A2A3A] rotate-45" />
+                            <p className="text-[#FFFFFF] text-[13px] font-medium font-['DM_Sans'] relative z-10">
+                                {chip.text}
+                            </p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
 
             {/* Header */}
-            <div className="mb-10 w-full">
-                <h2 className="text-[32px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-3">
-                    What's the main goal?
-                </h2>
+            <div className="mb-8 w-full pr-[90px]">
+                <h1 className="text-[28px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-2">
+                    What's your goal?
+                </h1>
                 <p className="text-[#A0A0B8] text-[15px] font-['DM_Sans']">
-                    We'll set your initial macro targets based on this.
+                    This shapes your calorie target and macro split.
                 </p>
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 gap-4 mb-auto">
-                {GOALS.map((g) => {
+            <div className="grid grid-cols-2 gap-3 mb-auto">
+                {GOALS.map((g, i) => {
                     const isSelected = data.goal === g.id;
-                    const Icon = g.icon;
+                    const isLast = i === GOALS.length - 1;
+
                     return (
                         <TapButton
                             key={g.id}
                             onClick={() => updateData({ goal: g.id as any })}
-                            className={`flex items-center p-5 rounded-[20px] border-2 transition-all ${isSelected
-                                ? "bg-[#22222F] border-[#FF6B35] shadow-[0_0_24px_rgba(255,107,53,0.15)]"
-                                : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#22222F]"
+                            className={`flex flex-col p-[16px] rounded-[16px] min-h-[80px] text-left transition-all duration-200 relative overflow-hidden ${isLast ? 'col-span-2' : 'col-span-1'} ${isSelected
+                                ? "bg-[rgba(255,107,53,0.10)] border-2 border-[#FF6B35]"
+                                : "bg-[#1A1A24] border border-[#2A2A3A] hover:border-[#3A3A4A]"
                                 }`}
                         >
-                            <div
-                                className="w-12 h-12 rounded-full flex items-center justify-center mr-4 shrink-0 transition-colors"
-                                style={{ backgroundColor: isSelected ? g.color : '#2A2A3A' }}
-                            >
-                                <Icon size={24} className={isSelected ? "text-black" : "text-[#A0A0B8]"} />
-                            </div>
-                            <div className="text-left">
-                                <h3 className={`text-[18px] font-bold font-['DM_Sans'] ${isSelected ? "text-white" : "text-[#E0E0E0]"}`}>
-                                    {g.title}
-                                </h3>
-                                <p className="text-[#A0A0B8] text-[14px] font-['DM_Sans'] mt-1">
-                                    {g.desc}
-                                </p>
-                            </div>
+                            {/* Checkmark */}
+                            {isSelected && (
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute top-3 right-3 w-[20px] h-[20px] bg-[#FF6B35] rounded-full flex items-center justify-center z-10"
+                                >
+                                    <Check size={12} className="text-white" strokeWidth={3} />
+                                </motion.div>
+                            )}
+
+                            <div className="text-[24px] mb-2 leading-none">{g.emoji}</div>
+                            <h3 className={`text-[16px] font-bold font-['DM_Sans'] leading-tight mb-1 ${isSelected ? "text-[#FF6B35]" : "text-white"}`}>
+                                {g.title}
+                            </h3>
+                            <p className="text-[#A0A0B8] text-[13px] font-['DM_Sans'] leading-snug">
+                                {g.desc}
+                            </p>
                         </TapButton>
                     )
                 })}
             </div>
 
-            {/* Reactive Chip Footer + Action */}
+            {/* Action */}
             <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
-                <div className="flex items-center gap-4 bg-[#1A1A24] rounded-[20px] p-4 mb-4 border border-[#2A2A3A]">
-                    <Chip emotion={chip.emotion} size={48} />
-                    <p className="text-[#FFFFFF] text-[14px] italic font-['DM_Sans'] flex-1">
-                        "{chip.text}"
-                    </p>
-                </div>
-
                 <TapButton
                     onClick={onNext}
                     disabled={!data.goal}
