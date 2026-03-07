@@ -20,7 +20,7 @@ const ACTIVITIES = [
 
 export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
     return (
-        <div className="flex-1 flex flex-col pt-[120px] pb-[40px] px-[20px]">
+        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto">
 
             <div className="mb-8 w-full">
                 <h2 className="text-[32px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-3">
@@ -59,9 +59,9 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                 })}
             </div>
 
-            <div className="mt-8">
-                <div className="flex items-center gap-4 bg-[#1A1A24] rounded-[20px] p-4 mb-6 border border-[#2A2A3A]">
-                    <Chip emotion="thinking" size={64} />
+            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
+                <div className="flex items-center gap-4 bg-[#1A1A24] rounded-[20px] p-4 mb-4 border border-[#2A2A3A]">
+                    <Chip emotion="thinking" size={48} />
                     <p className="text-[#FFFFFF] text-[14px] italic font-['DM_Sans'] flex-1">
                         "Be honest. I won't judge. Much. 👀"
                     </p>
@@ -69,7 +69,7 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
 
                 <TapButton
                     onClick={onNext}
-                    className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98]"
+                    className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98]"
                 >
                     See My Targets &rarr;
                 </TapButton>

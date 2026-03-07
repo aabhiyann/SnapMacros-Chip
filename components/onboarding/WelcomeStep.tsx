@@ -6,7 +6,7 @@ import { Chip } from "@/components/Chip";
 
 export function WelcomeStep({ onNext }: { onNext: () => void }) {
     return (
-        <div className="flex-1 flex flex-col px-[20px] pt-[80px] pb-[40px]">
+        <div className="flex-1 flex flex-col px-[20px] pt-[80px] pb-[160px] overflow-y-auto">
 
             {/* 1. Bouncing Chip */}
             <motion.div
@@ -49,14 +49,14 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
             </div>
 
             {/* 3. Action */}
-            <div className="w-full flex flex-col items-center">
+            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0F0F14] via-[#0F0F14] to-transparent z-50 flex flex-col items-center">
                 <TapButton
                     onClick={onNext}
-                    className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] mb-4"
+                    className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] mb-4"
                 >
                     Let's Get Started &rarr;
                 </TapButton>
-                <p className="font-['DM_Sans'] text-[13px] text-[#A0A0B8] tracking-wide">
+                <p className="font-['DM_Sans'] text-[13px] text-[#A0A0B8] tracking-wide bg-[#0F0F14] px-4">
                     Less than 60 seconds <span className="mx-2 font-black">·</span> Free
                 </p>
             </div>
