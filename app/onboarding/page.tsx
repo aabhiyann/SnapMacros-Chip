@@ -39,7 +39,6 @@ export default function OnboardingPage() {
         }),
     };
 
-    // We need a direction value, let's just make it always +1 for now unless going back
     const [direction, setDirection] = useState(1);
 
     const goNext = () => {
@@ -59,21 +58,23 @@ export default function OnboardingPage() {
             <AnimatePresence>
                 {step > 0 && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                         className="absolute top-0 left-0 right-0 z-50 pt-[48px] px-[20px] flex items-center"
                     >
-                        <button
+                        <motion.button
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
                             onClick={goPrev}
                             className="w-[44px] h-[44px] rounded-full bg-[#1A1A24] flex items-center justify-center border border-[#2A2A3A] hover:bg-[#2A2A3A] transition-colors"
                         >
                             <ChevronLeft size={24} className="text-white" />
-                        </button>
+                        </motion.button>
 
-                        {/* Progress Bar (Visible Steps 1-4) - We scale logic so step 1 maps to dot 1 */}
+                        {/* Progress Bar (Visible Steps 1-4) */}
                         <div className="flex-1 flex justify-center gap-2">
-                            {[1, 2, 3, 4].map((i) => (
+                            {[1, 2, 3, 4, 5].map((i) => (
                                 <motion.div
                                     key={i}
                                     animate={{
@@ -100,10 +101,7 @@ export default function OnboardingPage() {
                         initial="enter"
                         animate="center"
                         exit="exit"
-                        transition={{
-                            x: { type: "spring", stiffness: 300, damping: 30 },
-                            opacity: { duration: 0.28 }
-                        }}
+                        transition={{ duration: 0.28 }}
                         className="absolute inset-0 flex flex-col"
                     >
                         {step === 0 && <WelcomeStep onNext={goNext} />}

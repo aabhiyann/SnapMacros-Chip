@@ -31,7 +31,7 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
     const chip = getChipResponse();
 
     return (
-        <div className="flex-1 flex flex-col pt-[120px] pb-[40px] px-[20px]">
+        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto">
 
             {/* Header */}
             <div className="mb-10 w-full">
@@ -76,10 +76,10 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                 })}
             </div>
 
-            {/* Reactive Chip Footer */}
-            <div className="mt-8">
-                <div className="flex items-center gap-4 bg-[#1A1A24] rounded-[20px] p-4 mb-6 border border-[#2A2A3A]">
-                    <Chip emotion={chip.emotion} size={64} />
+            {/* Reactive Chip Footer + Action */}
+            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
+                <div className="flex items-center gap-4 bg-[#1A1A24] rounded-[20px] p-4 mb-4 border border-[#2A2A3A]">
+                    <Chip emotion={chip.emotion} size={48} />
                     <p className="text-[#FFFFFF] text-[14px] italic font-['DM_Sans'] flex-1">
                         "{chip.text}"
                     </p>
@@ -88,7 +88,7 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                 <TapButton
                     onClick={onNext}
                     disabled={!data.goal}
-                    className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:shadow-none"
+                    className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
                 >
                     Continue
                 </TapButton>

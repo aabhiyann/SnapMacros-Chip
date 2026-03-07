@@ -72,7 +72,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
     if (!targets) return <div className="flex-1 bg-[#0F0F14]" />;
 
     return (
-        <div className="flex-1 flex flex-col pt-[120px] pb-[40px] px-[20px] relative overflow-hidden">
+        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] relative overflow-y-auto overflow-x-hidden">
 
             {/* Sequence Header & Chip */}
             <div className="flex flex-col items-center justify-center mb-8">
@@ -138,12 +138,12 @@ export function ResultsStep({ data }: ResultsStepProps) {
 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.2 }}
-                        className="mt-8"
+                        className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]"
                     >
                         <TapButton
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="w-full h-[60px] bg-white rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-[#0F0F14] shadow-[0_8px_32px_rgba(255,255,255,0.15)] transition-transform active:scale-[0.98] disabled:opacity-50"
+                            className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
                         >
                             {isSubmitting ? "Launching..." : "Start Tracking 🚀"}
                         </TapButton>

@@ -31,7 +31,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
     const isComplete = localData.name.trim() !== "" && localData.age !== "" && localData.weight !== "" && localData.height !== "" && localData.gender !== "";
 
     return (
-        <div className="flex-1 flex flex-col pt-[120px] pb-[40px] px-[20px]">
+        <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto">
 
             <div className="mb-8 w-full">
                 <h2 className="text-[32px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-3">
@@ -141,11 +141,11 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
 
             </div>
 
-            <div className="mt-auto pt-4">
+            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
                 <TapButton
                     onClick={onNext}
                     disabled={!isComplete}
-                    className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:shadow-none"
+                    className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
                 >
                     Continue
                 </TapButton>
