@@ -1,38 +1,119 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { DEMO_USER_ID } from "@/lib/auth";
+import { getMascotState } from "@/lib/agents/chip-agent";
+import { calculateFullProfile } from "@/lib/tdee";
 
-export const revalidate = 30; // 30s cache as specified in README
-
-export async function GET(request: Request) {
+export async function GET() {
     try {
         const supabase = createClient();
-        const { searchParams } = new URL(request.url);
-        // Use the passed date, or fallback to server's current date (YYYY-MM-DD)
-        const dateQuery = searchParams.get("date") ?? new Date().toISOString().split('T')[0];
+        const userId = DEMO_USER_ID; // In prod: await supabase.auth.getUser()
 
-        const { data: summary, error } = await supabase
+        // Mock constants for user goals since we don't have an onboarding flow saved yet
+        const USER_GOALS = {
+            weightKg: 75,
+            heightCm: 175,
+            age: 28,
+            gender: "male" as const,
+            activityLevel: "active" as const,
+            goalType: "maintain" as const, // Or cut/bulk
+        };
+
+        const targets = calculateFullProfile(USER_GOALS);
+        const today = new Date().toISOString().split("T")[0];
+
+        // 1. Fetch Daily Summary
+        const { data: summary } = await supabase
             .from("daily_summaries")
             .select("*")
-            .eq("user_id", DEMO_USER_ID)
-            .eq("date", dateQuery)
-            .maybeSingle();
+            .eq("user_id", userId)
+            .eq("date", today)
+            .single();
 
-        if (error) {
-            console.error("DB Read Error:", error);
-            return NextResponse.json({ error: "Database error" }, { status: 500 });
-        }
+        const currentMacros = summary || { total_calories: 0, total_protein: 0, total_carbs: 0, total_fat: 0 };
 
-        return NextResponse.json({
-            summary: summary || {
-                total_calories: 0,
-                total_protein: 0,
-                total_carbs: 0,
-                total_fat: 0,
-                date: dateQuery
-            }
+        // 2. Fetch Food Logs for today
+        const { data: logs, error: logsError } = await supabase
+            .from("logs")
+            .select("*")
+            .eq("user_id", userId)
+            .gte("created_at", `${today}T00:00:00.000Z`)
+            .lte("created_at", `${today}T23:59:59.999Z`)
+            .order("created_at", { ascending: false });
+
+        if (logsError) throw logsError;
+
+        // 3. Fetch User Profile (Streaks)
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("streak_days, longest_streak")
+            .eq("user_id", userId)
+            .single();
+
+        const streakDays = profile?.streak_days || 0;
+
+        // Calculate Percentages & Remaining
+        const percentages = {
+            calories: Math.min(Math.round((currentMacros.total_calories / targets.calorieTarget) * 100), 100),
+            protein: Math.min(Math.round((currentMacros.total_protein / targets.macroTarget.protein) * 100), 100),
+            carbs: Math.min(Math.round((currentMacros.total_carbs / targets.macroTarget.carbs) * 100), 100),
+            fat: Math.min(Math.round((currentMacros.total_fat / targets.macroTarget.fat) * 100), 100),
+        };
+
+        const remaining = {
+            calories: Math.max(targets.calorieTarget - currentMacros.total_calories, 0),
+            protein: Math.max(targets.macroTarget.protein - currentMacros.total_protein, 0),
+            carbs: Math.max(targets.macroTarget.carbs - currentMacros.total_carbs, 0),
+            fat: Math.max(targets.macroTarget.fat - currentMacros.total_fat, 0),
+        };
+
+        // Determine Chip State
+        const maxSingleMeal = logs?.reduce((max, log) => Math.max(max, log.calories), 0) || 0;
+
+        // Simulate missed days (just an example, normally would compare dates)
+        const missedDays = 0;
+
+        const chipState = getMascotState({
+            isAnalyzing: false,
+            streakDays,
+            singleMealCalories: maxSingleMeal,
+            missedDays,
+            caloriesPercent: (currentMacros.total_calories / targets.calorieTarget) * 100,
+            hourOfDay: new Date().getHours(),
+            todayLogsCount: logs?.length || 0,
         });
-    } catch (err) {
-        return NextResponse.json({ error: "Server error" }, { status: 500 });
+
+        const payload = {
+            targets: {
+                calories: targets.calorieTarget,
+                protein: targets.macroTarget.protein,
+                carbs: targets.macroTarget.carbs,
+                fat: targets.macroTarget.fat,
+            },
+            current: {
+                calories: currentMacros.total_calories,
+                protein: currentMacros.total_protein,
+                carbs: currentMacros.total_carbs,
+                fat: currentMacros.total_fat,
+            },
+            percentages,
+            remaining,
+            profile: {
+                streak_days: streakDays,
+                name: "Abhiyan" // Mocked name
+            },
+            logs: logs || [],
+            chip: chipState,
+        };
+
+        return NextResponse.json(payload, {
+            status: 200,
+            headers: {
+                "Cache-Control": "private, max-age=30",
+            },
+        });
+    } catch (error) {
+        console.error("Dashboard API Error:", error);
+        return NextResponse.json({ error: "Failed to load dashboard data" }, { status: 500 });
     }
 }
