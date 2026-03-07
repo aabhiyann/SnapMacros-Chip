@@ -45,6 +45,9 @@ export interface UserProfile {
   tdee: number;
   calorieTarget: number;
   macroTarget: MacroSet;
+  lastLogDate: string | null;
+  streakDays: number;
+  longestStreak: number;
 }
 
 export interface MacroSet {

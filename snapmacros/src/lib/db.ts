@@ -24,6 +24,9 @@ type DbProfile = {
   tdee: number;
   calorie_target: number;
   macro_target: MacroSet;
+  last_log_date: string | null;
+  streak_days: number;
+  longest_streak: number;
 };
 
 type DbFoodLog = {
@@ -73,6 +76,9 @@ function toProfile(row: DbProfile): UserProfile {
     tdee: row.tdee,
     calorieTarget: row.calorie_target,
     macroTarget: row.macro_target,
+    lastLogDate: row.last_log_date ?? null,
+    streakDays: row.streak_days ?? 0,
+    longestStreak: row.longest_streak ?? 0,
   };
 }
 
@@ -137,6 +143,9 @@ export type ProfileUpdate = Partial<{
   tdee: number;
   calorieTarget: number;
   macroTarget: MacroSet;
+  lastLogDate: string | null;
+  streakDays: number;
+  longestStreak: number;
 }>;
 
 export async function updateUserProfile(
@@ -155,6 +164,9 @@ export async function updateUserProfile(
   if (updates.tdee != null) row.tdee = updates.tdee;
   if (updates.calorieTarget != null) row.calorie_target = updates.calorieTarget;
   if (updates.macroTarget != null) row.macro_target = updates.macroTarget;
+  if (updates.lastLogDate !== undefined) row.last_log_date = updates.lastLogDate;
+  if (updates.streakDays != null) row.streak_days = updates.streakDays;
+  if (updates.longestStreak != null) row.longest_streak = updates.longestStreak;
 
   const { data, error } = await supabase
     .from("profiles")
