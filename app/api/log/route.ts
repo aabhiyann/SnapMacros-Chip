@@ -1,65 +1,148 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/auth";
+import { DEMO_USER_ID } from "@/lib/auth"; // Mock ID
+import { z } from "zod";
 
-const logSchema = z.object({
-    meal_name: z.string().min(1),
-    image_url: z.string().url().optional().nullable(),
-    calories: z.number().int().min(0),
-    protein: z.number().int().min(0),
-    carbs: z.number().int().min(0),
-    fat: z.number().int().min(0),
+const FoodLogSchema = z.object({
+    food_name: z.string().min(1),
+    calories: z.number().nonnegative(),
+    protein: z.number().nonnegative(),
+    carbs: z.number().nonnegative(),
+    fat: z.number().nonnegative(),
 });
 
 export async function POST(request: Request) {
     try {
-        const raw = await request.json();
-        const parsed = logSchema.safeParse(raw);
+        const supabase = createClient();
+        const userId = DEMO_USER_ID; // In prod: await supabase.auth.getUser()
 
+        // 1. Parse and validate
+        const body = await request.json();
+        const parsed = FoodLogSchema.safeParse(body);
         if (!parsed.success) {
-            return NextResponse.json({ error: "Invalid body", details: parsed.error.flatten() }, { status: 400 });
+            return NextResponse.json({ error: "Invalid log payload", details: parsed.error.issues }, { status: 400 });
         }
 
-        const supabase = createClient();
-
-        // Server-side default to today's date if not passed.
-        const { data, error } = await supabase
+        // 2. Insert to logs
+        const { data: logData, error: logError } = await supabase
             .from("logs")
             .insert({
-                user_id: DEMO_USER_ID,
-                ...parsed.data
+                user_id: userId,
+                food_name: parsed.data.food_name,
+                calories: parsed.data.calories,
+                protein: parsed.data.protein,
+                carbs: parsed.data.carbs,
+                fat: parsed.data.fat,
             })
             .select()
             .single();
 
-        if (error) {
-            console.error("DB Insert Error:", error);
-            return NextResponse.json({ error: "Database error" }, { status: 500 });
+        if (logError) throw logError;
+
+        // 3. Update Profiles for Streaks
+        const today = new Date().toISOString().split("T")[0];
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("streak_days, longest_streak, last_log_date")
+            .eq("user_id", userId)
+            .single();
+
+        let streak = 1;
+        let longest = 1;
+
+        if (profile) {
+            if (profile.last_log_date !== today) {
+                // Calculate yesterday
+                const yesterdayDate = new Date();
+                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+                const yesterdayStr = yesterdayDate.toISOString().split("T")[0];
+
+                if (profile.last_log_date === yesterdayStr) {
+                    streak = profile.streak_days + 1; // Continue streak
+                } else {
+                    streak = 1; // Reset streak
+                }
+            } else {
+                streak = profile.streak_days; // Logged today already
+            }
+
+            longest = Math.max(streak, profile.longest_streak);
+
+            await supabase.from("profiles").update({
+                streak_days: streak,
+                longest_streak: longest,
+                last_log_date: today,
+            }).eq("user_id", userId);
+        } else {
+            // Create new profile record on first log
+            await supabase.from("profiles").insert({
+                user_id: userId,
+                streak_days: 1,
+                longest_streak: 1,
+                last_log_date: today,
+            });
         }
 
-        return NextResponse.json({ log: data });
-    } catch (err) {
-        const message = err instanceof Error ? err.message : "Server error";
-        return NextResponse.json({ error: message }, { status: 500 });
+        // 4. Get updated daily totals
+        const { data: summaryData } = await supabase
+            .from("daily_summaries")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("date", today)
+            .single();
+
+        return NextResponse.json({
+            log: logData,
+            daily_totals: summaryData || { date: today, total_calories: 0, total_protein: 0, total_carbs: 0, total_fat: 0 },
+            streak: streak,
+        });
+    } catch (error) {
+        console.error("Log error:", error);
+        return NextResponse.json({ error: "Failed to log food" }, { status: 500 });
     }
 }
 
+export async function DELETE(request: Request) {
+    try {
+        const supabase = createClient();
+        const userId = DEMO_USER_ID;
+
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get("id");
+
+        if (!id) return NextResponse.json({ error: "Missing log ID" }, { status: 400 });
+
+        // Ensure they own the log
+        const { data: log } = await supabase.from("logs").select("id").eq("id", id).eq("user_id", userId).single();
+        if (!log) return NextResponse.json({ error: "Log not found or unauthorized" }, { status: 404 });
+
+        const { error: delError } = await supabase.from("logs").delete().eq("id", id);
+        if (delError) throw delError;
+
+        return new NextResponse(null, { status: 204 });
+    } catch (error) {
+        console.error("Delete error:", error);
+        return NextResponse.json({ error: "Failed to delete log" }, { status: 500 });
+    }
+}
+
+// GET is existing (fetching history)
 export async function GET(request: Request) {
     try {
         const supabase = createClient();
+        const userId = DEMO_USER_ID;
+
+        // Default GET fetch to get recent history to populate feeds
         const { data, error } = await supabase
             .from("logs")
             .select("*")
-            .eq("user_id", DEMO_USER_ID)
-            .order("created_at", { ascending: false });
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false })
+            .limit(50);
 
-        if (error) {
-            return NextResponse.json({ error: "Database error" }, { status: 500 });
-        }
-
-        return NextResponse.json({ logs: data });
+        if (error) throw error;
+        return NextResponse.json(data);
     } catch (err) {
-        return NextResponse.json({ error: "Server error" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to get history" }, { status: 500 });
     }
 }
