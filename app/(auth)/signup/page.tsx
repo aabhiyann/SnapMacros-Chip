@@ -1,3 +1,4 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
 import { useState } from "react";
@@ -123,12 +124,12 @@ export default function SignupPage() {
                         onChange={e => { setPassword(e.target.value); if (uiState === 'error') setUiState('idle'); }}
                         className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[60px] px-5 pr-12 font-['DM_Sans'] focus:outline-none focus:border-[#FF6B35] transition-colors placeholder:text-[#60607A]"
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] hover:text-white transition-colors">
+                    <TapButton type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] hover:text-white transition-colors">
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
+                    </TapButton>
                 </div>
 
-                <button
+                <TapButton
                     type="submit"
                     disabled={uiState === "loading" || uiState === "success"}
                     className="w-full h-[60px] bg-[#6C63FF] rounded-[16px] font-['DM_Sans'] font-bold text-[16px] text-white shadow-[0_8px_32px_rgba(108,99,255,0.3)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center mt-2"
@@ -136,7 +137,7 @@ export default function SignupPage() {
                     {uiState === "loading" ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : "Create Account"}
-                </button>
+                </TapButton>
             </motion.form>
 
             <div className="mt-8 text-center z-10 w-full max-w-[340px]">

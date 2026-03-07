@@ -1,6 +1,7 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
 
 interface ActivityStepProps {
@@ -34,7 +35,7 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                 {ACTIVITIES.map((act) => {
                     const isSelected = data.activityLevel === act.id;
                     return (
-                        <button
+                        <TapButton
                             key={act.id}
                             onClick={() => updateData({ activityLevel: act.id as any })}
                             className={`flex items-center p-4 rounded-[16px] border-2 transition-all ${isSelected
@@ -53,7 +54,7 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                                     {act.desc}
                                 </p>
                             </div>
-                        </button>
+                        </TapButton>
                     )
                 })}
             </div>
@@ -66,12 +67,12 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                     </p>
                 </div>
 
-                <button
+                <TapButton
                     onClick={onNext}
                     className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98]"
                 >
                     See My Targets &rarr;
-                </button>
+                </TapButton>
             </div>
         </div>
     );

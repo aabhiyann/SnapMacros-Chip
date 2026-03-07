@@ -1,7 +1,9 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
 import { OnboardingData } from "./types";
 import { Plus, Minus } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface AboutStepProps {
     data: OnboardingData;
@@ -11,13 +13,22 @@ interface AboutStepProps {
 
 export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
 
+    const [localData, setLocalData] = useState(data);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            updateData(localData);
+        }, 100); // 100ms debounce
+        return () => clearTimeout(timer);
+    }, [localData, updateData]);
+
     const handleAgeChange = (amount: number) => {
-        const current = parseInt(data.age) || 25;
+        const current = parseInt(localData.age) || 25;
         const next = Math.max(12, Math.min(100, current + amount));
-        updateData({ age: next.toString() });
+        setLocalData(prev => ({ ...prev, age: next.toString() }));
     };
 
-    const isComplete = data.name.trim() !== "" && data.age !== "" && data.weight !== "" && data.height !== "" && data.gender !== "";
+    const isComplete = localData.name.trim() !== "" && localData.age !== "" && localData.weight !== "" && localData.height !== "" && localData.gender !== "";
 
     return (
         <div className="flex-1 flex flex-col pt-[120px] pb-[40px] px-[20px]">
@@ -38,8 +49,8 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                     <label className="block text-[#A0A0B8] text-[13px] font-bold uppercase mb-2 ml-1 tracking-wider">Name</label>
                     <input
                         type="text"
-                        value={data.name}
-                        onChange={(e) => updateData({ name: e.target.value })}
+                        value={localData.name}
+                        onChange={(e) => setLocalData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="e.g. Alex"
                         className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[56px] px-5 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#FF6B35]"
                     />
@@ -49,15 +60,15 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                 <div>
                     <label className="block text-[#A0A0B8] text-[13px] font-bold uppercase mb-2 ml-1 tracking-wider">Age</label>
                     <div className="flex items-center justify-between bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-2">
-                        <button onClick={() => handleAgeChange(-1)} className="w-[44px] h-[44px] rounded-[12px] bg-[#22222F] flex items-center justify-center text-white active:scale-95">
+                        <TapButton onClick={() => handleAgeChange(-1)} className="w-[44px] h-[44px] rounded-[12px] bg-[#22222F] flex items-center justify-center text-white active:scale-95">
                             <Minus size={20} />
-                        </button>
+                        </TapButton>
                         <div className="text-[20px] font-bold font-['DM_Sans'] text-white">
-                            {data.age || "25"}
+                            {localData.age || "25"}
                         </div>
-                        <button onClick={() => handleAgeChange(1)} className="w-[44px] h-[44px] rounded-[12px] bg-[#22222F] flex items-center justify-center text-white active:scale-95">
+                        <TapButton onClick={() => handleAgeChange(1)} className="w-[44px] h-[44px] rounded-[12px] bg-[#22222F] flex items-center justify-center text-white active:scale-95">
                             <Plus size={20} />
-                        </button>
+                        </TapButton>
                     </div>
                 </div>
 
@@ -67,22 +78,22 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                         <label className="block text-[#A0A0B8] text-[13px] font-bold uppercase mb-2 ml-1 tracking-wider">Weight</label>
                         <input
                             type="number"
-                            value={data.weight}
-                            onChange={(e) => updateData({ weight: e.target.value })}
+                            value={localData.weight}
+                            onChange={(e) => setLocalData(prev => ({ ...prev, weight: e.target.value }))}
                             placeholder="0"
                             className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[56px] px-5 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#FF6B35]"
                         />
                     </div>
                     <div className="flex items-end">
                         <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-1 flex h-[56px]">
-                            <button
-                                onClick={() => updateData({ weightUnit: "lbs" })}
-                                className={`px-4 rounded-[12px] font-bold text-[14px] ${data.weightUnit === "lbs" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
-                            >lbs</button>
-                            <button
-                                onClick={() => updateData({ weightUnit: "kg" })}
-                                className={`px-4 rounded-[12px] font-bold text-[14px] ${data.weightUnit === "kg" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
-                            >kg</button>
+                            <TapButton
+                                onClick={() => setLocalData(prev => ({ ...prev, weightUnit: "lbs" }))}
+                                className={`px-4 rounded-[12px] font-bold text-[14px] ${localData.weightUnit === "lbs" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
+                            >lbs</TapButton>
+                            <TapButton
+                                onClick={() => setLocalData(prev => ({ ...prev, weightUnit: "kg" }))}
+                                className={`px-4 rounded-[12px] font-bold text-[14px] ${localData.weightUnit === "kg" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
+                            >kg</TapButton>
                         </div>
                     </div>
                 </div>
@@ -93,22 +104,22 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                         <label className="block text-[#A0A0B8] text-[13px] font-bold uppercase mb-2 ml-1 tracking-wider">Height</label>
                         <input
                             type="number"
-                            value={data.height}
-                            onChange={(e) => updateData({ height: e.target.value })}
-                            placeholder={data.heightUnit === "ft" ? "e.g. 5.9" : "e.g. 175"}
+                            value={localData.height}
+                            onChange={(e) => setLocalData(prev => ({ ...prev, height: e.target.value }))}
+                            placeholder={localData.heightUnit === "ft" ? "e.g. 5.9" : "e.g. 175"}
                             className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[56px] px-5 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#FF6B35]"
                         />
                     </div>
                     <div className="flex items-end">
                         <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-1 flex h-[56px]">
-                            <button
-                                onClick={() => updateData({ heightUnit: "ft" })}
-                                className={`px-4 rounded-[12px] font-bold text-[14px] ${data.heightUnit === "ft" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
-                            >ft</button>
-                            <button
-                                onClick={() => updateData({ heightUnit: "cm" })}
-                                className={`px-4 rounded-[12px] font-bold text-[14px] ${data.heightUnit === "cm" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
-                            >cm</button>
+                            <TapButton
+                                onClick={() => setLocalData(prev => ({ ...prev, heightUnit: "ft" }))}
+                                className={`px-4 rounded-[12px] font-bold text-[14px] ${localData.heightUnit === "ft" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
+                            >ft</TapButton>
+                            <TapButton
+                                onClick={() => setLocalData(prev => ({ ...prev, heightUnit: "cm" }))}
+                                className={`px-4 rounded-[12px] font-bold text-[14px] ${localData.heightUnit === "cm" ? "bg-[#2A2A3A] text-white" : "text-[#60607A]"}`}
+                            >cm</TapButton>
                         </div>
                     </div>
                 </div>
@@ -117,27 +128,27 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                 <div>
                     <label className="block text-[#A0A0B8] text-[13px] font-bold uppercase mb-2 ml-1 tracking-wider">Biological Sex</label>
                     <div className="grid grid-cols-2 gap-3">
-                        <button
-                            onClick={() => updateData({ gender: "male" })}
-                            className={`h-[56px] rounded-[16px] border-2 font-bold text-[15px] transition-colors ${data.gender === "male" ? "bg-[#22222F] border-[#FF6B35] text-white" : "bg-[#1A1A24] border-[#2A2A3A] text-[#A0A0B8]"}`}
-                        >Male</button>
-                        <button
-                            onClick={() => updateData({ gender: "female" })}
-                            className={`h-[56px] rounded-[16px] border-2 font-bold text-[15px] transition-colors ${data.gender === "female" ? "bg-[#22222F] border-[#FF6B35] text-white" : "bg-[#1A1A24] border-[#2A2A3A] text-[#A0A0B8]"}`}
-                        >Female</button>
+                        <TapButton
+                            onClick={() => setLocalData(prev => ({ ...prev, gender: "male" }))}
+                            className={`h-[56px] rounded-[16px] border-2 font-bold text-[15px] transition-colors ${localData.gender === "male" ? "bg-[#22222F] border-[#FF6B35] text-white" : "bg-[#1A1A24] border-[#2A2A3A] text-[#A0A0B8]"}`}
+                        >Male</TapButton>
+                        <TapButton
+                            onClick={() => setLocalData(prev => ({ ...prev, gender: "female" }))}
+                            className={`h-[56px] rounded-[16px] border-2 font-bold text-[15px] transition-colors ${localData.gender === "female" ? "bg-[#22222F] border-[#FF6B35] text-white" : "bg-[#1A1A24] border-[#2A2A3A] text-[#A0A0B8]"}`}
+                        >Female</TapButton>
                     </div>
                 </div>
 
             </div>
 
             <div className="mt-auto pt-4">
-                <button
+                <TapButton
                     onClick={onNext}
                     disabled={!isComplete}
                     className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:shadow-none"
                 >
                     Continue
-                </button>
+                </TapButton>
             </div>
         </div>
     );

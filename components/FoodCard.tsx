@@ -2,7 +2,7 @@
 
 import { motion, useAnimation, PanInfo } from "framer-motion";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export interface FoodLog {
     id: string;
@@ -20,7 +20,7 @@ interface FoodCardProps {
     index: number;
 }
 
-export function FoodCard({ log, onDelete, index }: FoodCardProps) {
+export const FoodCard = React.memo(function FoodCard({ log, onDelete, index }: FoodCardProps) {
     const controls = useAnimation();
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -101,4 +101,4 @@ export function FoodCard({ log, onDelete, index }: FoodCardProps) {
             </motion.div>
         </motion.div>
     );
-}
+});

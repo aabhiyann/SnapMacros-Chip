@@ -1,7 +1,8 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
 import { motion } from "framer-motion";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 
 export function WelcomeStep({ onNext }: { onNext: () => void }) {
     return (
@@ -49,12 +50,12 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
 
             {/* 3. Action */}
             <div className="w-full flex flex-col items-center">
-                <button
+                <TapButton
                     onClick={onNext}
                     className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] mb-4"
                 >
                     Let's Get Started &rarr;
-                </button>
+                </TapButton>
                 <p className="font-['DM_Sans'] text-[13px] text-[#A0A0B8] tracking-wide">
                     Less than 60 seconds <span className="mx-2 font-black">·</span> Free
                 </p>

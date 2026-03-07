@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion, type Variants } from "framer-motion";
 
 export type ChipEmotion =
@@ -61,7 +62,7 @@ const emotionVariants: Record<ChipEmotion, Variants> = {
   },
 };
 
-export function Chip({ emotion = "happy", size = 80, className = "" }: ChipProps) {
+export const Chip = React.memo(function Chip({ emotion = "happy", size = 80, className = "" }: ChipProps) {
   const variants = emotionVariants[emotion];
   const isOnFire = emotion === "on_fire";
 
@@ -170,4 +171,4 @@ export function Chip({ emotion = "happy", size = 80, className = "" }: ChipProps
       </svg>
     </motion.div>
   );
-}
+});

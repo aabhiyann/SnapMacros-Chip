@@ -1,3 +1,4 @@
+import { TapButton } from "@/components/ui/TapButton";
 "use client";
 
 import { useState } from "react";
@@ -127,9 +128,9 @@ export default function LoginPage() {
                         onChange={e => { setPassword(e.target.value); if (uiState === 'error') setUiState('idle'); }}
                         className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[60px] px-5 pr-12 font-['DM_Sans'] focus:outline-none focus:border-[#FF6B35] transition-colors placeholder:text-[#60607A]"
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] hover:text-white transition-colors">
+                    <TapButton type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] hover:text-white transition-colors">
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
+                    </TapButton>
                 </div>
 
                 <div className="flex justify-end pr-2">
@@ -138,7 +139,7 @@ export default function LoginPage() {
                     </Link>
                 </div>
 
-                <button
+                <TapButton
                     type="submit"
                     disabled={uiState === "loading" || uiState === "success"}
                     className="w-full h-[60px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] font-bold text-[16px] text-white shadow-[0_8px_32px_rgba(255,107,53,0.3)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center mt-2"
@@ -146,7 +147,7 @@ export default function LoginPage() {
                     {uiState === "loading" ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : "Sign In"}
-                </button>
+                </TapButton>
             </motion.form>
 
             <div className="w-full max-w-[340px] mt-6 flex items-center justify-between text-[#60607A] text-[13px] font-['DM_Sans'] z-10">
@@ -156,7 +157,7 @@ export default function LoginPage() {
             </div>
 
             <div className="w-full max-w-[340px] mt-6 flex flex-col gap-4 z-10">
-                <button
+                <TapButton
                     type="button"
                     className="w-full h-[60px] bg-white text-black rounded-[16px] font-['DM_Sans'] font-bold text-[16px] active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
                 >
@@ -168,15 +169,15 @@ export default function LoginPage() {
                         <path d="M12 6.5C13.62 6.5 15.06 7.06 16.21 8.16L19.14 5.23C17.46 3.66 14.97 2 12 2C7.91 2 4.36 4.32 2.64 7.74L6.38 10.64C7.18 8.26 9.39 6.5 12 6.5Z" fill="#EA4335" />
                     </svg>
                     Continue with Google
-                </button>
+                </TapButton>
 
-                <button
+                <TapButton
                     type="button"
                     onClick={handleDemoLogin}
                     className="w-full h-[60px] bg-transparent border border-[#60607A] text-white rounded-[16px] font-['DM_Sans'] font-bold text-[16px] active:scale-[0.98] transition-transform hover:border-[#A0A0B8]"
                 >
                     Try Demo &rarr;
-                </button>
+                </TapButton>
             </div>
 
             <div className="mt-8 text-center z-10">

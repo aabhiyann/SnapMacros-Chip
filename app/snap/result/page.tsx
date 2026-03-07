@@ -3,11 +3,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import CountUp from "react-countup";
 import confetti from "canvas-confetti";
 import { Check, Edit2 } from "lucide-react";
 import clsx from "clsx";
+import Image from "next/image";
 import { twMerge } from "tailwind-merge";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
@@ -278,7 +279,7 @@ export default function ResultPage() {
             {/* Photo Panel (Top 45%) */}
             <div className="relative h-[45vh] w-full">
                 {bgImage ? (
-                    <img src={bgImage} className="w-full h-full object-cover" alt="Meal scan" />
+                    <Image src={bgImage} fill className="object-cover" alt="Meal scan" unoptimized />
                 ) : (
                     <div className="w-full h-full bg-[#1A1A24] flex items-center justify-center">
                         <span className="text-[#60607A] font-['Bricolage_Grotesque'] font-bold text-xl uppercase tracking-widest">Described Meal</span>
