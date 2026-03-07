@@ -93,4 +93,69 @@ describe("Onboarding Controller (Flow 3)", () => {
             expect(screen.getByText("Continue").closest("button")).not.toBeDisabled();
         });
     });
+
+    it("validates complex inputs on About You step (Step 2)", async () => {
+        render(<OnboardingPage />);
+
+        // 0 -> 1
+        fireEvent.click(screen.getByText("Let's Get Started →"));
+        // 1 -> 2
+        fireEvent.click(screen.getByText("Cut").closest("button")!);
+        await waitFor(() => expect(screen.getByText("Continue").closest("button")).not.toBeDisabled());
+        fireEvent.click(screen.getByText("Continue").closest("button")!);
+
+        // On About You step
+        expect(screen.getByText("About you")).toBeInTheDocument();
+        const continueBtn = screen.getByText("Continue").closest("button");
+        expect(continueBtn).toBeDisabled(); // Initially disabled because fields are missing
+
+        // Fill Name
+        const nameInput = screen.getByPlaceholderText("Your first name");
+        fireEvent.change(nameInput, { target: { value: "Alex" } });
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Fill Age
+        const ageInput = screen.getByPlaceholderText("25");
+        fireEvent.change(ageInput, { target: { value: "30" } });
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Change weight to invalid (20kg)
+        fireEvent.click(screen.getByText("KG").closest("button")!);
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        const weightInput1 = screen.getByPlaceholderText("0");
+        fireEvent.change(weightInput1, { target: { value: "20" } });
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Let the debounce propagate and re-render
+        await act(async () => { jest.runAllTimers(); });
+        expect(screen.getByText(/Weight must be between 30 and 350kg/i)).toBeInTheDocument();
+
+        // Fix weight
+        const weightInput2 = screen.getByPlaceholderText("0");
+        fireEvent.change(weightInput2, { target: { value: "70" } });
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Add valid height (CM)
+        fireEvent.click(screen.getByText("CM").closest("button")!);
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        const heightInput = screen.getByPlaceholderText("175");
+        fireEvent.change(heightInput, { target: { value: "180" } });
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Select gender
+        fireEvent.click(screen.getByText("Male").closest("button")!);
+        await act(async () => { jest.advanceTimersByTime(200); });
+
+        // Let the debounce propagate and re-render
+        await act(async () => { jest.runAllTimers(); });
+
+        require('fs').writeFileSync('/Users/abhiyansainju/Developer/SnapMacros-Chip/test-output.html', document.body.innerHTML);
+
+        // Should now be enabled
+        await waitFor(() => {
+            expect(screen.getByText("Continue").closest("button")).not.toBeDisabled();
+        });
+    });
 });
