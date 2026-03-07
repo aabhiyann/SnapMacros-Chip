@@ -1,153 +1,110 @@
-# 🥚 SnapMacros
+# SnapMacros
 
-> Snap your food. Know your macros. Get roasted by Chip.
+A premium, AI-powered nutrition tracking application. Photograph your meals and receive instantaneous macronutrient breakdowns, guided by Chip, an interactive Mascot that tracks user habits and streaks.
 
-**SnapMacros** is an AI-powered nutrition tracker where you photograph any meal and get an instant macro breakdown. Your mascot — Chip, a tiny hatching egg — reacts emotionally to your eating habits and delivers a personalized weekly roast every Sunday.
+Built in 72 hours for the AI Hackathon, March 2026.
 
-Built in 72 hours at the AI Hackathon, March 2026.
-
-[**Try it →**](https://snapmacros.vercel.app) | [**Watch demo**](#demo) | [**Case study**](#)
+[Live Demo](https://snapmacros.vercel.app)
 
 ---
 
-## What It Does
+## Project Overview
 
-| Feature | Description |
-|---|---|
-| 📷 **Snap to Track** | Photograph food → Claude Vision analyzes it → macros in < 5 seconds |
-| 💪 **Macro Rings** | 4 animated rings (calories, protein, carbs, fat) update in real-time |
-| 🥚 **Chip the Mascot** | 8 emotional states — reacts to every meal, streak, and missed day |
-| 🔥 **Weekly Roast** | Chip roasts your actual meals by name every Sunday |
-| 🎯 **Goal Modes** | Bulk, Lean Bulk, Maintain, Fat Loss, Cut — targets auto-calculated |
-| 📱 **PWA** | Installs on iPhone home screen via a URL, no App Store needed |
+SnapMacros aims to eliminate the friction from calorie counting by utilizing Claude Vision.
 
----
-
-## Demo
-
-[Demo GIF or screenshot here]
-
-**Try the demo** — no sign-up required:
-1. Open [snapmacros.vercel.app](https://snapmacros.vercel.app)
-2. Tap "Try Demo"
-3. Snap food or use demo account's pre-loaded week
+### Core Features
+- **Instant Tracking**: Photograph any meal; macros are returned within seconds via Anthropic Claude.
+- **Dynamic Dashboards**: Four animated Macro Rings (Calories, Protein, Carbs, Fat) track progress against daily targets in real-time.
+- **Interactive Companion**: Chip, the application mascot, features 8 distinct emotional states driven by real-time user data.
+- **Weekly Analytics and Roasts**: Summarizes a user's week via the Claude Text API.
+- **Goal Mapping**: Dynamic targets for Bulking, Lean Bulking, Maintaining, and Cutting.
+- **Progressive Web Application (PWA)**: Installable natively on iOS and Android without an App Store payload.
 
 ---
 
-## Tech Stack
+## Technology Stack
 
-```
-Frontend:  Next.js 14 (App Router), TypeScript, Tailwind CSS
-Animation: Framer Motion (all animations, Chip's 8 emotional states)
-AI:        Claude claude-sonnet-4-20250514 (Vision + Text)
-Backend:   Next.js API Routes (serverless)
-Database:  Supabase (PostgreSQL, Auth, Storage)
-Hosting:   Vercel
-Testing:   Jest, Testing Library
-CI/CD:     GitHub Actions
-Fonts:     Bricolage Grotesque + DM Sans
-```
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **Animation**: Framer Motion
+- **AI Integration**: Anthropic Claude (`claude-sonnet-4-20250514`) for Vision + Text
+- **Backend Infrastructure**: Next.js API Routes (Serverless)
+- **Database & Identity**: Supabase (PostgreSQL, Authentication, Object Storage)
+- **Hosting Engine**: Vercel
+- **Testing Suite**: Jest, React Testing Library
+- **Design System**: Bricolage Grotesque & DM Sans
 
----
-
-## Architecture
-
-```
-User's Phone (PWA)
-    ↓
-Vercel Edge (Next.js 14 API routes)
-    ├── /api/analyze  → Anthropic Claude (Vision)
-    ├── /api/roast    → Anthropic Claude (Text)
-    ├── /api/log      → Supabase Postgres
-    └── /api/dashboard→ Supabase Postgres
-    ↓
-Supabase (Postgres + Auth + Storage)
-```
-
-**Key decisions:**
-- All Claude API calls are server-side — key never exposed to client
-- Supabase RLS policies enforce data isolation at the database level
-- `daily_summaries` table is pre-aggregated via trigger for fast dashboard loads
-- CONCURRENTLY indexes added after profiling slow queries
+Please see `DESIGN_SYSTEM.md` for complete UI patterns, layout specifications, and animation standards.
 
 ---
 
-## Engineering Highlights
+## System Architecture
 
-- **CI/CD:** GitHub Actions runs type-check + ESLint + Jest (70% coverage gate) + build verification on every PR. Deploys automatically to Vercel on `main` merge.
-- **Database:** Versioned SQL migrations (001–004). Supabase RLS prevents cross-user data access.
-- **Validation:** Zod schemas on all API routes — runtime type safety matching compile-time types.
-- **Testing:** Unit tests for all deterministic logic (TDEE calculations, Chip state machine). Integration tests for API routes with mocked Claude.
-- **Performance:** Pre-aggregated daily summaries, CONCURRENTLY indexes, 30s cache on dashboard endpoint.
+All AI requests are strictly server-side through Vercel Edge endpoints to prevent leakage of API keys.
+
+1. **Client**: Next.js App Router providing cached UI states.
+2. **API Layer (`/api`)**:
+   - `/api/analyze`: Relays Base64 images to Anthropic Claude Vision.
+   - `/api/roast`: Validates weekly SQL records and requests a summary from Claude.
+   - `/api/log` & `/api/dashboard`: Mutates and queries data via the Supabase Node runtime.
+3. **Database Layer**: Supabase PostgreSQL utilizing Row Level Security (RLS) to firmly isolate customer data records. A database trigger pre-aggregates the `daily_summaries` table.
+
+## Engineering Standards
+
+- **CI/CD Validation**: GitHub Actions trigger type-checks, ESLint linting, and Jest tests on every PR.
+- **Data Validation**: End-to-end type safety mapped from the UI components through Zod schemas down into Postgres row definitions.
+- **Testing Paradigms**: Independent unit tests for the TDEE targeting formula and Mascot Agent State Machine. 
 
 ---
 
-## Getting Started
+## Local Development
 
+### Prerequisites
+- Node.js 18+
+- Supabase CLI
+
+### Setup Instructions
+
+1. **Clone Repository**
 ```bash
-# Clone
 git clone https://github.com/aabhiyann/snapmacros
 cd snapmacros
+```
 
-# Install
+2. **Install Dependencies**
+```bash
 npm install
+```
 
-# Environment
+3. **Environment Setup**
+```bash
 cp .env.example .env.local
-# Fill in: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY
+```
+Fill in the following variables in `.env.local`:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `ANTHROPIC_API_KEY`
 
-# Database
-npx supabase db push
+4. **Initialize Database**
+```bash
+# Deploys the local schema, RLS policies, triggers, and seed data
+npx supabase init
+supabase db push
+```
 
-# Run
+5. **Start Development Server**
+```bash
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000).
-
----
-
-## Chip — The Mascot
-
-Chip is a tiny hatching egg with 8 emotional states:
-
-| State | Trigger |
-|---|---|
-| 😊 Happy | Default |
-| 🎉 Hype | Protein goal hit, 3–6 day streak |
-| 😱 Shocked | Single meal > 900 cal |
-| 😂 Laughing | Weekly roast time |
-| 😢 Sad | Missed 3+ days |
-| 🔥 On Fire | 7+ day streak |
-| 🤔 Thinking | AI analyzing photo |
-| 😴 Sleepy | 9pm, no logs today |
+Navigate to `http://localhost:3000`.
 
 ---
 
-## Project Structure
+## Documentation
 
-```
-src/
-├── app/           Next.js App Router pages + API routes
-├── components/    React components (chip/, rings/, food/, layout/, ui/)
-├── lib/           Types, utils, agents, validation
-supabase/
-├── migrations/    Versioned SQL (001–004)
-└── seed/          Demo account data
-docs/
-├── decisions/     Architecture Decision Records
-└── blog-notes/    Case study material
-__tests__/         Jest unit + integration tests
-```
-
----
+- `DESIGN_SYSTEM.md`: Strict aesthetic laws and brand rules.
+- `CHANGELOG.md`: History of feature additions.
+- `/supabase/migrations`: Versioned SQL architecture files.
 
 ## License
 
-MIT — built at AI Hackathon 2026 by Abhiyan.
-
----
-
-*Made with 🥚 by Abhiyan — [portfolio](https://abhiyansainju.com/) · [Instagram](https://www.instagram.com/abhiyan_sainju/)*
-github:https://github.com/aabhiyann
-LinkedIN:https://www.linkedin.com/in/abhiyansainju/
+MIT License. Designed and engineered by Abhiyan at the 2026 AI Hackathon.
