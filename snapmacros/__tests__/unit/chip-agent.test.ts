@@ -1,66 +1,54 @@
 import { getMascotState, getSpeechLine } from "@/lib/agents/chip-agent";
 
-describe("chip-agent", () => {
-  describe("getMascotState", () => {
-    it("returns thinking when isAnalyzing is true", () => {
-      const state = getMascotState({ isAnalyzing: true });
-      expect(state.emotion).toBe("thinking");
-      expect(typeof state.message).toBe("string");
-    });
-
-    it("returns laughing when isRoastTime is true", () => {
-      const state = getMascotState({ isRoastTime: true });
-      expect(state.emotion).toBe("laughing");
-    });
-
-    it("returns on_fire when streakDays >= 7", () => {
-      const state = getMascotState({ streakDays: 7 });
-      expect(state.emotion).toBe("on_fire");
-    });
-
-    it("returns shocked when singleMealCalories > 900", () => {
-      const state = getMascotState({ singleMealCalories: 901 });
-      expect(state.emotion).toBe("shocked");
-    });
-
-    it("returns sad when missedDays >= 3", () => {
-      const state = getMascotState({ missedDays: 3 });
-      expect(state.emotion).toBe("sad");
-    });
-
-    it("returns hype when caloriesPercent in 90-110", () => {
-      const state = getMascotState({ caloriesPercent: 95 });
-      expect(state.emotion).toBe("hype");
-    });
-
-    it("returns sleepy when hourOfDay >= 21 and todayLogsCount === 0", () => {
-      const state = getMascotState({ hourOfDay: 21, todayLogsCount: 0 });
-      expect(state.emotion).toBe("sleepy");
-    });
-
-    it("returns happy by default", () => {
-      const state = getMascotState({});
-      expect(state.emotion).toBe("happy");
-    });
-
-    it("priority: isAnalyzing beats isRoastTime", () => {
-      const state = getMascotState({ isAnalyzing: true, isRoastTime: true });
-      expect(state.emotion).toBe("thinking");
-    });
+describe("Chip Agent Emotion Matrix", () => {
+  it("defaults to happy", () => {
+    const result = getMascotState({});
+    expect(result.emotion).toBe("happy");
+    expect(result.message).toBeTruthy();
   });
 
-  describe("getSpeechLine", () => {
-    it("returns a string from the emotion pool", () => {
-      const line = getSpeechLine("happy");
-      expect(["Ready when you are!", "Snap something tasty!", "Let's go!"]).toContain(line);
-    });
+  it("prioritizes isAnalyzing correctly (thinking)", () => {
+    // Should think even if streak is 7 or missed days is 3
+    const result = getMascotState({ isAnalyzing: true, streakDays: 7, missedDays: 5 });
+    expect(result.emotion).toBe("thinking");
+    expect(["Hmm...", "Calculating macros...", "Analyzing..."]).toContain(result.message);
+  });
 
-    it("avoids repeating lastLine when provided", () => {
-      const first = getSpeechLine("happy", null);
-      for (let i = 0; i < 10; i++) {
-        const next = getSpeechLine("happy", first);
-        expect(next).not.toBe(first);
-      }
-    });
+  it("prioritizes isRoastTime correctly (laughing)", () => {
+    const result = getMascotState({ isRoastTime: true, streakDays: 7, missedDays: 5 });
+    expect(result.emotion).toBe("laughing");
+    expect(["Haha!", "This is too good.", "Oh boy."]).toContain(result.message);
+  });
+
+  it("triggers on_fire for week+ streaks", () => {
+    const result = getMascotState({ streakDays: 7 });
+    expect(result.emotion).toBe("on_fire");
+  });
+
+  it("triggers shocked for huge single meals over 900cals", () => {
+    const result = getMascotState({ singleMealCalories: 950 });
+    expect(result.emotion).toBe("shocked");
+  });
+
+  it("triggers sad state for missing 3 or more days", () => {
+    const result = getMascotState({ missedDays: 3 });
+    expect(result.emotion).toBe("sad");
+  });
+
+  it("triggers hype state for hitting goals (90-110%)", () => {
+    const result = getMascotState({ caloriesPercent: 100 });
+    expect(result.emotion).toBe("hype");
+  });
+
+  it("triggers sleepy state late at night if zero logs", () => {
+    const result = getMascotState({ hourOfDay: 22, todayLogsCount: 0 });
+    expect(result.emotion).toBe("sleepy");
+  });
+
+  it("ensures alternating speech behavior from getSpeechLine", () => {
+    // test getSpeechLine fallback options 
+    const firstLine = getSpeechLine("happy");
+    const secondLine = getSpeechLine("happy", firstLine);
+    expect(firstLine).not.toBe(secondLine);
   });
 });

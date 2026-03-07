@@ -1,77 +1,65 @@
-import {
-  calculateBMR,
-  calculateTDEE,
-  getCalorieTarget,
-  getMacroTargets,
-  calculateFullProfile,
-} from "@/lib/tdee";
+import { calculateBMR, calculateTDEE, getCalorieTarget, getMacroTargets, calculateFullProfile } from "@/lib/tdee";
 
-describe("tdee", () => {
-  describe("calculateBMR", () => {
-    it("returns higher BMR for male than female at same inputs", () => {
-      const male = calculateBMR(70, 175, 30, "male");
-      const female = calculateBMR(70, 175, 30, "female");
-      expect(male).toBeGreaterThan(female);
+describe("TDEE Calculator", () => {
+  describe("calculates BMR accurately", () => {
+    it("returns correct BMR for male", () => {
+      // 10 * 80 + 6.25 * 180 - 5 * 30 + 5 = 800 + 1125 - 150 + 5 = 1780
+      const bmr = calculateBMR(80, 180, 30, "male");
+      expect(bmr).toBe(1780);
     });
 
-    it("Mifflin-St Jeor: male 70kg 175cm 30yr", () => {
-      const bmr = calculateBMR(70, 175, 30, "male");
-      // 10*70 + 6.25*175 - 5*30 + 5 = 700 + 1093.75 - 150 + 5 = 1648.75
-      expect(bmr).toBeCloseTo(1648.75, 1);
+    it("returns correct BMR for female", () => {
+      // 10 * 65 + 6.25 * 165 - 5 * 28 - 161 = 650 + 1031.25 - 140 - 161 = 1380.25
+      const bmr = calculateBMR(65, 165, 28, "female");
+      expect(bmr).toBe(1380.25);
     });
   });
 
-  describe("calculateTDEE", () => {
-    it("multiplies BMR by activity factor", () => {
-      const bmr = 1600;
-      expect(calculateTDEE(bmr, "sedentary")).toBe(1920);
-      expect(calculateTDEE(bmr, "moderate")).toBe(2480);
+  describe("calculates TDEE safely", () => {
+    it("applies sedentary multiplier", () => {
+      const bmr = 2000;
+      expect(calculateTDEE(bmr, "sedentary")).toBe(2400);
+    });
+
+    it("applies active multiplier", () => {
+      const bmr = 2000;
+      expect(calculateTDEE(bmr, "active")).toBe(3450);
     });
   });
 
-  describe("getCalorieTarget", () => {
-    it("applies goal offset: maintain 0, cut -500", () => {
-      const tdee = 2500;
-      expect(getCalorieTarget(tdee, "maintain")).toBe(2500);
-      expect(getCalorieTarget(tdee, "cut")).toBe(2000);
+  describe("calculates Macro Targets safely", () => {
+    it("calculates balanced maintaining goals", () => {
+      expect(getCalorieTarget(2000, "maintain")).toBe(2000);
     });
 
-    it("floors at 1200", () => {
-      expect(getCalorieTarget(1000, "cut")).toBe(1200);
-    });
-  });
-
-  describe("getMacroTargets", () => {
-    it("returns calories and protein/carbs/fat in grams", () => {
-      const m = getMacroTargets(2000, "maintain");
-      expect(m.calories).toBe(2000);
-      expect(m.protein).toBeGreaterThan(0);
-      expect(m.carbs).toBeGreaterThan(0);
-      expect(m.fat).toBeGreaterThan(0);
+    it("creates strict cutting limits floored at 1200", () => {
+      expect(getCalorieTarget(2000, "cut")).toBe(1500);
+      expect(getCalorieTarget(1500, "cut")).toBe(1200); // properly floors
     });
 
-    it("maintain split 30/40/30: protein and carbs 4 cal/g, fat 9 cal/g", () => {
-      const m = getMacroTargets(2000, "maintain");
-      const fromMacros = m.protein * 4 + m.carbs * 4 + m.fat * 9;
-      expect(fromMacros).toBeLessThanOrEqual(2000 + 50);
-      expect(fromMacros).toBeGreaterThanOrEqual(2000 - 50);
+    it("calculates realistic bulking surplus", () => {
+      expect(getCalorieTarget(2500, "bulk")).toBe(3000);
     });
   });
 
-  describe("calculateFullProfile", () => {
-    it("returns bmr, tdee, calorieTarget, macroTarget", () => {
-      const result = calculateFullProfile({
-        weightKg: 70,
-        heightCm: 175,
+  describe("full profile integrations matches inputs", () => {
+    it("works correctly for full profile", () => {
+      const profile = calculateFullProfile({
+        weightKg: 80,
+        heightCm: 180,
         age: 30,
         gender: "male",
         activityLevel: "moderate",
-        goalType: "maintain",
+        goalType: "cut"
       });
-      expect(result.bmr).toBeGreaterThan(0);
-      expect(result.tdee).toBeGreaterThanOrEqual(result.bmr);
-      expect(result.calorieTarget).toBe(result.tdee);
-      expect(result.macroTarget.calories).toBe(result.calorieTarget);
+      // 1780 * 1.55 = 2759 TDEE -> CUT = 2259 Target
+      expect(profile.bmr).toBe(1780);
+      expect(profile.tdee).toBe(2759);
+      expect(profile.calorieTarget).toBe(2259);
+      expect(profile.macroTarget.calories).toBe(2259);
+      expect(profile.macroTarget.protein).toBe(169); // Math.round((2259*0.3)/4)
+      expect(profile.macroTarget.carbs).toBe(226); // Math.round((2259*0.4)/4)
+      expect(profile.macroTarget.fat).toBe(75); // Math.round((2259*0.3)/9)
     });
   });
 });
