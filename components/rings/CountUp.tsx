@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useMotionValue, useSpring, useTransform, motion } from "framer-motion";
 
 interface CountUpProps {
@@ -10,7 +10,7 @@ interface CountUpProps {
     duration?: number;
 }
 
-export function CountUp({ value, className = "", delay = 0, duration = 0.6 }: CountUpProps) {
+export function CountUp({ value, className = "", delay = 0 }: CountUpProps) {
     const motionValue = useMotionValue(0);
     const springValue = useSpring(motionValue, {
         stiffness: 100,
