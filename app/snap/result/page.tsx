@@ -86,16 +86,15 @@ export default function ResultPage() {
 
         setBgImage(imgData || null);
 
-        // Progression faker
-        let prog = 0;
-        const progInt = setInterval(() => {
-            prog += 5;
-            if (prog <= 82) setProgress(prog);
-        }, 250);
+        // Start progress animation
+        setProgress(82);
 
         const txtInt = setInterval(() => {
             setLoadingLineIdx((prev) => (prev + 1) % LOADING_LINES.length);
         }, 1800);
+
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => abortController.abort(), 10000);
 
         const performAnalysis = async () => {
             try {
@@ -108,13 +107,15 @@ export default function ResultPage() {
                 const res = await fetch("/api/analyze", {
                     method: "POST",
                     body: formData,
+                    signal: abortController.signal,
                 });
+
+                clearTimeout(timeoutId);
 
                 if (!res.ok) throw new Error("API FAILED");
 
                 const json = await res.json();
 
-                clearInterval(progInt);
                 clearInterval(txtInt);
                 setProgress(100);
 
@@ -135,10 +136,10 @@ export default function ResultPage() {
                     else setMealType("Snack");
 
                     setStatus("success");
-                }, 400);
+                }, 200);
 
             } catch (e) {
-                clearInterval(progInt);
+                clearTimeout(timeoutId);
                 clearInterval(txtInt);
                 setStatus("error");
             }
@@ -147,8 +148,9 @@ export default function ResultPage() {
         performAnalysis();
 
         return () => {
-            clearInterval(progInt);
+            clearTimeout(timeoutId);
             clearInterval(txtInt);
+            abortController.abort();
         };
     }, [router]);
 
@@ -205,8 +207,8 @@ export default function ResultPage() {
             <main className="fixed inset-0 bg-[#0F0F14] flex flex-col items-center justify-center overflow-hidden">
                 {bgImage && (
                     <div
-                        className="absolute inset-0 z-0 opacity-20 scale-110"
-                        style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(24px) brightness(0.2)' }}
+                        className="absolute inset-0 z-0 scale-110"
+                        style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(24px) brightness(0.2) saturate(0.5)' }}
                     />
                 )}
                 <div className="z-10 flex flex-col items-center justify-center text-center">
@@ -218,25 +220,26 @@ export default function ResultPage() {
                         <Chip emotion="thinking" size={130} />
                     </motion.div>
 
-                    <div className="bg-[#22222F] border border-[#2A2A3A] rounded-[14px] px-4 py-2 mb-12 shadow-[0_8px_32px_rgba(0,0,0,0.50)]">
+                    <div className="bg-[#22222F] border border-[#2A2A3A] rounded-[14px] px-4 py-2 mb-12 shadow-[0_8px_32px_rgba(0,0,0,0.50)] min-w-[200px]">
                         <AnimatePresence mode="wait">
                             <motion.span
                                 key={loadingLineIdx}
-                                initial={{ opacity: 0, y: 5 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -5 }}
-                                className="text-[14px] text-white font-['DM_Sans']"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.4 }}
+                                className="text-[14px] text-white font-['DM_Sans'] inline-block w-full"
                             >
                                 {LOADING_LINES[loadingLineIdx]}
                             </motion.span>
                         </AnimatePresence>
                     </div>
 
-                    <div className="w-[260px] h-[5px] bg-[#2A2A3A] rounded-full overflow-hidden">
+                    <div className="w-[260px] h-[5px] bg-white/15 rounded-full overflow-hidden">
                         <motion.div
-                            className="h-full bg-[#FF6B35]"
+                            className="h-full bg-gradient-to-r from-[#FF6B35] to-[#FF8540]"
                             animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            transition={{ duration: progress === 100 ? 0.2 : 4.5, ease: "easeOut" }}
                         />
                     </div>
                 </div>
