@@ -1,20 +1,34 @@
-import { Chip } from "@/components/Chip";
-import { Nav } from "@/components/Nav";
+"use client";
 
-export interface AppShellProps {
-  children: React.ReactNode;
-  chipEmotion?: "happy" | "hype" | "shocked" | "laughing" | "sad" | "on_fire" | "thinking" | "sleepy";
-}
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { BottomNav } from "@/components/BottomNav";
 
-export function AppShell({ children, chipEmotion = "happy" }: AppShellProps) {
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // In prod: await supabase.auth.getUser()
+      const isAuthed = true; // Use DEMO
+      if (!isAuthed && pathname !== "/login") {
+        router.push("/login");
+      } else {
+        setIsAuth(true);
+      }
+    };
+    checkAuth();
+  }, [pathname, router]);
+
+  // Prevent hydration flash
+  if (isAuth === null) return <div className="min-h-screen bg-[#0F0F14]" />;
+
   return (
-    <div className="min-h-screen flex flex-col bg-bg">
-      <header className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-elevated bg-card">
-        <h1 className="font-heading text-lg font-bold text-text">SnapMacros</h1>
-        <Chip emotion={chipEmotion} size={48} />
-      </header>
-      <main className="flex-1 pb-20">{children}</main>
-      <Nav />
+    <div className="min-h-screen bg-[#0F0F14] text-[#FFFFFF] flex flex-col font-['DM_Sans']">
+      <main className="flex-1 pb-[72px]">{children}</main>
+      <BottomNav />
     </div>
   );
 }
