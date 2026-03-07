@@ -1,5 +1,5 @@
-import { TapButton } from "@/components/ui/TapButton";
 "use client";
+import { TapButton } from "@/components/ui/TapButton";
 
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -23,16 +23,16 @@ const SettingRow = ({ icon: Icon, label, value, onClick, isDanger }: any) => (
         className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
     >
         <div className="flex items-center gap-4 text-left">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center \${isDanger ? 'bg-[#EF4444]/10 text-[#EF4444]' : 'bg-[#2A2A3A] text-white'}`}>
-            <Icon size={18} />
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDanger ? 'bg-[#EF4444]/10 text-[#EF4444]' : 'bg-[#2A2A3A] text-white'}`}>
+                <Icon size={18} />
+            </div>
+            <span className={`font-['DM_Sans'] font-medium text-[16px] ${isDanger ? 'text-[#EF4444]' : 'text-white'}`}>{label}</span>
         </div>
-        <span className={`font-['DM_Sans'] font-medium text-[16px] \${isDanger ? 'text-[#EF4444]' : 'text-white'}`}>{label}</span>
-    </div >
-    <div className="flex items-center gap-3">
-        {value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>}
-        <ChevronRight size={18} className="text-[#60607A]" />
-    </div>
-  </button >
+        <div className="flex items-center gap-3">
+            {value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>}
+            <ChevronRight size={18} className="text-[#60607A]" />
+        </div>
+    </TapButton>
 );
 
 export default function ProfilePage() {
