@@ -1,73 +1,109 @@
-import Link from "next/link";
-import { MacroRings } from "@/components/MacroRings";
-import { createClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/auth";
+"use client";
 
-export const revalidate = 30; // 30s cache
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Chip } from "@/components/Chip";
+import { createClient } from "@/lib/supabase/client";
 
-export default async function HomePage() {
+export default function SplashScreen() {
+  const router = useRouter();
+  const [showBubble, setShowBubble] = useState(false);
   const supabase = createClient();
-  const today = new Date().toISOString().split('T')[0];
 
-  const { data: summary } = await supabase
-    .from("daily_summaries")
-    .select("*")
-    .eq("user_id", DEMO_USER_ID)
-    .eq("date", today)
-    .maybeSingle();
+  useEffect(() => {
+    // Show speech bubble at 900ms
+    const bubbleTimer = setTimeout(() => {
+      setShowBubble(true);
+    }, 900);
 
-  // Targets (Usually from user profile, hardcoded for demo)
-  const targets = { calories: 2200, protein: 160, carbs: 200, fat: 70 };
+    // Route logic at 1200ms
+    const routeTimer = setTimeout(async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
 
-  const displayData = {
-    calories: { current: summary?.total_calories || 0, target: targets.calories },
-    protein: { current: summary?.total_protein || 0, target: targets.protein },
-    carbs: { current: summary?.total_carbs || 0, target: targets.carbs },
-    fat: { current: summary?.total_fat || 0, target: targets.fat },
-  };
+        if (!session) {
+          router.replace("/login");
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", session.user.id)
+          .single();
+
+        if (profile?.onboarding_completed) {
+          router.replace("/dashboard");
+        } else {
+          router.replace("/onboarding");
+        }
+      } catch (err) {
+        console.error("Auth routing error:", err);
+        router.replace("/login");
+      }
+    }, 1200);
+
+    return () => {
+      clearTimeout(bubbleTimer);
+      clearTimeout(routeTimer);
+    };
+  }, [router, supabase]);
 
   return (
-    <div className="p-4 flex flex-col items-center pb-24">
-      <section className="w-full flex justify-center mb-8 mt-4">
-        <MacroRings
-          size={240}
-          strokeWidth={16}
-          calories={displayData.calories}
-          protein={displayData.protein}
-          carbs={displayData.carbs}
-          fat={displayData.fat}
-        />
-      </section>
+    <div className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center relative overflow-hidden">
+      {/* 150ms: Snap word fades in */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.4 }}
+        className="flex items-center gap-1 z-10"
+      >
+        <span className="text-white font-heading font-bold text-[32px]">Snap</span>
+        {/* 300ms: Macros word fades in */}
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className="text-[#FF6B35] font-heading font-bold text-[32px]"
+        >
+          Macros
+        </motion.span>
+      </motion.div>
 
-      <section className="w-full rounded-xl bg-card border border-elevated p-6 mb-4 flex flex-col items-center text-center">
-        <h2 className="font-heading text-xl font-bold text-text mb-2">Ready for a meal?</h2>
-        <p className="text-text-secondary text-sm mb-6">
-          Snap a photo to instantly log your macros.
-        </p>
-        <Link
-          href="/log"
-          className="touch-target inline-flex items-center justify-center min-h-[48px] px-8 rounded-full bg-primary text-white font-bold tracking-wide hover:opacity-90 transition-opacity w-full sm:w-auto"
-        >
-          📷 Snap Food
-        </Link>
-      </section>
+      {/* 500ms: Tagline fades in */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+        className="text-[#A0A0B8] font-body text-[14px] mt-2 z-10"
+      >
+        Snap. Track. Roast.
+      </motion.p>
 
-      <div className="w-full grid grid-cols-2 gap-4">
-        <Link
-          href="/meals"
-          className="rounded-xl bg-card border border-elevated p-4 flex flex-col items-center justify-center hover:bg-elevated transition-colors"
-        >
-          <span className="text-2xl mb-2">🍽️</span>
-          <span className="font-medium text-text mt-1">Meal History</span>
-        </Link>
-        <Link
-          href="/roast"
-          className="rounded-xl bg-card border border-elevated p-4 flex flex-col items-center justify-center hover:bg-elevated transition-colors"
-        >
-          <span className="text-2xl mb-2">🔥</span>
-          <span className="font-medium text-text mt-1">Weekly Roast</span>
-        </Link>
-      </div>
+      {/* 700ms: Chip bounces up */}
+      <motion.div
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.7, type: "spring", stiffness: 300, damping: 20 }}
+        className="mt-12 relative z-10"
+      >
+        <Chip emotion="happy" size={90} />
+
+        {/* 900ms: Speech Bubble */}
+        <AnimatePresence>
+          {showBubble && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, x: -10, y: 10 }}
+              animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="absolute -top-12 -right-4 bg-white text-black px-4 py-2 rounded-2xl rounded-bl-sm font-body text-sm font-medium shadow-lg whitespace-nowrap"
+            >
+              Hey! Let&apos;s track something 🥚
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
