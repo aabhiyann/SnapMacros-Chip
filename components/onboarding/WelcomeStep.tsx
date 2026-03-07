@@ -1,5 +1,5 @@
-import { TapButton } from "@/components/ui/TapButton";
 "use client";
+import { TapButton } from "@/components/ui/TapButton";
 
 import { motion } from "framer-motion";
 import { Chip } from "@/components/Chip";

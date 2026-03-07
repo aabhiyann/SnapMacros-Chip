@@ -1,5 +1,5 @@
-import { TapButton } from "@/components/ui/TapButton";
 "use client";
+import { TapButton } from "@/components/ui/TapButton";
 
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
