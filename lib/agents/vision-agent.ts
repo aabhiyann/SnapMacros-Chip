@@ -1,137 +1,103 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { AnalysisResult } from '@/lib/types';
+import { logger } from '@/lib/logger';
 
-const MODEL = "claude-sonnet-4-20250514";
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
-export interface AnalysisResult {
-    food_name: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    confidence: "high" | "medium" | "low";
-    reasoning: string;
-}
+const SYSTEM_PROMPT = `You are NutriLens, an expert food scientist inside SnapMacros.
 
-const SYSTEM_PROMPT = `You are an expert food scientist and nutritionist. Your task is to analyze food images and provide highly accurate macronutrient estimates following USDA guidelines.
+Analyze food photos and estimate nutritional content with precision.
 
-RULES:
-1. Identify all visible ingredients and consider cooking methods (e.g., fried vs. baked, added oils/sauces).
-2. Estimate standard portion sizes unless a specific hint is provided.
-3. Your confidence must be "high" for highly recognizable standard items, "medium" for mixed dishes, and "low" if the image is blurry or portions are completely ambiguous.
-4. Chip (the mascot) will react to your output, so ensure the food_name is colloquial and descriptive (e.g., "Bacon Double Cheeseburger" instead of "Meat and Bread").
-5. Return ONLY a valid JSON object. Do not include markdown code blocks, apologies, or any surrounding text.`;
+ACCURACY STANDARDS (use USDA National Nutrient Database as reference):
+- Chicken breast, cooked: ~31g protein, ~165 cal per 100g
+- White rice, cooked: ~28g carbs, ~130 cal per 100g
+- Olive oil: ~14g fat, ~120 cal per tablespoon
+- Deep-fried food: adds 30-50% more calories
+- Restaurant portions: typically 1.5-2x home portions
+- Fast food: use known values (Big Mac ≈ 550 cal, Chipotle bowl ≈ 800-1000 cal)
 
-function buildVisionPrompt(portionHint?: string): string {
-    return `Analyze this food image.${portionHint ? ` \nContext: ${portionHint}` : ""}
+CONFIDENCE RULES:
+- "high":   Clear photo, identifiable food, standard portion
+- "medium": Food identifiable but portion unclear or uncommon prep
+- "low":    Blurry, very mixed, or unrecognizable
 
-Return ONLY a JSON object matching this exact schema:
-{
-  "food_name": "casual, descriptive name of the meal",
-  "calories": number (in kcal),
-  "protein": number (in grams),
-  "carbs": number (in grams),
-  "fat": number (in grams),
-  "confidence": "high" | "medium" | "low",
-  "reasoning": "1 sentence explanation of how you estimated the macros based on visible items and assumed cooking methods."
-}`;
-}
+CHIP REACTION RULES:
+- "hype":    protein_g > 30 OR clearly healthy/clean meal
+- "shocked": calories > 850 OR very indulgent meal
+- "happy":   everything else
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+FUN NOTE: One sentence, max 12 words, Chip's voice, casual and funny, references specific food.
+
+CRITICAL: Return ONLY valid JSON. No markdown. No backticks. No prose.`;
 
 export async function analyzeFood(
     imageBase64: string,
-    mediaType: "image/jpeg" | "image/png" | "image/webp" | "image/gif",
+    mediaType: 'image/jpeg' | 'image/png' | 'image/webp',
     portionHint?: string,
     maxRetries = 2
 ): Promise<AnalysisResult> {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-        throw new Error("Missing ANTHROPIC_API_KEY");
-    }
+    const startTime = Date.now();
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const client = new Anthropic({ apiKey });
-    const prompt = buildVisionPrompt(portionHint);
-    const backoffs = [1000, 2000];
+    const userPrompt = `${SYSTEM_PROMPT}
 
-    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
-        const startTime = Date.now();
+${portionHint ? `User says: "${portionHint}"` : ''}
+
+Analyze this food and return ONLY this JSON, nothing else:
+{
+  "food_name": "2-5 word descriptive name",
+  "items_detected": ["item1", "item2", "item3"],
+  "portion_size": "human-readable estimate",
+  "confidence": "high" | "medium" | "low",
+  "confidence_note": "one sentence why you are/aren't confident",
+  "macros": {
+    "calories": <integer>,
+    "protein_g": <float 1 decimal>,
+    "carbs_g": <float 1 decimal>,
+    "fat_g": <float 1 decimal>,
+    "fiber_g": <float 1 decimal>,
+    "sugar_g": <float 1 decimal>
+  },
+  "chip_reaction": "hype" | "shocked" | "happy",
+  "fun_note": "one funny line max 12 words"
+}`;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-            const response = await client.messages.create({
-                model: MODEL,
-                system: SYSTEM_PROMPT,
-                max_tokens: 512,
-                messages: [
-                    {
-                        role: "user",
-                        content: [
-                            {
-                                type: "image",
-                                source: {
-                                    type: "base64",
-                                    media_type: mediaType,
-                                    data: imageBase64.replace(/^data:image\/\w+;base64,/, ""),
-                                },
-                            },
-                            { type: "text", text: prompt },
-                        ],
+            const result = await model.generateContent([
+                {
+                    inlineData: {
+                        data: imageBase64,
+                        mimeType: mediaType,
                     },
-                ],
-            });
+                },
+                { text: userPrompt },
+            ]);
 
-            const textBlock = response.content.find((c) => c.type === "text");
-            if (!textBlock || textBlock.type !== "text") {
-                throw new Error("No text response from Claude");
+            const rawText = result.response.text();
+            const cleaned = rawText.replace(/```json\n?|```\n?/g, '').trim();
+            const parsed = JSON.parse(cleaned) as AnalysisResult;
+
+            if (!parsed.food_name || !parsed.macros || typeof parsed.macros.calories !== 'number') {
+                throw new Error('Invalid response structure from Gemini');
             }
 
-            // Strip potential markdown blocks if Claude disobeys
-            let rawText = textBlock.text.trim();
-            if (rawText.startsWith("```json")) rawText = rawText.replace(/^```json/, "");
-            if (rawText.startsWith("```")) rawText = rawText.replace(/^```/, "");
-            if (rawText.endsWith("```")) rawText = rawText.replace(/```$/, "");
-            rawText = rawText.trim();
-
-            const parsed = JSON.parse(rawText);
-
-            // Validate required fields
-            if (
-                typeof parsed.food_name !== "string" ||
-                typeof parsed.calories !== "number" ||
-                typeof parsed.protein !== "number" ||
-                typeof parsed.carbs !== "number" ||
-                typeof parsed.fat !== "number" ||
-                !["high", "medium", "low"].includes(parsed.confidence) ||
-                typeof parsed.reasoning !== "string"
-            ) {
-                throw new Error("Invalid schema returned by Claude");
-            }
-
-            const durationMs = Date.now() - startTime;
-            console.log(`[Vision Agent] SUCCESS:`, {
+            logger.info('Food analyzed', {
                 food_name: parsed.food_name,
                 confidence: parsed.confidence,
-                calories: parsed.calories,
-                duration_ms: durationMs,
-                attempt,
+                calories: parsed.macros.calories,
+                duration_ms: Date.now() - startTime,
+                attempt: attempt + 1,
             });
 
-            return parsed as AnalysisResult;
+            return parsed;
+
         } catch (err) {
-            const durationMs = Date.now() - startTime;
-            console.warn(`[Vision Agent] ATTEMPT ${attempt} FAILED:`, {
-                error: err instanceof Error ? err.message : String(err),
-                duration_ms: durationMs,
-            });
-
-            if (attempt <= maxRetries) {
-                const delay = backoffs[attempt - 1] || 2000;
-                console.log(`[Vision Agent] Retrying in ${delay}ms...`);
-                await sleep(delay);
-            } else {
-                console.error(`[Vision Agent] ALL RETRIES EXHAUSTED.`);
-                throw new Error(err instanceof Error ? `Analysis failed: ${err.message}` : "Analysis failed");
-            }
+            logger.error(`Vision agent attempt ${attempt + 1} failed`, err);
+            if (attempt === maxRetries) throw err;
+            await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
     }
 
-    throw new Error("Unexpected loop exit in analyzeFood");
+    throw new Error('Vision agent failed after all retries');
 }

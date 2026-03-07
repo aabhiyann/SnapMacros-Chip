@@ -187,7 +187,7 @@ export default function DashboardPage() {
                     transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.3 }}
                     className="shrink-0 relative z-10"
                 >
-                    <Chip emotion={data.chip.emotion} size={100} />
+                    <Chip emotion={data.current.calories > data.targets.calories + 50 ? "shocked" : data.chip.emotion} size={100} />
                 </motion.div>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -196,9 +196,22 @@ export default function DashboardPage() {
                     className="flex-1 bg-[#1A1A24] rounded-[14px] p-4 border border-[#2A2A3A] relative shadow-lg z-0"
                 >
                     <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45 z-0" />
-                    <p className="text-[14px] text-white font-['DM_Sans'] relative z-10 italic">
-                        &quot;{data.chip.message}&quot;
-                    </p>
+                    <div className="relative z-10">
+                        {data.current.calories > data.targets.calories + 50 ? (
+                            <>
+                                <p className="text-[14px] text-white font-['DM_Sans'] italic mb-1">
+                                    "Went a bit over today."
+                                </p>
+                                <p className="text-[13px] text-[#A0A0B8] font-['DM_Sans'] italic">
+                                    "Tomorrow is what matters."
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-[14px] text-white font-['DM_Sans'] italic">
+                                &quot;{data.chip.message}&quot;
+                            </p>
+                        )}
+                    </div>
                 </motion.div>
             </div>
 

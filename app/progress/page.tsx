@@ -190,52 +190,56 @@ export default function ProgressPage() {
             {/* 3. WEEKLY CHART */}
             <div className="px-5 mb-12 h-[220px]">
                 <h3 className="font-['Bricolage_Grotesque'] font-bold text-white mb-6 text-[20px]">This week's calories</h3>
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={last7Days} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
-                        <XAxis dataKey="dayStr" stroke="#60607A" fontSize={11} tickLine={false} axisLine={false} />
-                        <YAxis
-                            stroke="#60607A"
-                            fontSize={11}
-                            tickLine={false}
-                            axisLine={false}
-                            domain={[0, 'dataMax']}
-                            ticks={[0, Math.max(...last7Days.map(d => d.calories), 2000)]}
-                        />
-                        <Tooltip
-                            cursor={{ fill: '#2A2A3A', opacity: 0.4 }}
-                            contentStyle={{ backgroundColor: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: '12px' }}
-                            itemStyle={{ color: 'white', fontFamily: 'DM Sans', fontWeight: 'bold' }}
-                            labelStyle={{ color: '#A0A0B8', fontFamily: 'DM Sans', fontSize: '13px', marginBottom: '4px' }}
-                        />
-                        {/* Reference dashed line */}
-                        <ReferenceLine y={2000} stroke="#FF6B35" strokeDasharray="4 4" label={{ position: 'top', value: 'Your target', fill: '#FF6B35', fontSize: 10, fontFamily: 'DM Sans' }} />
-                        <Bar dataKey="calories" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                            {last7Days.map((entry, index) => {
-                                let color = "#2A2A3A"; // no logs
-                                if (entry.state === "hit") color = "#2DD4BF"; // green
-                                if (entry.state === "logged") color = "#FF6B35"; // orange (under)
-                                if (entry.calories > entry.target + 100) color = "#EF4444"; // red (over)
-                                return <Cell key={`cell-\${index}`} fill={color} />;
-                            })}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
+                {daysHit < 3 ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A]">
+                        <Chip emotion="thinking" size={64} className="mb-3" />
+                        <p className="font-['DM_Sans'] text-[14px] text-white/70 font-medium">Log 3 days of meals to see your trends.</p>
+                    </div>
+                ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={last7Days} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+                            <XAxis dataKey="dayStr" stroke="#60607A" fontSize={11} tickLine={false} axisLine={false} />
+                            <YAxis
+                                stroke="#60607A"
+                                fontSize={11}
+                                tickLine={false}
+                                axisLine={false}
+                                domain={[0, 'dataMax']}
+                                ticks={[0, Math.max(...last7Days.map(d => d.calories), 2000)]}
+                            />
+                            <Tooltip
+                                cursor={{ fill: '#2A2A3A', opacity: 0.4 }}
+                                contentStyle={{ backgroundColor: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: '12px' }}
+                                itemStyle={{ color: 'white', fontFamily: 'DM Sans', fontWeight: 'bold' }}
+                                labelStyle={{ color: '#A0A0B8', fontFamily: 'DM Sans', fontSize: '13px', marginBottom: '4px' }}
+                            />
+                            {/* Reference dashed line */}
+                            <ReferenceLine y={2000} stroke="#FF6B35" strokeDasharray="4 4" label={{ position: 'top', value: 'Your target', fill: '#FF6B35', fontSize: 10, fontFamily: 'DM Sans' }} />
+                            <Bar dataKey="calories" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                                {last7Days.map((entry, index) => {
+                                    let color = "#2A2A3A"; // no logs
+                                    if (entry.state === "hit") color = "#2DD4BF"; // green
+                                    if (entry.state === "logged") color = "#FF6B35"; // orange (under)
+                                    if (entry.calories > entry.target + 100) color = "#EF4444"; // red (over)
+                                    return <Cell key={`cell-\${index}`} fill={color} />;
+                                })}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </div>
 
             {/* 4. ROAST SECTION */}
             <div className="px-5 pb-[100px]">
                 {roastStateA ? (
-                    // STATE A
+                    // STATE A (Empty Roast State)
                     <div className="bg-[#1A1A24] border border-dashed border-[#FF6B35]/50 rounded-[24px] p-6 flex flex-col items-center justify-center text-center">
                         <Chip emotion="laughing" size={80} />
-                        <h2 className="text-[20px] font-bold font-['Bricolage_Grotesque'] text-white mt-4 mb-2">🔥 Your weekly roast drops Sunday</h2>
-                        <p className="text-[#A0A0B8] font-['DM_Sans'] text-[15px] mb-6">
-                            I've been taking notes all week.
-                        </p>
+                        <h2 className="text-[20px] font-bold font-['Bricolage_Grotesque'] text-white mt-4 mb-2 whitespace-pre-wrap">Your weekly roast drops Sunday. 😈</h2>
                         <button
                             onClick={handleGenerateRoast}
                             disabled={isGenerating}
-                            className="bg-transparent border border-[#60607A] text-[#A0A0B8] rounded-[12px] px-6 py-2.5 font-bold font-['DM_Sans'] text-[14px] hover:text-white hover:border-[#A0A0B8] transition-colors disabled:opacity-50"
+                            className="bg-transparent border border-[#60607A] text-[#A0A0B8] rounded-[12px] px-6 py-2.5 font-bold font-['DM_Sans'] text-[14px] hover:text-white hover:border-[#A0A0B8] transition-colors mt-6 disabled:opacity-50"
                         >
                             {isGenerating ? "Analyzing week..." : "Roast Me Early"}
                         </button>

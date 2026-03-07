@@ -7,6 +7,35 @@ import { X, Image as ImageIcon, Zap, ZapOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BottomSheet } from "@/components/BottomSheet";
 import { Chip } from "@/components/Chip";
+import { TapButton } from "@/components/ui/TapButton";
+
+const DescribeMealSheet = ({ isOpen, onClose, onSubmit, isAnalyzing }: any) => {
+    const [desc, setDesc] = useState("");
+    return (
+        <BottomSheet isOpen={isOpen} onClose={onClose} className="bg-[#22222F]">
+            <div className="p-5 pb-8 relative">
+                <div className="absolute -top-[52px] right-6">
+                    <Chip emotion="thinking" size={64} />
+                </div>
+                <h3 className="font-['Bricolage_Grotesque'] text-[22px] font-bold text-white mb-4">Describe your meal</h3>
+                <textarea
+                    autoFocus
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
+                    placeholder="e.g., grilled salmon with rice and broccoli"
+                    className="w-full h-[120px] bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-4 text-white font-['DM_Sans'] text-[15px] resize-none focus:outline-none focus:border-[#FF6B35] transition-colors mb-4 placeholder:text-[#60607A]"
+                />
+                <button
+                    onClick={() => onSubmit(desc)}
+                    disabled={!desc.trim() || isAnalyzing}
+                    className="w-full h-[56px] rounded-[16px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-bold flex items-center justify-center disabled:opacity-50 active:scale-[0.98] transition-all"
+                >
+                    {isAnalyzing ? "Analyzing..." : "Analyze This \u2192"}
+                </button>
+            </div>
+        </BottomSheet>
+    );
+};
 
 const PLACEHOLDERS = [
     "e.g., grilled salmon with rice and broccoli",
@@ -133,8 +162,8 @@ export default function SnapPage() {
     // ---------------------------------------------------------------------------
     if (hasCamera === false) {
         return (
-            <main className="min-h-screen bg-[#0F0F14] text-[#FFFFFF] px-[20px] flex flex-col pt-[48px]">
-                <div className="flex justify-between items-center mb-8">
+            <main className="min-h-screen bg-[#0F0F14] flex flex-col pt-[48px] px-5 relative">
+                <div className="absolute top-[env(safe-area-inset-top,20px)] left-[20px] z-50">
                     <button
                         onClick={() => router.push("/dashboard")}
                         className="w-[44px] h-[44px] rounded-full bg-[#1A1A24] flex items-center justify-center border border-[#2A2A3A]"
@@ -143,16 +172,37 @@ export default function SnapPage() {
                     </button>
                 </div>
 
-                <div className="flex flex-col items-center justify-center flex-grow pb-[72px]">
-                    <Chip emotion="thinking" size={100} />
-                    <h2 className="font-['Bricolage_Grotesque'] text-[28px] font-bold mt-6 mb-2">No camera found.</h2>
-                    <p className="text-[#A0A0B8] mb-8 text-center font-['DM_Sans'] text-[16px]">
-                        Describe your meal below and Chip will analyze it.
+                <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10">
+                    <Chip emotion="thinking" size={100} className="mb-6 drop-shadow-[0_0_30px_rgba(255,107,53,0.3)]" />
+                    <h2 className="font-['Bricolage_Grotesque'] text-[28px] font-bold text-white mb-3 tracking-tight">Camera access blocked.</h2>
+                    <p className="text-[#A0A0B8] text-[15px] font-['DM_Sans'] max-w-[280px] mx-auto mb-8 leading-relaxed">
+                        Allow camera in Settings or describe your meal instead.
                     </p>
 
-                    <div className="w-full relative">
-                        {renderDescribeForm()}
+                    <div className="w-full relative max-w-[340px] px-2 space-y-3">
+                        <TapButton
+                            onClick={() => window.open('app-settings:', '_blank')}
+                            className="w-full py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans'] text-[15px]"
+                        >
+                            Open Settings
+                        </TapButton>
+                        <TapButton
+                            onClick={() => setIsSheetOpen(true)}
+                            className="w-full py-4 rounded-xl bg-[#2A2A3A] text-white font-bold font-['DM_Sans'] text-[15px]"
+                        >
+                            Describe Instead
+                        </TapButton>
                     </div>
+
+                    <DescribeMealSheet
+                        isOpen={isSheetOpen}
+                        onClose={() => setIsSheetOpen(false)}
+                        onSubmit={(text: string) => {
+                            setDescription(text);
+                            handleDescribeSubmit();
+                        }}
+                        isAnalyzing={false}
+                    />
                 </div>
             </main>
         );

@@ -251,26 +251,28 @@ export default function ResultPage() {
     if (status === "error") {
         return (
             <main className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center px-[20px] pb-[72px]">
-                <Chip emotion="sad" size={120} />
-                <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[28px] font-bold text-white text-center">
+                <Chip emotion="sad" size={120} className="drop-shadow-[0_0_20px_rgba(255,107,53,0.2)]" />
+                <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[28px] font-bold text-white text-center tracking-tight">
                     Chip couldn't figure that one out.
                 </h2>
-                <p className="text-[#A0A0B8] mb-12 text-center text-[16px] font-['DM_Sans'] px-4">
+                <p className="text-[#A0A0B8] mb-12 text-center text-[15px] font-['DM_Sans'] px-4 max-w-[280px]">
                     Try a clearer photo or describe the meal.
                 </p>
 
-                <button
-                    onClick={() => router.push("/snap")}
-                    className="w-full max-w-[300px] h-[56px] rounded-[14px] bg-[#FF6B35] text-white font-['DM_Sans'] font-semibold text-[16px] mb-4"
-                >
-                    Try Again &rarr;
-                </button>
-                <button
-                    onClick={() => router.push("/snap")}
-                    className="w-full max-w-[300px] h-[56px] rounded-[14px] bg-[#22222F] text-white font-['DM_Sans'] font-semibold text-[16px]"
-                >
-                    Describe Instead
-                </button>
+                <div className="w-full max-w-[320px] space-y-3">
+                    <button
+                        onClick={() => router.push("/snap")}
+                        className="w-full h-[56px] rounded-[16px] bg-[#FF6B35] text-white font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.98] transition-transform shadow-[0_4px_20px_rgba(255,107,53,0.3)]"
+                    >
+                        Try Again
+                    </button>
+                    <button
+                        onClick={() => router.push("/snap?describe=1")}
+                        className="w-full h-[56px] rounded-[16px] bg-[#22222F] border border-[#2A2A3A] text-white font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.98] transition-transform"
+                    >
+                        Describe Instead
+                    </button>
+                </div>
             </main>
         );
     }

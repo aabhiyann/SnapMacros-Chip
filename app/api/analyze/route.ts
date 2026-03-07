@@ -6,7 +6,7 @@ import { DEMO_USER_ID } from "@/lib/auth"; // In real prod, this comes from supa
 
 // Used constants
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: Request) {
   try {
@@ -51,11 +51,23 @@ export async function POST(request: Request) {
     try {
       const result = await analyzeFood(
         base64,
-        file.type as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
+        file.type as "image/jpeg" | "image/png" | "image/webp",
         portionHint
       );
+
+      const mappedResult = {
+        food_name: result.food_name,
+        calories: result.macros?.calories || 0,
+        protein: result.macros?.protein_g || 0,
+        carbs: result.macros?.carbs_g || 0,
+        fat: result.macros?.fat_g || 0,
+        confidence: result.confidence || "medium",
+        reasoning: result.confidence_note || result.fun_note || "",
+        detected_items: result.items_detected || [],
+      };
+
       // 7. Return Result
-      return NextResponse.json(result, { status: 200 });
+      return NextResponse.json(mappedResult, { status: 200 });
     } catch (aiErr) {
       const msg = aiErr instanceof Error ? aiErr.message : "Analysis failed";
 
