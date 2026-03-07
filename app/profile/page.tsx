@@ -141,6 +141,33 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
+                {/* ROAST HISTORY */}
+                <div className="mb-10">
+                    <div className="px-5 mb-4 flex items-center justify-between">
+                        <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Roast History</h3>
+                        <button className="text-[#A0A0B8] text-[13px] font-medium font-['DM_Sans'] hover:text-white transition-colors">View All</button>
+                    </div>
+
+                    <div className="w-full overflow-x-auto pb-4 hide-scrollbar px-5 flex gap-4">
+                        {/* Mock Roast Cards */}
+                        {[
+                            { id: 1, week: "Vol. 10", title: "The Cheese Incident", emoji: "laughing" },
+                            { id: 2, week: "Vol. 9", title: "Robot Precision", emoji: "hype" },
+                            { id: 3, week: "Vol. 8", title: "Weekend Warrior", emoji: "thinking" }
+                        ].map((roast) => (
+                            <div key={roast.id} className="min-w-[200px] h-[120px] bg-[#1A1A24] border border-[#2A2A3A] rounded-[20px] p-4 flex flex-col justify-between shrink-0 active:scale-95 transition-transform">
+                                <div className="flex justify-between items-start">
+                                    <p className="text-[#60607A] text-[11px] font-bold uppercase tracking-wider">{roast.week}</p>
+                                    <Chip emotion={roast.emoji as any} size={28} />
+                                </div>
+                                <h4 className="text-white font-['Bricolage_Grotesque'] font-bold text-[16px] italic leading-tight mt-2">
+                                    "{roast.title}"
+                                </h4>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* SETTINGS LIST */}
                 <div className="px-5">
                     <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px] mb-4 pl-2">Settings</h3>
