@@ -27,6 +27,7 @@ interface AnalysisData {
     reasoning: string;
     fiber?: number;
     sugar?: number;
+    detected_items?: string[];
 }
 
 const LOADING_LINES = [
@@ -279,34 +280,61 @@ export default function ResultPage() {
 
     return (
         <main className="min-h-screen bg-[#0F0F14] flex flex-col relative text-white">
+            {/* Ring Flash Overlay on Success */}
+            <AnimatePresence>
+                {logSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: [0, 1, 0], scale: [0.8, 1.1, 1.2] }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center border-[8px] border-[#FF6B35] rounded-full opacity-0"
+                        style={{ width: '200vw', height: '200vw', top: '50%', left: '50%', x: '-50%', y: '-50%' }}
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Photo Panel (Top 45%) */}
             <div className="relative h-[45vh] w-full">
                 {bgImage ? (
-                    <Image src={bgImage} fill className="object-cover" alt="Meal scan" unoptimized />
+                    <Image src={bgImage} fill className="object-cover" alt="Meal scan" unoptimized priority />
                 ) : (
                     <div className="w-full h-full bg-[#1A1A24] flex items-center justify-center">
                         <span className="text-[#60607A] font-['Bricolage_Grotesque'] font-bold text-xl uppercase tracking-widest">Described Meal</span>
                     </div>
                 )}
+                {/* Detected Items Overlay */}
+                <div className="absolute bottom-6 left-4 right-4 z-20 flex flex-wrap gap-2">
+                    {data.detected_items?.slice(0, 3).map((item, i) => (
+                        <motion.span
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 + i * 0.06 }}
+                            className="bg-black/70 text-white text-[12px] px-3 py-1.5 rounded-[8px] font-['DM_Sans'] backdrop-blur-sm"
+                        >
+                            {item}
+                        </motion.span>
+                    ))}
+                </div>
                 {/* Gradient into card */}
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#1A1A24] to-transparent z-10" />
+                <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#1A1A24] to-transparent z-10" />
             </div>
 
             {/* Result Card (Bottom 65% Overlapping) */}
-            <div className="relative -mt-[10vh] bg-[#1A1A24] rounded-t-[28px] flex-grow shadow-[0_-8px_32px_rgba(0,0,0,0.50)] z-20 px-[20px] pt-4 pb-8 flex flex-col">
+            <div className="relative -mt-[10vh] bg-[#1A1A24] rounded-t-[28px] flex-grow shadow-[0_-12px_40px_rgba(0,0,0,0.60)] z-20 px-[20px] pt-3 pb-8 flex flex-col">
                 {/* Drag handle */}
                 <div className="w-[40px] h-[4px] bg-[#2A2A3A] rounded-full mx-auto mb-6" />
 
                 {/* Title & Badge */}
                 <div className="flex justify-between items-start mb-2">
-                    <h2 className="font-['Bricolage_Grotesque'] text-[28px] leading-tight font-bold w-2/3">
+                    <h2 className="font-['Bricolage_Grotesque'] text-[28px] leading-tight font-bold w-[60%]">
                         {data.food_name}
                     </h2>
                     <div className={cn(
-                        "text-[10px] font-bold uppercase py-1.5 px-3 rounded-full shrink-0 mt-1",
-                        data.confidence === "high" ? "bg-[#2DD4BF]/20 text-[#2DD4BF]" :
-                            data.confidence === "medium" ? "bg-[#FBBF24]/20 text-[#FBBF24]" :
-                                "bg-[#F87171]/20 text-[#F87171]"
+                        "text-[10px] font-bold uppercase py-1.5 px-3 rounded-full shrink-0 mt-2",
+                        data.confidence === "high" ? "bg-green-500/10 border border-green-500/20 text-green-500" :
+                            data.confidence === "medium" ? "bg-amber-500/10 border border-amber-500/20 text-amber-500" :
+                                "bg-red-500/10 border border-red-500/20 text-red-500"
                     )}>
                         {data.confidence === "high" ? "✓ Confident" :
                             data.confidence === "medium" ? "~ Best Guess" :
@@ -320,52 +348,70 @@ export default function ResultPage() {
                 </p>
 
                 {/* Macro Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-[10px] mb-4">
                     {/* Cal */}
-                    <div className="bg-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-[#FF6B35] font-['DM_Sans'] text-[11px] font-bold uppercase mb-1">🔥 Calories</span>
+                    <div className="bg-[#FF6B35]/10 border border-[#FF6B35]/25 rounded-[16px] p-4 flex flex-col">
+                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Calories 🔥</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.calories} onChange={e => setManualMacros({ ...manualMacros, calories: Number(e.target.value) })} className="bg-transparent text-[36px] font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" value={manualMacros.calories} onChange={e => setManualMacros({ ...manualMacros, calories: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
-                            <span className="text-[36px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.6} end={Math.round(manualMacros.calories * multiplier)} />
+                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
+                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.calories * multiplier)} />
                             </span>
                         )}
                     </div>
                     {/* Pro */}
-                    <div className="bg-[#6C63FF]/10 border border-[#6C63FF]/30 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-[#6C63FF] font-['DM_Sans'] text-[11px] font-bold uppercase mb-1">🥩 Protein</span>
+                    <div className="bg-[#6C63FF]/10 border border-[#6C63FF]/25 rounded-[16px] p-4 flex flex-col">
+                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Protein 💜</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.protein} onChange={e => setManualMacros({ ...manualMacros, protein: Number(e.target.value) })} className="bg-transparent text-[36px] font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" value={manualMacros.protein} onChange={e => setManualMacros({ ...manualMacros, protein: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
-                            <span className="text-[36px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.6} end={Math.round(manualMacros.protein * multiplier)} />g
+                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
+                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.protein * multiplier)} />g
                             </span>
                         )}
                     </div>
                     {/* Car */}
-                    <div className="bg-[#2DD4BF]/10 border border-[#2DD4BF]/30 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-[#2DD4BF] font-['DM_Sans'] text-[11px] font-bold uppercase mb-1">🍞 Carbs</span>
+                    <div className="bg-[#2DD4BF]/10 border border-[#2DD4BF]/25 rounded-[16px] p-4 flex flex-col">
+                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Carbs 💚</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.carbs} onChange={e => setManualMacros({ ...manualMacros, carbs: Number(e.target.value) })} className="bg-transparent text-[36px] font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" value={manualMacros.carbs} onChange={e => setManualMacros({ ...manualMacros, carbs: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
-                            <span className="text-[36px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.6} end={Math.round(manualMacros.carbs * multiplier)} />g
+                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
+                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.carbs * multiplier)} />g
                             </span>
                         )}
                     </div>
                     {/* Fat */}
-                    <div className="bg-[#FBBF24]/10 border border-[#FBBF24]/30 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-[#FBBF24] font-['DM_Sans'] text-[11px] font-bold uppercase mb-1">🥑 Fat</span>
+                    <div className="bg-[#FBBF24]/10 border border-[#FBBF24]/25 rounded-[16px] p-4 flex flex-col">
+                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Fat 🟡</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.fat} onChange={e => setManualMacros({ ...manualMacros, fat: Number(e.target.value) })} className="bg-transparent text-[36px] font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" value={manualMacros.fat} onChange={e => setManualMacros({ ...manualMacros, fat: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
-                            <span className="text-[36px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.6} end={Math.round(manualMacros.fat * multiplier)} />g
+                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
+                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.fat * multiplier)} />g
                             </span>
                         )}
                     </div>
                 </div>
+
+                {/* Secondary Macros (Fiber & Sugar) */}
+                {(data.fiber !== undefined || data.sugar !== undefined) && (
+                    <div className="flex gap-2 mb-6">
+                        {data.fiber !== undefined && (
+                            <div className="bg-black/30 rounded-full px-3 py-1.5 flex items-center gap-2 border border-white/5">
+                                <span className="text-[12px] text-[#A0A0B8] uppercase font-bold tracking-wider">Fiber</span>
+                                <span className="text-[13px] text-white font-medium">{Math.round(data.fiber * multiplier)}g</span>
+                            </div>
+                        )}
+                        {data.sugar !== undefined && (
+                            <div className="bg-black/30 rounded-full px-3 py-1.5 flex items-center gap-2 border border-white/5">
+                                <span className="text-[12px] text-[#A0A0B8] uppercase font-bold tracking-wider">Sugar</span>
+                                <span className="text-[13px] text-white font-medium">{Math.round(data.sugar * multiplier)}g</span>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Portion Size */}
                 {!isEditing && (
@@ -395,16 +441,21 @@ export default function ResultPage() {
 
                 {/* Chip Reaction Row */}
                 <div className="flex items-center gap-4 bg-[#22222F] rounded-[20px] p-4 mb-6 relative overflow-hidden ring-1 ring-[#2A2A3A]">
-                    <Chip emotion={data.calories * multiplier > 900 ? "shocked" : "hype"} size={80} />
+                    <Chip emotion={logSuccess ? "hype" : (data.calories * multiplier > 900 ? "shocked" : "hype")} size={80} />
                     <div className="flex-1 bg-[#1A1A24] rounded-[14px] p-3 border border-[#2A2A3A] relative">
                         <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45" />
                         <p className="text-[14px] text-[#FFFFFF] font-['DM_Sans'] relative z-10 leading-snug">
-                            {data.calories * multiplier > 900 ? "Wait, are you sure?" : "Perfect addition to the rings."}
+                            {logSuccess
+                                ? "LOGGED! The rings are happy."
+                                : (data.calories * multiplier > 900 ? "Wait, are you sure?" : "Perfect addition to the rings.")}
                         </p>
                     </div>
                 </div>
 
                 {/* Meal Type Scroll */}
+                <div className="mb-2">
+                    <span className="text-[#A0A0B8] text-[11px] font-bold uppercase tracking-wider mb-2 block">ADD TO</span>
+                </div>
                 <div className="pb-6 w-full overflow-x-auto select-none [&::-webkit-scrollbar]:hidden">
                     <div className="flex gap-6 px-1">
                         {["🌅 Breakfast", "☀️ Lunch", "🌙 Dinner", "🍎 Snack"].map((opt) => {
