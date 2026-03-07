@@ -107,13 +107,10 @@ export default function OnboardingPage() {
                         className="absolute inset-0 flex flex-col"
                     >
                         {step === 0 && <WelcomeStep onNext={goNext} />}
-                        {/* Steps 1-4 to be added in next phase */}
-                        {step > 0 && (
-                            <div className="flex-1 flex items-center justify-center text-center px-4">
-                                <p className="text-[#A0A0B8]">Step {step} placeholder component</p>
-                                <button onClick={goNext} className="mt-8 px-6 py-3 bg-[#FF6B35] rounded-xl font-bold">Next (Dev)</button>
-                            </div>
-                        )}
+                        {step === 1 && <GoalStep data={data} updateData={updateData} onNext={goNext} />}
+                        {step === 2 && <AboutStep data={data} updateData={updateData} onNext={goNext} />}
+                        {step === 3 && <ActivityStep data={data} updateData={updateData} onNext={goNext} />}
+                        {step === 4 && <ResultsStep data={data} />}
                     </motion.div>
                 </AnimatePresence>
             </div>
