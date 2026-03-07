@@ -11,9 +11,9 @@ import { createClient } from "@/lib/supabase/client";
 
 // Mock out our components for the UI shell building phase
 const StatCard = ({ label, value }: { label: string, value: string | number }) => (
-    <div className="flex-1 bg-[#1A1A24] rounded-[16px] border border-[#2A2A3A] p-4 flex flex-col items-center justify-center text-center">
-        <p className="text-[#A0A0B8] text-[11px] font-bold uppercase tracking-wider mb-2">{label}</p>
-        <p className="text-white text-[24px] font-black font-['Bricolage_Grotesque'] leading-none">{value}</p>
+    <div className="bg-[#1A1A24] rounded-[16px] border border-[#2A2A3A] flex flex-col items-center justify-center text-center p-3">
+        <p className="text-white text-[24px] font-black font-['Bricolage_Grotesque'] leading-none mb-1">{value}</p>
+        <p className="text-[#A0A0B8] text-[12px] font-medium font-['DM_Sans'] leading-tight">{label}</p>
     </div>
 );
 
@@ -67,114 +67,90 @@ export default function ProfilePage() {
             <div className="relative pb-[120px]">
 
                 {/* HEADER CARD */}
-                <div className="relative bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] pt-[64px] pb-8 px-5 rounded-b-[40px] shadow-[0_12px_40px_rgba(255,107,53,0.15)] overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-
-                    <div className="flex items-center gap-5 relative z-10">
-                        {/* Avatar */}
-                        <div className="w-[84px] h-[84px] rounded-full bg-[#1A1A24] border-4 border-[#0F0F14] shadow-xl flex items-center justify-center">
-                            <span className="text-white font-black font-['Bricolage_Grotesque'] text-[32px]">
-                                {userData.name.charAt(0)}
-                            </span>
-                        </div>
-
-                        <div className="flex-1">
-                            <h1 className="text-[32px] font-black font-['Bricolage_Grotesque'] text-white leading-none tracking-tight mb-2">
-                                {userData.name}
-                            </h1>
-                            <div className="flex gap-2 items-center">
-                                <span className="bg-white/20 px-3 py-1 rounded-full text-white text-[12px] font-bold font-['DM_Sans']">
-                                    Goal: {userData.goal}
+                <div className="px-5 mt-4 mb-8">
+                    <div className="relative bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] p-6 rounded-[24px] shadow-[0_12px_40px_rgba(255,107,53,0.25)] overflow-hidden">
+                        <div className="flex items-center gap-4 relative z-10">
+                            {/* Avatar */}
+                            <div className="w-[56px] h-[56px] rounded-full bg-[#FF8C35] border-2 border-white/20 shadow-md flex items-center justify-center shrink-0">
+                                <span className="text-white font-black font-['Bricolage_Grotesque'] text-[20px]">
+                                    {userData.name.charAt(0)}
                                 </span>
-                                <span className="text-white/70 text-[12px] font-['DM_Sans'] font-medium">
-                                    Since {userData.joined}
-                                </span>
+                            </div>
+
+                            <div className="flex-1">
+                                <h2 className="text-[24px] font-black font-['Bricolage_Grotesque'] text-white leading-none tracking-tight mb-2">
+                                    {userData.name}
+                                </h2>
+                                <div className="flex flex-col gap-1">
+                                    <div className="inline-flex items-center self-start">
+                                        <span className="bg-white/20 px-3 py-1 rounded-full text-white text-[12px] font-bold font-['DM_Sans']">
+                                            🎯 {userData.goal}
+                                        </span>
+                                    </div>
+                                    <span className="text-white/70 text-[13px] font-['DM_Sans'] font-medium mt-1">
+                                        Member since {userData.joined}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* STATS ROW */}
-                <div className="px-5 -mt-6 relative z-20 flex gap-3 mb-8">
-                    <StatCard label="Meals Logged" value={userData.mealsLogged} />
-                    <StatCard label="Best Streak" value={userData.bestStreak} />
-                    <StatCard label="Roasts" value={userData.roastsReceived} />
+                <div className="px-5 grid grid-cols-3 gap-3 mb-8">
+                    <StatCard label="Total meals logged" value={userData.mealsLogged} />
+                    <StatCard label="Best streak" value={userData.bestStreak} />
+                    <StatCard label="Roasts received" value={userData.roastsReceived} />
                 </div>
 
                 {/* TARGETS CARD */}
                 <div className="px-5 mb-10">
                     <div className="bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A] p-5">
-                        <div className="flex justify-between items-center mb-5">
+                        <div className="flex justify-between items-center mb-6">
                             <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Daily Targets</h3>
-                            <TapButton className="text-[#FF6B35] text-[13px] font-bold font-['DM_Sans'] px-3 py-1.5 bg-[#FF6B35]/10 rounded-full">
+                            <TapButton className="text-[#FF6B35] text-[14px] font-bold font-['DM_Sans']">
                                 Edit
                             </TapButton>
                         </div>
 
-                        <div className="flex justify-between items-end border-b border-[#2A2A3A] pb-5 mb-5">
-                            <div>
-                                <p className="text-[#A0A0B8] text-[12px] font-bold uppercase tracking-wider mb-1">Calories</p>
-                                <p className="text-white text-[32px] font-black font-['Bricolage_Grotesque'] leading-none tracking-tight">
-                                    {userData.targets.cal}
-                                </p>
-                            </div>
-                            <div className="w-[48px] h-[48px] rounded-full bg-[#2A2A3A] flex items-center justify-center">
-                                <span className="text-[#FF6B35]">🔥</span>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-4">
-                            <div className="flex-1">
-                                <p className="text-[#A0A0B8] text-[11px] font-bold uppercase mb-1">Protein</p>
-                                <p className="text-[#FFFFFF] font-bold font-['DM_Sans'] text-[18px]">{userData.targets.pro}g</p>
-                            </div>
-                            <div className="w-[1px] bg-[#2A2A3A]" />
-                            <div className="flex-1 px-4">
-                                <p className="text-[#A0A0B8] text-[11px] font-bold uppercase mb-1">Carbs</p>
-                                <p className="text-[#FFFFFF] font-bold font-['DM_Sans'] text-[18px]">{userData.targets.carb}g</p>
-                            </div>
-                            <div className="w-[1px] bg-[#2A2A3A]" />
-                            <div className="flex-1 text-right">
-                                <p className="text-[#A0A0B8] text-[11px] font-bold uppercase mb-1">Fat</p>
-                                <p className="text-[#FFFFFF] font-bold font-['DM_Sans'] text-[18px]">{userData.targets.fat}g</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ROAST HISTORY */}
-                <div className="mb-10">
-                    <div className="px-5 mb-4 flex items-center justify-between">
-                        <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Roast History</h3>
-                        <TapButton className="text-[#A0A0B8] text-[13px] font-medium font-['DM_Sans'] hover:text-white transition-colors">View All</TapButton>
-                    </div>
-
-                    <div className="w-full overflow-x-auto pb-4 hide-scrollbar px-5 flex gap-4">
-                        {/* Mock Roast Cards */}
-                        {[
-                            { id: 1, week: "Vol. 10", title: "The Cheese Incident", emoji: "laughing" },
-                            { id: 2, week: "Vol. 9", title: "Robot Precision", emoji: "hype" },
-                            { id: 3, week: "Vol. 8", title: "Weekend Warrior", emoji: "thinking" }
-                        ].map((roast) => (
-                            <div key={roast.id} className="min-w-[200px] h-[120px] bg-[#1A1A24] border border-[#2A2A3A] rounded-[20px] p-4 flex flex-col justify-between shrink-0 active:scale-95 transition-transform">
-                                <div className="flex justify-between items-start">
-                                    <p className="text-[#60607A] text-[11px] font-bold uppercase tracking-wider">{roast.week}</p>
-                                    <Chip emotion={roast.emoji as any} size={28} />
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full bg-[#FF6B35]" />
+                                    <span className="font-['DM_Sans'] text-[15px] font-medium text-white">Calories</span>
                                 </div>
-                                <h4 className="text-white font-['Bricolage_Grotesque'] font-bold text-[16px] italic leading-tight mt-2">
-                                    "{roast.title}"
-                                </h4>
+                                <span className="font-['Bricolage_Grotesque'] font-bold text-[18px] text-white">{userData.targets.cal}</span>
                             </div>
-                        ))}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full bg-[#6C63FF]" />
+                                    <span className="font-['DM_Sans'] text-[15px] font-medium text-white">Protein</span>
+                                </div>
+                                <span className="font-['Bricolage_Grotesque'] font-bold text-[18px] text-white">{userData.targets.pro}g</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full bg-[#2DD4BF]" />
+                                    <span className="font-['DM_Sans'] text-[15px] font-medium text-white">Carbs</span>
+                                </div>
+                                <span className="font-['Bricolage_Grotesque'] font-bold text-[18px] text-white">{userData.targets.carb}g</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full bg-[#FBBF24]" />
+                                    <span className="font-['DM_Sans'] text-[15px] font-medium text-white">Fat</span>
+                                </div>
+                                <span className="font-['Bricolage_Grotesque'] font-bold text-[18px] text-white">{userData.targets.fat}g</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* SETTINGS LIST */}
                 <div className="px-5">
-                    <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px] mb-4 pl-2">Settings</h3>
-                    <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[24px] p-2">
+                    <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[24px] overflow-hidden">
                         <SettingRow icon={UserIcon} label="Edit Profile" />
-                        <SettingRow icon={Award} label="Change Goal" value={userData.goal} />
+                        <SettingRow icon={Award} label="Change Goal" value={userData.goal} onClick={() => router.push('/onboarding?step=1')} />
                         <SettingRow icon={Bell} label="Notifications" value="On" />
                         <SettingRow icon={Settings} label="About SnapMacros" value="v1.0.0" />
                         <SettingRow
@@ -203,15 +179,15 @@ export default function ProfilePage() {
                                     <LogOut size={32} />
                                 </div>
                             </div>
-                            <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Sign Out?</h3>
+                            <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Sign out?</h3>
                             <p className="text-[#A0A0B8] font-['DM_Sans'] text-[15px] mb-8">
-                                Chip will miss you. Are you sure you want to leave?
+                                You'll lose your streak reminder notifications.
                             </p>
 
                             <div className="flex gap-3">
                                 <TapButton
                                     onClick={() => setShowSignOutConf(false)}
-                                    className="flex-1 py-4 rounded-xl bg-[#2A2A3A] text-white font-bold font-['DM_Sans']"
+                                    className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']"
                                 >
                                     Cancel
                                 </TapButton>
