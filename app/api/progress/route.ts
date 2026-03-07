@@ -34,10 +34,25 @@ export async function GET(request: Request) {
             .eq("user_id", userId)
             .single();
 
+        // 3. Fetch active Roast
+        const todayDate = new Date();
+        const day = todayDate.getDay();
+        const diff = todayDate.getDate() - day;
+        todayDate.setDate(diff);
+        const weekStart = todayDate.toISOString().split("T")[0];
+
+        const { data: roast } = await supabase
+            .from("weekly_roasts")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("week_start", weekStart)
+            .single();
+
         return NextResponse.json({
             summaries: summaries || [],
             streak: profile?.streak_days || 0,
             longest_streak: profile?.longest_streak || 0,
+            roast: roast || null
         }, {
             status: 200,
             headers: { "Cache-Control": "private, max-age=60" }
