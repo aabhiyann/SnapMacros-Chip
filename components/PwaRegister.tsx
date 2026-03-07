@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { PWAInstallBanner } from "@/components/ui/PWAInstallBanner";
 
 export function PwaRegister() {
   useEffect(() => {
@@ -8,7 +9,7 @@ export function PwaRegister() {
     navigator.serviceWorker
       .register("/sw.js")
       .then((reg) => reg.update())
-      .catch(() => {});
+      .catch(() => { });
   }, []);
-  return null;
+  return <PWAInstallBanner />;
 }
