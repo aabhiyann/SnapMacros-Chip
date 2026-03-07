@@ -1,4 +1,4 @@
-# SnapMacros — Design System
+# 🎨 SnapMacros — Design System
 **Version:** 3.0 | "Midnight Athlete" aesthetic | Chip the hatching egg.
 
 ---
@@ -33,7 +33,7 @@ The intersection of gym culture and premium design. Dark. Bold. Energetic. Not a
 
 ## 3. Color System
 
-```text
+```
 ── BRAND ──────────────────────────────────────────────────────
 Primary Orange      #FF6B35      All CTAs, active ring, selections
 Primary 10%         rgba(255,107,53,0.10)   Tinted card backgrounds
@@ -79,17 +79,17 @@ Fat                 #FBBF24      Innermost
 ## 4. Typography
 
 **Display: `Bricolage Grotesque`** — Chunky, confident, geometric. Not on ten thousand apps. Has personality without being quirky.
-```text
+```
 Google Fonts: family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800
 ```
 
 **Body: `DM Sans`** — Slightly informal, extremely readable, pairs perfectly with Bricolage.
-```text
+```
 Google Fonts: family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700
 ```
 
 **Scale:**
-```text
+```
 Hero       80px  800wt  Bricolage  -3px    Calorie number in ring center
 Display    40px  800wt  Bricolage  -1.5px  Onboarding headlines
 H1         28px  700wt  DM Sans   -0.5px  Screen titles
@@ -105,7 +105,7 @@ Micro      10px  500wt  DM Sans   +0.5px  Pills, badges
 ---
 
 ## 5. Spacing (4px base unit)
-```text
+```
 4px    Tight interior (icon gap, pill v-padding)
 8px    Small component gap
 12px   Card interior spacing
@@ -123,7 +123,7 @@ Micro      10px  500wt  DM Sans   +0.5px  Pills, badges
 ---
 
 ## 6. Border Radii
-```text
+```
 8px    Input fields, small chips
 14px   Buttons, pills, tags
 20px   Standard cards
@@ -135,7 +135,7 @@ Micro      10px  500wt  DM Sans   +0.5px  Pills, badges
 ---
 
 ## 7. Shadows
-```text
+```
 Lifted:       0 2px 12px rgba(0,0,0,0.30)     Standard cards
 Floating:     0 8px 32px rgba(0,0,0,0.50)     Bottom sheets, modals
 Glow Orange:  0 0 24px rgba(255,107,53,0.35)  Active states, streaks
@@ -156,7 +156,7 @@ Glow Red:     0 0 20px rgba(248,113,113,0.30) Over-target rings
 Motion that doesn't serve one of these is cut.
 
 **Timing:**
-```text
+```
 Instant     0ms      Toggles, selection highlights
 Fast        150ms    Button press feedback
 Standard    280ms    Page transitions, modal open
@@ -166,14 +166,14 @@ Celebration 900ms    Confetti, milestone moments
 ```
 
 **Easing curves:**
-```text
+```
 Enter:   cubic-bezier(0.22, 1, 0.36, 1)      Ease-out. Content arriving.
 Exit:    cubic-bezier(0.55, 0, 1, 0.45)      Ease-in. Content leaving.
 Spring:  type:'spring' stiffness:400 damping:28
 ```
 
 **Specific animation specs:**
-```text
+```
 Ring fill:          strokeDashoffset 0→target 800ms ease-out staggered 100ms/ring
 Chip idle:          y:[0,-6,0] 2.2s ease-in-out infinite
 Chip bounce (hype): y:[0,-22,-4,-14,0] scale:[1,1.08,1,1.05,1] 400ms
@@ -192,7 +192,7 @@ Confetti:           20 particles outward random directions 900ms
 
 ---
 
-## 9. Chip — Complete Visual Specification
+## 9. 🥚 Chip — Complete Visual Specification
 
 ### Character Design
 **Body:** Oval egg, cream/off-white (#FAF7F0), wider at bottom, narrows toward top third. Cracked opening at the top — jagged irregular line. Chip's round head always visible above the crack.
@@ -200,7 +200,7 @@ Confetti:           20 particles outward random directions 900ms
 **Head:** Perfect circle, same cream. Eyes occupy ~35% of face width (key to expressiveness). Arms: tiny rounded stubs at the crack edges.
 
 **Color palette:**
-```text
+```
 Shell:       #FAF7F0    Warm off-white (not pure white)
 Shadow:      #E8E0D0    Depth on the oval underside
 Crack:       #C4B5A0    Natural eggshell crack
@@ -215,7 +215,7 @@ Zzz text:    #A0A0B8    Muted — sleepy state
 ### Per-Emotion Visual Spec
 
 **HAPPY (default)**
-```text
+```
 Eyes:       Open ovals, pupils centered, white highlight top-right
 Mouth:      Small U-curve, 40% face width
 Arms:       Slightly raised, neutral
@@ -223,7 +223,7 @@ Animation:  Gentle bob y:[0,-4,0] 2.2s infinite
 ```
 
 **HYPE**
-```text
+```
 Eyes:       Star-shaped ★ in gold #FFD700
 Mouth:      Large open D-grin
 Arms:       Both raised above crack
@@ -233,7 +233,7 @@ Extras:     4–6 sparkle ✦ particles orbiting Chip
 ```
 
 **SHOCKED**
-```text
+```
 Eyes:       1.5× normal size ovals, tiny pupils in center
 Mouth:      Perfect O shape
 Arms:       Hands on cheeks (covering)
@@ -242,7 +242,7 @@ Animation:  x:[0,-12,12,-10,10,0] 480ms
 ```
 
 **LAUGHING**
-```text
+```
 Eyes:       Curved lines (squeezed shut)
 Mouth:      Open irregular laugh shape
 Arms:       One holding stomach, one waving
@@ -252,7 +252,7 @@ Animation:  rotate:[0,-6,6,-4,4,0] y:[0,-4,0] 500ms
 ```
 
 **SAD**
-```text
+```
 Eyes:       Half-closed, pupils slightly down, inner brows raised
 Mouth:      Soft downward curve (not dramatic frown)
 Arms:       One hanging, one holding arm
@@ -262,7 +262,7 @@ Animation:  y:[0,8] rotate:[0,-4] 600ms then slow droop idle
 ```
 
 **ON FIRE**
-```text
+```
 Eyes:       Normal but pupils glow orange #FF6B35
 Mouth:      Confident wide grin
 Arms:       Power pose, wide
@@ -273,7 +273,7 @@ Animation:  rotate:[-8,8,-5,5,0] scale:[1,1.12,1] 600ms
 ```
 
 **THINKING**
-```text
+```
 Eyes:       One squinted (half-oval), one normal looking up-right
 Mouth:      Slight one-sided hmm
 Arms:       One raised, tiny finger pointing up
@@ -282,7 +282,7 @@ Animation:  rotate:[0,-10,10,-10,0] 2s loop
 ```
 
 **SLEEPY**
-```text
+```
 Eyes:       Both half-closed (heavy lids)
 Mouth:      Small oval yawn
 Arms:       One propping up head from inside shell
@@ -292,7 +292,7 @@ Animation:  y:[0,5,0] 3s ease-in-out infinite, very slow
 ```
 
 ### Chip's Voice Rules
-```text
+```
 ✅ Max 2 sentences per speech line
 ✅ Casual language: "eat" not "consume", "macros" not "macronutrients"
 ✅ Specific: "47g protein" not "good protein intake"
@@ -307,7 +307,7 @@ Animation:  y:[0,5,0] 3s ease-in-out infinite, very slow
 ```
 
 ### Chip Sizes by Context
-```text
+```
 Onboarding Step 1:  size=150   (hero entrance, the star)
 Roast screen:       size=130   (star of the roast)
 Snap loading:       size=130   (centered, key moment)
@@ -376,7 +376,7 @@ font: DM Sans 14px;
 ---
 
 ## 11. Accessibility
-```text
+```
 Touch targets:    48×48px minimum — all interactive elements
 Color contrast:   4.5:1 minimum — all body text on dark bg (WCAG AA)
 Reduced motion:   @media (prefers-reduced-motion: reduce) → kill all animations
@@ -385,3 +385,7 @@ Focus visible:    2px solid #FF6B35 ring on keyboard focus
 Images:           alt text on all food photos
 Font scaling:     rem units throughout, respects system font size
 ```
+
+---
+
+*End of DESIGN_SYSTEM.md v3.0*
