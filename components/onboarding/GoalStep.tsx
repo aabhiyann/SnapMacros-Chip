@@ -1,5 +1,5 @@
-import { TapButton } from "@/components/ui/TapButton";
 "use client";
+import { TapButton } from "@/components/ui/TapButton";
 
 import { motion } from "framer-motion";
 import { Chip } from "@/components/Chip";
@@ -53,8 +53,8 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                             key={g.id}
                             onClick={() => updateData({ goal: g.id as any })}
                             className={`flex items-center p-5 rounded-[20px] border-2 transition-all ${isSelected
-                                    ? "bg-[#22222F] border-[#FF6B35] shadow-[0_0_24px_rgba(255,107,53,0.15)]"
-                                    : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#22222F]"
+                                ? "bg-[#22222F] border-[#FF6B35] shadow-[0_0_24px_rgba(255,107,53,0.15)]"
+                                : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#22222F]"
                                 }`}
                         >
                             <div

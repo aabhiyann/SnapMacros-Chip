@@ -1,5 +1,5 @@
-import { TapButton } from "@/components/ui/TapButton";
 "use client";
+import { TapButton } from "@/components/ui/TapButton";
 
 import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
@@ -39,8 +39,8 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                             key={act.id}
                             onClick={() => updateData({ activityLevel: act.id as any })}
                             className={`flex items-center p-4 rounded-[16px] border-2 transition-all ${isSelected
-                                    ? "bg-[#22222F] border-[#FF6B35] shadow-[0_0_24px_rgba(255,107,53,0.15)]"
-                                    : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#22222F]"
+                                ? "bg-[#22222F] border-[#FF6B35] shadow-[0_0_24px_rgba(255,107,53,0.15)]"
+                                : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#22222F]"
                                 }`}
                         >
                             <div className={`w-5 h-5 rounded-full border-2 mr-4 flex flex-col items-center justify-center shrink-0 ${isSelected ? "border-[#FF6B35]" : "border-[#60607A]"}`}>

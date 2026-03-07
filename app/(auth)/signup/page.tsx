@@ -1,5 +1,5 @@
-import { TapButton } from "@/components/ui/TapButton";
 "use client";
+import { TapButton } from "@/components/ui/TapButton";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
