@@ -27,9 +27,21 @@ export function AppShell({ children, chipEmotion }: { children: React.ReactNode,
           .eq("user_id", session.user.id)
           .single();
 
-        if (!profile?.onboarding_completed && pathname !== "/onboarding" && pathname !== "/") {
-          router.replace("/onboarding");
-        } else if (profile?.onboarding_completed && (isPublicRoute || pathname === "/onboarding") && pathname !== "/") {
+        if (!profile?.onboarding_completed) {
+          // Demo user: bootstrap profile so they land on dashboard
+          if (session.user.email === "demo@snapmacros.app") {
+            await fetch("/api/bootstrap-demo", { method: "POST" });
+            router.replace("/dashboard");
+            return;
+          }
+          if (pathname !== "/onboarding" && pathname !== "/") {
+            router.replace("/onboarding");
+          } else {
+            setIsAuth(true);
+          }
+          return;
+        }
+        if (profile?.onboarding_completed && (isPublicRoute || pathname === "/onboarding") && pathname !== "/") {
           router.replace("/dashboard");
         } else {
           setIsAuth(true);
