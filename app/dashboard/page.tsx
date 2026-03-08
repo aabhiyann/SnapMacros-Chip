@@ -177,7 +177,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col">
                     <span className="text-[#60607A] text-[13px] font-[500] tracking-wide font-['DM_Sans']">{greeting}</span>
                     <h1 className="text-[24px] font-bold font-['Bricolage_Grotesque'] tracking-tight text-white leading-none mt-1">
-                        {data.profile.full_name?.split(' ')[0] || "Athlete"}
+                        {data.profile.name?.split(' ')[0] || "Athlete"}
                     </h1>
                 </div>
                 {data.profile.streak_days > 0 ? (

@@ -184,7 +184,7 @@ export default function ProgressPage() {
                         <div className="w-[120px] h-2 bg-black/20 rounded-full mt-4 overflow-hidden relative">
                             <div
                                 className="absolute top-0 left-0 bottom-0 bg-white rounded-full transition-all duration-1000"
-                                style={{ width: `\${Math.min(((data?.streak || 0) % 7) / 7 * 100, 100)}%` }}
+                                style={{ width: `${Math.min(((data?.streak || 0) % 7) / 7 * 100, 100)}%` }}
                             />
                         </div>
                         <p className="text-white/70 font-['DM_Sans'] text-[12px] mt-2">
@@ -229,7 +229,7 @@ export default function ProgressPage() {
 
                         return (
                             <div key={idx} className="flex flex-col items-center gap-2">
-                                <div className={`w-[36px] h-[36px] rounded-full flex items-center justify-center \${fillClass} \${borderClass} transition-colors`}>
+                                <div className={`w-[36px] h-[36px] rounded-full flex items-center justify-center ${fillClass} ${borderClass} transition-colors`}>
                                     {day.state === "hit" && (
                                         <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1 5L5 9L13 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -237,7 +237,7 @@ export default function ProgressPage() {
                                     )}
                                     {day.state === "logged" && <div className="w-2 h-2 bg-[#3B8BF7] rounded-full" />}
                                 </div>
-                                <span className={`text-[11px] font-['DM_Sans'] uppercase tracking-wider \${textClass}`}>
+                                <span className={`text-[11px] font-['DM_Sans'] uppercase tracking-wider ${textClass}`}>
                                     {day.dayStr}
                                 </span>
                             </div>
