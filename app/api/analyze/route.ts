@@ -10,6 +10,15 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: Request) {
   try {
+    // 0. Verify API key exists before doing anything
+    if (!process.env.GOOGLE_AI_API_KEY) {
+      console.error("GOOGLE_AI_API_KEY is not set");
+      return NextResponse.json(
+        { error: "AI service not configured", code: "CONFIG_ERROR" },
+        { status: 500 }
+      );
+    }
+
     // 1. Validate Auth
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
