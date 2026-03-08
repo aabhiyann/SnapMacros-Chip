@@ -34,6 +34,22 @@ export default function SignupPage() {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        setUiState("loading");
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/onboarding`,
+                },
+            });
+            if (error) throw error;
+        } catch (err: any) {
+            handleAuthError(err.message || "Google sign-in failed");
+        }
+    };
+
     const handleAuthError = (errMessage: string) => {
         setUiState("error");
         setShakeKey(k => k + 1);
@@ -81,13 +97,17 @@ export default function SignupPage() {
 
         try {
             const supabase = createClient();
+            const redirectUrl = typeof window !== "undefined"
+                ? `${window.location.origin}/onboarding`
+                : (process.env.NEXT_PUBLIC_APP_URL || "https://snapmacros.vercel.app") + "/onboarding";
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
                     data: {
                         full_name: name,
-                    }
+                    },
+                    emailRedirectTo: redirectUrl,
                 }
             });
 
@@ -229,6 +249,7 @@ export default function SignupPage() {
             <div className="w-full max-w-[340px] mt-6 flex flex-col gap-4 z-10">
                 <TapButton
                     type="button"
+                    onClick={handleGoogleSignIn}
                     className="w-full h-[56px] bg-white text-black rounded-[16px] font-body font-bold text-[16px] active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

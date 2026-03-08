@@ -80,6 +80,22 @@ export default function LoginPage() {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        setUiState("loading");
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/dashboard`,
+                },
+            });
+            if (error) throw error;
+        } catch (err: any) {
+            handleAuthError(err.message || "Google sign-in failed");
+        }
+    };
+
     const handleDemoLogin = async () => {
         setUiState("demo-loading");
         try {
@@ -204,6 +220,7 @@ export default function LoginPage() {
                 <div className="w-full mt-4 flex flex-col gap-4">
                     <TapButton
                         type="button"
+                        onClick={handleGoogleSignIn}
                         className="w-full h-[52px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] text-white rounded-[16px] font-['DM_Sans'] text-[15px] font-medium active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

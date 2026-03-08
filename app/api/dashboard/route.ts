@@ -6,7 +6,7 @@ import { calculateFullProfile } from "@/lib/tdee";
 
 export async function GET() {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
         // Since layout protects this, user generally exists
         const userId = user?.id || DEMO_USER_ID;

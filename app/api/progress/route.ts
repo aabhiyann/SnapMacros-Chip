@@ -4,7 +4,7 @@ import { DEMO_USER_ID } from "@/lib/auth";
 
 export async function GET(request: Request) {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         const userId = user.id;

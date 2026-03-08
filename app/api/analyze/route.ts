@@ -11,7 +11,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export async function POST(request: Request) {
   try {
     // 1. Validate Auth
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
 
