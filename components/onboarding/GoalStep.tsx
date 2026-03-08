@@ -67,40 +67,42 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                 </p>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-auto">
+            {/* List */}
+            <div className="flex flex-col gap-3 mb-auto relative z-10 w-full">
                 {GOALS.map((g, i) => {
                     const isSelected = data.goal === g.id;
-                    const isLast = i === GOALS.length - 1;
 
                     return (
-                        <TapButton
+                        <motion.button
                             key={g.id}
                             onClick={() => updateData({ goal: g.id as any })}
-                            className={`flex flex-col p-[16px] rounded-[16px] min-h-[80px] text-left transition-all duration-200 relative overflow-hidden ${isLast ? 'col-span-2' : 'col-span-1'} ${isSelected
-                                ? "bg-[rgba(255,107,53,0.10)] border-2 border-[#FF6B35] shadow-[0_0_16px_rgba(255,107,53,0.2)]"
-                                : "premium-card p-[16px] rounded-[16px] border-none"
+                            whileTap={{ scale: 0.98 }}
+                            animate={isSelected ? { scale: [0.98, 1.02, 1] } : { scale: 1 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                            className={`w-full flex items-center p-4 rounded-[16px] text-left transition-all duration-200 border ${isSelected
+                                ? "bg-[rgba(255,107,53,0.08)] border-[#FF6B35]"
+                                : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#20202D]"
                                 }`}
                         >
-                            {/* Checkmark */}
-                            {isSelected && (
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="absolute top-3 right-3 w-[20px] h-[20px] bg-[#FF6B35] rounded-full flex items-center justify-center z-10"
-                                >
-                                    <Check size={12} className="text-white" strokeWidth={3} />
-                                </motion.div>
-                            )}
+                            {/* Emoji Circle bg */}
+                            <div className={`w-[48px] h-[48px] rounded-[16px] flex items-center justify-center text-[24px] shrink-0 mr-4 transition-colors ${isSelected ? 'bg-[#FF6B35]/15' : 'bg-[#2A2A3A]'}`}>
+                                {g.emoji}
+                            </div>
 
-                            <div className="text-[24px] mb-2 leading-none">{g.emoji}</div>
-                            <h3 className={`text-[16px] font-bold font-['DM_Sans'] leading-tight mb-1 ${isSelected ? "text-[#FF6B35]" : "text-white"}`}>
-                                {g.title}
-                            </h3>
-                            <p className="text-[#A0A0B8] text-[13px] font-['DM_Sans'] leading-snug">
-                                {g.desc}
-                            </p>
-                        </TapButton>
+                            <div className="flex-1 pr-4">
+                                <h3 className={`text-[16px] font-bold font-['DM_Sans'] leading-tight mb-0.5 text-white`}>
+                                    {g.title}
+                                </h3>
+                                <p className={`text-[13px] font-['DM_Sans'] leading-snug ${isSelected ? 'text-[#FF6B35]/80' : 'text-[#A0A0B8]'}`}>
+                                    {g.desc}
+                                </p>
+                            </div>
+
+                            {/* Radio Circle */}
+                            <div className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'border-[#FF6B35] bg-[#FF6B35]' : 'border-[#60607A] bg-transparent'}`}>
+                                {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                            </div>
+                        </motion.button>
                     )
                 })}
             </div>
