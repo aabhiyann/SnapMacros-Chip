@@ -263,7 +263,7 @@ export default function ResultPage() {
                 <div className="w-full max-w-[320px] space-y-3">
                     <button
                         onClick={() => router.push("/snap")}
-                        className="w-full h-[56px] rounded-[16px] bg-[#FF6B35] text-white font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.98] transition-transform shadow-[0_4px_20px_rgba(255,107,53,0.3)]"
+                        className="w-full premium-btn"
                     >
                         Try Again
                     </button>
@@ -330,11 +330,11 @@ export default function ResultPage() {
 
                 {/* Title & Badge */}
                 <div className="flex justify-between items-start mb-2">
-                    <h2 className="font-['Bricolage_Grotesque'] text-[28px] leading-tight font-bold w-[60%]">
+                    <h2 className="font-['Bricolage_Grotesque'] text-[36px] tracking-[-1px] leading-tight font-bold w-[60%]">
                         {data.food_name}
                     </h2>
                     <div className={cn(
-                        "text-[10px] font-bold uppercase py-1.5 px-3 rounded-full shrink-0 mt-2",
+                        "text-[11px] tracking-[0.5px] font-bold uppercase py-1.5 px-3 rounded-full shrink-0 mt-3",
                         data.confidence === "high" ? "bg-green-500/10 border border-green-500/20 text-green-500" :
                             data.confidence === "medium" ? "bg-amber-500/10 border border-amber-500/20 text-amber-500" :
                                 "bg-red-500/10 border border-red-500/20 text-red-500"
@@ -493,10 +493,10 @@ export default function ResultPage() {
                     ) : (
                         <motion.button
                             ref={logBtnRef}
-                            whileTap={{ scale: 0.96 }}
+                            whileTap={{ scale: 0.97 }}
                             onClick={isEditing ? () => setIsEditing(false) : handleLogMeal}
                             disabled={isLogging}
-                            className="w-full h-[56px] rounded-[14px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-semibold flex items-center justify-center opacity-100 disabled:opacity-50 transition-opacity"
+                            className="w-full premium-btn"
                         >
                             {isLogging ? "Logging..." : isEditing ? "Save Changes" : "Log This Meal 🍽️"}
                         </motion.button>

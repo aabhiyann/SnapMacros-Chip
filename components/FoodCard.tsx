@@ -79,7 +79,7 @@ export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
                 onDragEnd={handleDragEnd}
                 animate={controls}
                 style={{ x }}
-                className="relative bg-[#1A1A24] p-4 rounded-2xl flex items-center justify-between z-10 w-full touch-pan-y"
+                className="relative bg-[linear-gradient(160deg,#1E1E2A_0%,#1A1A24_100%)] p-[20px] rounded-[20px] flex items-center justify-between z-10 w-full touch-pan-y border border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.3)] transition-colors active:border-white/[0.10]"
             >
                 <div className="flex items-center gap-4 flex-1 overflow-hidden">
                     <div className={`w-[48px] h-[48px] rounded-[14px] shrink-0 bg-gradient-to-br ${bgGradient} flex items-center justify-center text-[20px] shadow-inner`}>

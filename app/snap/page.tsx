@@ -271,17 +271,17 @@ export default function SnapPage() {
                         className="absolute inset-0"
                     >
                         {/* Top Left */}
-                        <div className="absolute top-0 left-0 w-[24px] h-[3px] bg-[#FF6B35] rounded-full" />
-                        <div className="absolute top-0 left-0 w-[3px] h-[24px] bg-[#FF6B35] rounded-full" />
+                        <div className="absolute top-0 left-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute top-0 left-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
                         {/* Top Right */}
-                        <div className="absolute top-0 right-0 w-[24px] h-[3px] bg-[#FF6B35] rounded-full" />
-                        <div className="absolute top-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] rounded-full" />
+                        <div className="absolute top-0 right-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute top-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
                         {/* Bottom Left */}
-                        <div className="absolute bottom-0 left-0 w-[24px] h-[3px] bg-[#FF6B35] rounded-full" />
-                        <div className="absolute bottom-0 left-0 w-[3px] h-[24px] bg-[#FF6B35] rounded-full" />
+                        <div className="absolute bottom-0 left-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute bottom-0 left-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
                         {/* Bottom Right */}
-                        <div className="absolute bottom-0 right-0 w-[24px] h-[3px] bg-[#FF6B35] rounded-full" />
-                        <div className="absolute bottom-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] rounded-full" />
+                        <div className="absolute bottom-0 right-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute bottom-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
                     </motion.div>
                 </div>
                 <div className="text-white text-[13px] font-['DM_Sans'] drop-shadow-md tracking-wide">
@@ -309,15 +309,15 @@ export default function SnapPage() {
                 className="absolute bottom-0 left-0 right-0 z-30 pt-16 pb-[calc(20px+env(safe-area-inset-bottom))] flex flex-col items-center"
                 style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)" }}
             >
-                <div className="relative w-[80px] h-[80px] flex items-center justify-center rounded-full border-[3px] border-white/80">
+                <div className="relative w-[80px] h-[80px] flex items-center justify-center rounded-full border-[3px] border-white/80 shadow-[0_0_30px_rgba(255,107,53,0.6)]">
                     <motion.button
                         onPointerDown={() => {
                             if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
                         }}
                         onClick={capture}
-                        whileTap={{ scale: 1.25 }}
+                        whileTap={{ scale: 1.15 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
-                        className="w-[64px] h-[64px] bg-white rounded-full focus:outline-none"
+                        className="w-[64px] h-[64px] bg-gradient-to-br from-[#FF8040] to-[#FF6B35] rounded-full focus:outline-none"
                     />
                 </div>
 

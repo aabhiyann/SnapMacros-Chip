@@ -270,8 +270,8 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
             <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
                 <TapButton
                     onClick={onNext}
-                    disabled={!isComplete}
-                    className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
+                    disabled={!data.age || !data.weight || !data.height}
+                    className="w-full premium-btn"
                 >
                     Continue
                 </TapButton>

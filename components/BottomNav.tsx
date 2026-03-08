@@ -35,7 +35,7 @@ export const BottomNav = React.memo(function BottomNav() {
     };
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 h-[calc(64px+env(safe-area-inset-bottom))] bg-[#1A1A24] border-t border-[#2A2A3A] pb-[env(safe-area-inset-bottom)] z-50">
+        <div className="fixed bottom-0 left-0 right-0 h-[calc(64px+env(safe-area-inset-bottom))] bg-[rgba(15,15,20,0.95)] backdrop-blur-[24px] border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)] z-50">
             <div className="flex h-full items-center px-4 relative max-w-md mx-auto">
 
                 {/* Left tab (Home) - 25% width */}
@@ -46,21 +46,24 @@ export const BottomNav = React.memo(function BottomNav() {
                 {/* spacer for snap button - 50% width total (25% left, 25% right implicitly around it) */}
                 <div className="flex-[0.5] flex justify-center relative h-full">
                     {/* Center Elevate Snap Button */}
-                    <div className="absolute bottom-[12px] z-10">
+                    <div className="absolute bottom-[14px] z-10">
                         <motion.button
                             onPointerDown={() => {
                                 if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
                             }}
                             onClick={handleSnap}
-                            whileTap={{ scale: 0.9 }}
+                            whileTap={{
+                                scale: 0.88,
+                                boxShadow: "0 0 10px rgba(255,107,53,0.2)"
+                            }}
                             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                            className="w-[64px] h-[64px] rounded-full flex items-center justify-center border-none outline-none focus:outline-none"
+                            className="w-[60px] h-[60px] rounded-full flex items-center justify-center border-none outline-none focus:outline-none"
                             style={{
-                                background: "linear-gradient(135deg, #FF6B35, #FF8540)",
-                                boxShadow: "0 4px 20px rgba(255,107,53,0.50)"
+                                background: "linear-gradient(145deg, #FF8040, #FF6B35, #E55A20)",
+                                boxShadow: "0 0 0 1px rgba(255,107,53,0.3), 0 0 20px rgba(255,107,53,0.4), 0 8px 24px rgba(0,0,0,0.5)"
                             }}
                         >
-                            <Camera size={26} className="text-white" strokeWidth={2.5} />
+                            <Camera size={24} className="text-white" strokeWidth={2.5} />
                         </motion.button>
                     </div>
                 </div>
@@ -88,7 +91,7 @@ function NavItem({ tab, isActive }: { tab: Tab, isActive: boolean }) {
                     color: isActive ? tab.activeColor : "#60607A",
                     y: isActive ? -8 : 0
                 }}
-                transition={{ duration: 0.2 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className="relative z-10"
             >
                 <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
@@ -104,7 +107,7 @@ function NavItem({ tab, isActive }: { tab: Tab, isActive: boolean }) {
                         className="absolute bottom-[8px] flex flex-col items-center justify-center"
                     >
                         <span
-                            className="text-[10px] font-bold font-['DM_Sans'] tracking-wide"
+                            className="text-[10px] font-semibold font-['DM_Sans'] tracking-wide"
                             style={{ color: tab.activeColor }}
                         >
                             {tab.name}

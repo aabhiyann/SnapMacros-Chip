@@ -78,8 +78,8 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                             key={g.id}
                             onClick={() => updateData({ goal: g.id as any })}
                             className={`flex flex-col p-[16px] rounded-[16px] min-h-[80px] text-left transition-all duration-200 relative overflow-hidden ${isLast ? 'col-span-2' : 'col-span-1'} ${isSelected
-                                ? "bg-[rgba(255,107,53,0.10)] border-2 border-[#FF6B35]"
-                                : "bg-[#1A1A24] border border-[#2A2A3A] hover:border-[#3A3A4A]"
+                                ? "bg-[rgba(255,107,53,0.10)] border-2 border-[#FF6B35] shadow-[0_0_16px_rgba(255,107,53,0.2)]"
+                                : "premium-card p-[16px] rounded-[16px] border-none"
                                 }`}
                         >
                             {/* Checkmark */}
@@ -110,7 +110,7 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                 <TapButton
                     onClick={onNext}
                     disabled={!data.goal}
-                    className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
+                    className="w-full premium-btn"
                 >
                     Continue
                 </TapButton>

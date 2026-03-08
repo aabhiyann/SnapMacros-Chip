@@ -20,7 +20,9 @@
 
 body {
   color: var(--text);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-attachment: fixed;
   font-family: var(--font-body);
 }
 
@@ -28,6 +30,7 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
   .font-heading {
     font-family: var(--font-heading);
   }
@@ -37,4 +40,73 @@ body {
 .touch-target {
   min-width: 48px;
   min-height: 48px;
+}
+
+@layer components {
+  .premium-card {
+    background: linear-gradient(160deg, #1E1E2A 0%, #1A1A24 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 4px 24px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    transition: all 150ms ease;
+  }
+
+  @media (hover: hover) {
+    .premium-card:hover {
+      border-color: rgba(255, 255, 255, 0.10);
+      transform: translateY(-1px);
+    }
+  }
+
+  .premium-card:active {
+    border-color: rgba(255, 255, 255, 0.10);
+    transform: translateY(-1px);
+  }
+
+  .premium-btn {
+    background: linear-gradient(145deg, #FF8040, #FF6B35);
+    color: white;
+    min-height: 56px;
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    border: none;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 4px 16px rgba(255, 107, 53, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease;
+  }
+
+  .premium-btn:active {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 2px 8px rgba(255, 107, 53, 0.2);
+  }
+
+  .premium-btn:disabled {
+    background: #2A2A3A;
+    color: #60607A;
+    box-shadow: none;
+  }
+
+  .premium-input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    height: 52px;
+    padding: 0 16px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: white;
+    transition: all 200ms ease;
+  }
+
+  .premium-input:focus {
+    background: rgba(255, 107, 53, 0.06);
+    border-color: rgba(255, 107, 53, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+    outline: none;
+  }
 }
