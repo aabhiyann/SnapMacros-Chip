@@ -17,21 +17,34 @@ export async function POST() {
             return NextResponse.json({ error: "Not demo user" }, { status: 403 });
         }
 
-        const { error } = await supabase
+        const { data: existingProfile } = await supabase
             .from("profiles")
-            .upsert({
-                user_id: user.id,
-                onboarding_completed: true,
-                name: "Alex",
-                target_calories: 2500,
-                target_protein: 150,
-                target_carbs: 300,
-                target_fat: 80,
-                streak_days: 5,
-                updated_at: new Date().toISOString(),
-            }, { onConflict: "user_id" });
+            .select("user_id")
+            .eq("user_id", user.id)
+            .maybeSingle();
 
-        if (error) throw error;
+        const profileData = {
+            onboarding_completed: true,
+            name: "Alex",
+            target_calories: 2500,
+            target_protein: 150,
+            target_carbs: 300,
+            target_fat: 80,
+            streak_days: 5,
+            updated_at: new Date().toISOString(),
+        };
+
+        let dbError;
+        if (existingProfile) {
+            const { error } = await supabase.from("profiles").update(profileData).eq("user_id", user.id);
+            dbError = error;
+        } else {
+            const { error } = await supabase.from("profiles").insert({ user_id: user.id, ...profileData });
+            dbError = error;
+        }
+
+        if (dbError) throw dbError;
+
 
         return NextResponse.json({ success: true });
     } catch (err) {
