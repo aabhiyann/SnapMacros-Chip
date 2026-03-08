@@ -8,7 +8,7 @@
   --bg: #0f0f14;
   --card: #1a1a24;
   --elevated: #22222f;
-  --primary: #ff6b35;
+  --primary: #3b8bf7;
   --secondary: #6c63ff;
   --success: #2dd4bf;
   --warning: #fbbf24;
@@ -67,7 +67,7 @@ body {
   }
 
   .premium-btn {
-    background: linear-gradient(145deg, #FF8040, #FF6B35);
+    background: linear-gradient(145deg, #5B9EF8, #3B8BF7);
     color: white;
     min-height: 56px;
     border-radius: 14px;
@@ -76,7 +76,7 @@ body {
     font-weight: 600;
     letter-spacing: 0.2px;
     border: none;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 4px 16px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 4px 16px rgba(59, 139, 247, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,7 +84,7 @@ body {
   }
 
   .premium-btn:active {
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 2px 8px rgba(255, 107, 53, 0.2);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 2px 8px rgba(59, 139, 247, 0.2);
   }
 
   .premium-btn:disabled {
@@ -106,9 +106,9 @@ body {
   }
 
   .premium-input:focus {
-    background: rgba(255, 107, 53, 0.06);
-    border-color: rgba(255, 107, 53, 0.5);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+    background: rgba(59, 139, 247, 0.06);
+    border-color: rgba(59, 139, 247, 0.5);
+    box-shadow: 0 0 0 3px rgba(59, 139, 247, 0.12);
     outline: none;
   }
 
@@ -158,9 +158,9 @@ body {
   }
 
   .macro-pill--calories {
-    background: rgba(255, 107, 53, 0.12);
-    border: 1px solid rgba(255, 107, 53, 0.25);
-    color: #FF6B35;
+    background: rgba(59, 139, 247, 0.12);
+    border: 1px solid rgba(59, 139, 247, 0.25);
+    color: #3B8BF7;
   }
 }
 

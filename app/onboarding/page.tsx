@@ -79,7 +79,7 @@ export default function OnboardingPage() {
                                     key={i}
                                     animate={{
                                         width: step === i ? 32 : 8,
-                                        backgroundColor: step === i ? "#FF6B35" : step > i ? "#FF6B35" : "#2A2A3A"
+                                        backgroundColor: step === i ? "#3B8BF7" : step > i ? "#3B8BF7" : "#2A2A3A"
                                     }}
                                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                                     className="h-[8px] rounded-full"

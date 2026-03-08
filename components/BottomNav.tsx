@@ -21,9 +21,9 @@ export const BottomNav = React.memo(function BottomNav() {
     if (pathname.startsWith("/snap") || pathname.startsWith("/onboarding")) return null;
 
     const TABS: Tab[] = [
-        { name: "Home", path: "/dashboard", icon: Home, activeColor: "#FF6B35" },
-        { name: "Progress", path: "/progress", icon: BarChart2, activeColor: "#FF6B35" },
-        { name: "Profile", path: "/profile", icon: User, activeColor: "#FF6B35" },
+        { name: "Home", path: "/dashboard", icon: Home, activeColor: "#3B8BF7" },
+        { name: "Progress", path: "/progress", icon: BarChart2, activeColor: "#3B8BF7" },
+        { name: "Profile", path: "/profile", icon: User, activeColor: "#3B8BF7" },
     ];
 
     const handleSnap = (e: React.MouseEvent) => {
@@ -54,13 +54,13 @@ export const BottomNav = React.memo(function BottomNav() {
                             onClick={handleSnap}
                             whileTap={{
                                 scale: 0.88,
-                                boxShadow: "0 0 10px rgba(255,107,53,0.2)"
+                                boxShadow: "0 0 10px rgba(59,139,247,0.2)"
                             }}
                             transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             className="w-[60px] h-[60px] rounded-full flex items-center justify-center border-none outline-none focus:outline-none"
                             style={{
-                                background: "linear-gradient(145deg, #FF8040, #FF6B35, #E55A20)",
-                                boxShadow: "0 0 0 1px rgba(255,107,53,0.3), 0 0 20px rgba(255,107,53,0.4), 0 8px 24px rgba(0,0,0,0.5)"
+                                background: "linear-gradient(145deg, #5B9EF8, #3B8BF7, #2B78E4)",
+                                boxShadow: "0 0 0 1px rgba(59,139,247,0.3), 0 0 20px rgba(59,139,247,0.4), 0 8px 24px rgba(0,0,0,0.5)"
                             }}
                         >
                             <Camera size={24} className="text-white" strokeWidth={2.5} />

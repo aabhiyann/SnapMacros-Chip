@@ -89,8 +89,8 @@ export const Chip = React.memo(function Chip({ emotion = "happy", size = 80, cla
             <stop offset="100%" stopColor="#EDE5D8" />
           </linearGradient>
           <linearGradient id="flameGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#FF6B35" />
-            <stop offset="50%" stopColor="#FF8540" />
+            <stop offset="0%" stopColor="#3B8BF7" />
+            <stop offset="50%" stopColor="#5B9EF8" />
             <stop offset="100%" stopColor="#FBBF24" />
           </linearGradient>
         </defs>

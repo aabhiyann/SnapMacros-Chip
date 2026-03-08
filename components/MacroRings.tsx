@@ -40,7 +40,7 @@ export const MacroRings = React.memo(function MacroRings({
     const ringGap = strokeWidth + 6; // slightly larger gap for 280
 
     const rings: RingData[] = [
-        { label: "Calories", ...calories, color: "#FF6B35", radius: center - strokeWidth },
+        { label: "Calories", ...calories, color: "#3B8BF7", radius: center - strokeWidth },
         { label: "Protein", ...protein, color: "#2DD4BF", radius: center - strokeWidth - ringGap },
         { label: "Carbs", ...carbs, color: "#FBBF24", radius: center - strokeWidth - ringGap * 2 },
         { label: "Fat", ...fat, color: "#F87171", radius: center - strokeWidth - ringGap * 3 },

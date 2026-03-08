@@ -112,7 +112,7 @@ export default function ProgressPage() {
                     <Chip emotion="sad" size={100} />
                     <h2 className="text-white mt-6 mb-2 text-xl font-bold font-['Bricolage_Grotesque']">Oops.</h2>
                     <p className="text-[#A0A0B8] mb-6 font-['DM_Sans']">{error}</p>
-                    <button onClick={() => { setError(null); setIsLoading(true); fetchProgress(); }} className="px-6 py-3 bg-[#FF6B35] text-white rounded-xl font-['DM_Sans'] font-semibold">
+                    <button onClick={() => { setError(null); setIsLoading(true); fetchProgress(); }} className="px-6 py-3 bg-[#3B8BF7] text-white rounded-xl font-['DM_Sans'] font-semibold">
                         Retry
                     </button>
                 </div>
@@ -121,8 +121,8 @@ export default function ProgressPage() {
     }
 
     // Format 7 Day calendar data
-    // Requirements: 7 circles, Mon-Sun, green (hit) | orange (logged) | gray (none)
-    // Recharts: Bar green(hit) | orange (logged) | gray (none)
+    // Requirements: 7 circles, Mon-Sun, green (hit) | blue (logged) | gray (none)
+    // Recharts: Bar green(hit) | blue (logged) | gray (none)
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const today = new Date();
 
@@ -170,7 +170,7 @@ export default function ProgressPage() {
                     {new Date(today.getTime() - 6 * 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric" })} – {today.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </p>
 
-                <div className="bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(255,107,53,0.25)] relative overflow-hidden flex items-center justify-between">
+                <div className="bg-gradient-to-br from-[#3B8BF7] to-[#5B9EF8] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(59,139,247,0.25)] relative overflow-hidden flex items-center justify-between">
                     <div className="relative z-10">
                         <div className="flex items-center gap-2">
                             <Flame size={32} strokeWidth={2.5} className="text-white mb-1" />
@@ -219,12 +219,12 @@ export default function ProgressPage() {
                             textClass = "text-white font-bold";
                         } else if (day.state === "logged") {
                             fillClass = "bg-transparent";
-                            borderClass = "border-[#FF6B35] border-2";
-                            textClass = "text-[#FF6B35] font-bold";
+                            borderClass = "border-[#3B8BF7] border-2";
+                            textClass = "text-[#3B8BF7] font-bold";
                         }
 
                         if (day.isToday && day.state === "none") {
-                            borderClass = "border-[#FF6B35] border-2";
+                            borderClass = "border-[#3B8BF7] border-2";
                         }
 
                         return (
@@ -235,7 +235,7 @@ export default function ProgressPage() {
                                             <path d="M1 5L5 9L13 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     )}
-                                    {day.state === "logged" && <div className="w-2 h-2 bg-[#FF6B35] rounded-full" />}
+                                    {day.state === "logged" && <div className="w-2 h-2 bg-[#3B8BF7] rounded-full" />}
                                 </div>
                                 <span className={`text-[11px] font-['DM_Sans'] uppercase tracking-wider \${textClass}`}>
                                     {day.dayStr}
@@ -274,12 +274,12 @@ export default function ProgressPage() {
                                     labelStyle={{ color: '#A0A0B8', fontFamily: 'DM Sans', fontSize: '13px', marginBottom: '4px' }}
                                 />
                                 {/* Reference dashed line */}
-                                <ReferenceLine y={2000} stroke="#FF6B35" strokeDasharray="4 4" label={{ position: 'top', value: 'Your target', fill: '#FF6B35', fontSize: 10, fontFamily: 'DM Sans' }} />
+                                <ReferenceLine y={2000} stroke="#3B8BF7" strokeDasharray="4 4" label={{ position: 'top', value: 'Your target', fill: '#3B8BF7', fontSize: 10, fontFamily: 'DM Sans' }} />
                                 <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={32}>
                                     {last7Days.map((entry, index) => {
                                         let color = "#2A2A3A"; // no logs
                                         if (entry.state === "hit") color = "#2DD4BF"; // green
-                                        if (entry.state === "logged") color = "#FF6B35"; // orange (under)
+                                        if (entry.state === "logged") color = "#3B8BF7"; // blue (under)
                                         if (entry.calories > entry.target + 100) color = "#EF4444"; // red (over)
                                         return <Cell key={`cell-${index}`} fill={color} opacity={entry.isToday ? 1 : 0.6} />;
                                     })}
@@ -294,7 +294,7 @@ export default function ProgressPage() {
             <div className="px-5 pb-[100px]">
                 {roastStateA ? (
                     // STATE A (Empty Roast State)
-                    <div className="bg-[#1A1A24] border border-dashed border-[#FF6B35]/50 rounded-[24px] p-6 flex flex-col items-center justify-center text-center">
+                    <div className="bg-[#1A1A24] border border-dashed border-[#3B8BF7]/50 rounded-[24px] p-6 flex flex-col items-center justify-center text-center">
                         <Chip emotion="laughing" size={80} />
                         <h2 className="text-[20px] font-bold font-['Bricolage_Grotesque'] text-white mt-4 mb-2 whitespace-pre-wrap">Your weekly roast drops Sunday. 😈</h2>
                         <button
@@ -307,7 +307,7 @@ export default function ProgressPage() {
                     </div>
                 ) : (
                     // STATE B
-                    <div className="bg-[#1A1A24] border-l-4 border-l-[#FF6B35] rounded-[24px] p-6 shadow-xl relative overflow-hidden">
+                    <div className="bg-[#1A1A24] border-l-4 border-l-[#3B8BF7] rounded-[24px] p-6 shadow-xl relative overflow-hidden">
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h4 className="text-white text-[15px] font-bold font-['DM_Sans']">🔥 Week of {new Date(today.getTime() - 6 * 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</h4>

@@ -188,7 +188,7 @@ export default function ResultPage() {
                     particleCount: 20,
                     spread: 60,
                     origin: { x, y },
-                    colors: ["#FF6B35", "#2DD4BF", "#6C63FF", "#FBBF24"]
+                    colors: ["#3B8BF7", "#2DD4BF", "#6C63FF", "#FBBF24"]
                 });
             }
 
@@ -239,7 +239,7 @@ export default function ResultPage() {
 
                     <div className="w-[260px] h-[5px] bg-white/15 rounded-full overflow-hidden">
                         <motion.div
-                            className="h-full bg-gradient-to-r from-[#FF6B35] to-[#FF8540]"
+                            className="h-full bg-gradient-to-r from-[#3B8BF7] to-[#5B9EF8]"
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: progress === 100 ? 0.2 : 4.5, ease: "easeOut" }}
                         />
@@ -252,7 +252,7 @@ export default function ResultPage() {
     if (status === "error") {
         return (
             <main className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center px-[20px] pb-[72px]">
-                <Chip emotion="sad" size={120} className="drop-shadow-[0_0_20px_rgba(255,107,53,0.2)]" />
+                <Chip emotion="sad" size={120} className="drop-shadow-[0_0_20px_rgba(59,139,247,0.2)]" />
                 <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[28px] font-bold text-white text-center tracking-tight">
                     Chip couldn't figure that one out.
                 </h2>
@@ -290,7 +290,7 @@ export default function ResultPage() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: [0, 1, 0], scale: [0.8, 1.1, 1.2] }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center border-[8px] border-[#FF6B35] rounded-full opacity-0"
+                        className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center border-[8px] border-[#3B8BF7] rounded-full opacity-0"
                         style={{ width: '200vw', height: '200vw', top: '50%', left: '50%', x: '-50%', y: '-50%' }}
                     />
                 )}
@@ -353,7 +353,7 @@ export default function ResultPage() {
                 {/* Macro Grid */}
                 <div className="grid grid-cols-2 gap-[10px] mb-4">
                     {/* Cal */}
-                    <div className="bg-[#FF6B35]/10 border border-[#FF6B35]/25 rounded-[16px] p-4 flex flex-col">
+                    <div className="bg-[#3B8BF7]/10 border border-[#3B8BF7]/25 rounded-[16px] p-4 flex flex-col">
                         <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Calories 🔥</span>
                         {isEditing ? (
                             <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.calories} onChange={e => setManualMacros({ ...manualMacros, calories: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
@@ -431,7 +431,7 @@ export default function ResultPage() {
                                     className={cn(
                                         "flex-1 py-2 rounded-[12px] font-['DM_Sans'] text-[14px] font-semibold border transition-colors",
                                         multiplier === m
-                                            ? "bg-[#FF6B35] border-[#FF6B35] text-white shadow-[0_0_24px_rgba(255,107,53,0.35)]"
+                                            ? "bg-[#3B8BF7] border-[#3B8BF7] text-white shadow-[0_0_24px_rgba(59,139,247,0.35)]"
                                             : "bg-[#22222F] border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#2A2A3A]"
                                     )}
                                 >
@@ -470,7 +470,7 @@ export default function ResultPage() {
                                     onClick={() => setMealType(baseOpt)}
                                     className={cn(
                                         "whitespace-nowrap pb-2 text-[16px] font-['DM_Sans'] transition-all",
-                                        isActive ? "text-[#FF6B35] font-semibold border-b-2 border-[#FF6B35]" : "text-[#60607A] border-b-2 border-transparent"
+                                        isActive ? "text-[#3B8BF7] font-semibold border-b-2 border-[#3B8BF7]" : "text-[#60607A] border-b-2 border-transparent"
                                     )}
                                 >
                                     {opt}

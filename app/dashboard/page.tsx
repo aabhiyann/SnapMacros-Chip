@@ -141,7 +141,7 @@ export default function DashboardPage() {
                     <Chip emotion="sad" size={100} />
                     <h2 className="text-white mt-6 mb-2 text-xl font-bold font-['Bricolage_Grotesque']">Oops.</h2>
                     <p className="text-[#A0A0B8] mb-6 font-['DM_Sans']">{error}</p>
-                    <button onClick={fetchDashboardData} className="px-6 py-3 bg-[#FF6B35] text-white rounded-xl font-['DM_Sans'] font-semibold">
+                    <button onClick={fetchDashboardData} className="px-6 py-3 bg-[#3B8BF7] text-white rounded-xl font-['DM_Sans'] font-semibold">
                         Retry
                     </button>
                 </div>
@@ -162,11 +162,11 @@ export default function DashboardPage() {
     return (
         <AppShell>
             {data.profile?.email === "demo@snapmacros.app" && showDemoBanner && (
-                <div className="bg-[#FF6B35]/10 border-b border-[#FF6B35]/20 px-4 py-2 flex items-center justify-between z-20">
-                    <p className="text-[#FF6B35] text-[13px] text-center flex-1 font-['DM_Sans']">
+                <div className="bg-[#3B8BF7]/10 border-b border-[#3B8BF7]/20 px-4 py-2 flex items-center justify-between z-20">
+                    <p className="text-[#3B8BF7] text-[13px] text-center flex-1 font-['DM_Sans']">
                         👀 You're in demo mode — snap any food to try it out!
                     </p>
-                    <button onClick={() => setShowDemoBanner(false)} className="text-[#FF6B35] p-1 font-bold">
+                    <button onClick={() => setShowDemoBanner(false)} className="text-[#3B8BF7] p-1 font-bold">
                         ✕
                     </button>
                 </div>
@@ -181,9 +181,9 @@ export default function DashboardPage() {
                     </h1>
                 </div>
                 {data.profile.streak_days > 0 ? (
-                    <div className="bg-gradient-to-br from-[#FF6B35]/20 to-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-full px-3 py-1 mt-1 shrink-0 shadow-[0_0_12px_rgba(255,107,53,0.3)] flex items-center gap-1.5">
-                        <Flame size={14} stroke="#FF6B35" strokeWidth={2.5} />
-                        <span className="text-[13px] font-bold font-['DM_Sans'] text-[#FF6B35] tracking-wide">{data.profile.streak_days}</span>
+                    <div className="bg-gradient-to-br from-[#3B8BF7]/20 to-[#3B8BF7]/10 border border-[#3B8BF7]/30 rounded-full px-3 py-1 mt-1 shrink-0 shadow-[0_0_12px_rgba(59,139,247,0.3)] flex items-center gap-1.5">
+                        <Flame size={14} stroke="#3B8BF7" strokeWidth={2.5} />
+                        <span className="text-[13px] font-bold font-['DM_Sans'] text-[#3B8BF7] tracking-wide">{data.profile.streak_days}</span>
                     </div>
                 ) : (
                     <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 mt-1 shrink-0 flex items-center gap-1.5">
@@ -277,11 +277,11 @@ export default function DashboardPage() {
                             <span className="text-[#F87171]/70 text-[10px] uppercase font-bold tracking-wider">Fat</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF6B35]/10 border border-[#FF6B35]/30">
+                    <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#3B8BF7]/10 border border-[#3B8BF7]/30">
                         <span className="text-[14px]">🔥</span>
                         <div className="flex flex-col">
-                            <span className="text-[#FF6B35] font-bold text-[14px] font-['Bricolage_Grotesque'] leading-tight">{data.current.calories} <span className="text-[#FF6B35]/70 font-normal">/ {data.targets.calories}</span></span>
-                            <span className="text-[#FF6B35]/70 text-[10px] uppercase font-bold tracking-wider">Calories</span>
+                            <span className="text-[#3B8BF7] font-bold text-[14px] font-['Bricolage_Grotesque'] leading-tight">{data.current.calories} <span className="text-[#3B8BF7]/70 font-normal">/ {data.targets.calories}</span></span>
+                            <span className="text-[#3B8BF7]/70 text-[10px] uppercase font-bold tracking-wider">Calories</span>
                         </div>
                     </div>
                 </div>

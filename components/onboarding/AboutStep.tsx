@@ -138,17 +138,17 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                         value={localData.name}
                         onChange={(e) => setLocalData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="Your first name"
-                        className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#FF6B35] transition-colors"
+                        className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
                     />
                     {isNameInvalid && localData.name !== data.name && (
-                        <p className="text-[#FF6B35] text-[12px] font-['DM_Sans'] mt-2 ml-1">Chip needs something to call you!</p>
+                        <p className="text-[#3B8BF7] text-[12px] font-['DM_Sans'] mt-2 ml-1">Chip needs something to call you!</p>
                     )}
                 </div>
 
                 {/* Age Stepper */}
                 <div>
                     <label className="block text-[#A0A0B8] text-[11px] font-bold uppercase mb-2 ml-1 tracking-wider">AGE</label>
-                    <div className={`flex items-center justify-between bg-[#1A1A24] border ${isAgeInvalid ? 'border-[#FF6B35]' : 'border-[#2A2A3A]'} rounded-[16px] p-2 h-[52px] transition-colors`}>
+                    <div className={`flex items-center justify-between bg-[#1A1A24] border ${isAgeInvalid ? 'border-[#3B8BF7]' : 'border-[#2A2A3A]'} rounded-[16px] p-2 h-[52px] transition-colors`}>
                         <TapButton onClick={() => handleAgeChange(-1)} className="w-[36px] h-[36px] rounded-[10px] bg-[#22222F] flex items-center justify-center text-white active:scale-95">
                             <Minus size={18} />
                         </TapButton>
@@ -164,7 +164,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                         </TapButton>
                     </div>
                     {isAgeInvalid && (
-                        <p className="text-[#FF6B35] text-[12px] font-['DM_Sans'] mt-2 ml-1">Age must be between 13 and 85</p>
+                        <p className="text-[#3B8BF7] text-[12px] font-['DM_Sans'] mt-2 ml-1">Age must be between 13 and 85</p>
                     )}
                 </div>
 
@@ -177,21 +177,21 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                             value={localData.weight}
                             onChange={(e) => setLocalData(prev => ({ ...prev, weight: e.target.value }))}
                             placeholder="0"
-                            className={`flex-1 bg-[#1A1A24] border ${isWeightInvalid ? 'border-[#FF6B35]' : 'border-[#2A2A3A]'} rounded-[16px] h-[52px] px-5 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#FF6B35] transition-colors`}
+                            className={`flex-1 bg-[#1A1A24] border ${isWeightInvalid ? 'border-[#3B8BF7]' : 'border-[#2A2A3A]'} rounded-[16px] h-[52px] px-5 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#3B8BF7] transition-colors`}
                         />
                         <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-1 flex h-[52px]">
                             <TapButton
                                 onClick={() => handleWeightUnitToggle("kg")}
-                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.weightUnit === "kg" ? "bg-[#FF6B35] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
+                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.weightUnit === "kg" ? "bg-[#3B8BF7] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
                             >KG</TapButton>
                             <TapButton
                                 onClick={() => handleWeightUnitToggle("lbs")}
-                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.weightUnit === "lbs" ? "bg-[#FF6B35] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
+                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.weightUnit === "lbs" ? "bg-[#3B8BF7] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
                             >LBS</TapButton>
                         </div>
                     </div>
                     {isWeightInvalid && (
-                        <p className="text-[#FF6B35] text-[12px] font-['DM_Sans'] mt-2 ml-1">Weight must be between 30 and 350kg</p>
+                        <p className="text-[#3B8BF7] text-[12px] font-['DM_Sans'] mt-2 ml-1">Weight must be between 30 and 350kg</p>
                     )}
                 </div>
 
@@ -205,7 +205,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                                 value={localData.height}
                                 onChange={(e) => setLocalData(prev => ({ ...prev, height: e.target.value }))}
                                 placeholder="175"
-                                className="flex-1 bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#FF6B35] transition-colors"
+                                className="flex-1 bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
                             />
                         ) : (
                             <div className="flex-1 flex gap-2">
@@ -215,7 +215,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                                         value={getFeetInches(localData.height).ft}
                                         onChange={(e) => handleHeightFtChange("ft", e.target.value)}
                                         placeholder="5"
-                                        className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] pr-8 pl-2 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#FF6B35] transition-colors"
+                                        className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] pr-8 pl-2 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-bold">'</span>
                                 </div>
@@ -225,7 +225,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                                         value={getFeetInches(localData.height).in}
                                         onChange={(e) => handleHeightFtChange("in", e.target.value)}
                                         placeholder="9"
-                                        className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] pr-8 pl-2 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#FF6B35] transition-colors"
+                                        className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] pr-8 pl-2 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-bold">"</span>
                                 </div>
@@ -235,11 +235,11 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                         <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-1 flex h-[52px]">
                             <TapButton
                                 onClick={() => handleHeightUnitToggle("cm")}
-                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.heightUnit === "cm" ? "bg-[#FF6B35] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
+                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.heightUnit === "cm" ? "bg-[#3B8BF7] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
                             >CM</TapButton>
                             <TapButton
                                 onClick={() => handleHeightUnitToggle("ft")}
-                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.heightUnit === "ft" ? "bg-[#FF6B35] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
+                                className={`px-4 flex items-center justify-center rounded-[12px] font-bold text-[13px] ${localData.heightUnit === "ft" ? "bg-[#3B8BF7] text-white" : "text-[#60607A] hover:bg-[#22222F]"}`}
                             >FT</TapButton>
                         </div>
                     </div>
@@ -252,15 +252,15 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                     <div className="flex gap-2">
                         <TapButton
                             onClick={() => setLocalData(prev => ({ ...prev, gender: "male" }))}
-                            className={`flex-1 h-[52px] rounded-[16px] font-bold text-[14px] transition-colors ${localData.gender === "male" ? "bg-[#FF6B35] text-white" : "bg-[#1A1A24] border border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#22222F]"}`}
+                            className={`flex-1 h-[52px] rounded-[16px] font-bold text-[14px] transition-colors ${localData.gender === "male" ? "bg-[#3B8BF7] text-white" : "bg-[#1A1A24] border border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#22222F]"}`}
                         >Male</TapButton>
                         <TapButton
                             onClick={() => setLocalData(prev => ({ ...prev, gender: "female" }))}
-                            className={`flex-1 h-[52px] rounded-[16px] font-bold text-[14px] transition-colors ${localData.gender === "female" ? "bg-[#FF6B35] text-white" : "bg-[#1A1A24] border border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#22222F]"}`}
+                            className={`flex-1 h-[52px] rounded-[16px] font-bold text-[14px] transition-colors ${localData.gender === "female" ? "bg-[#3B8BF7] text-white" : "bg-[#1A1A24] border border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#22222F]"}`}
                         >Female</TapButton>
                         <TapButton
                             onClick={() => setLocalData(prev => ({ ...prev, gender: "other" }))}
-                            className={`flex-1 h-[52px] rounded-[16px] font-bold text-[14px] leading-tight transition-colors ${localData.gender === "other" ? "bg-[#FF6B35] text-white" : "bg-[#1A1A24] border border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#22222F]"}`}
+                            className={`flex-1 h-[52px] rounded-[16px] font-bold text-[14px] leading-tight transition-colors ${localData.gender === "other" ? "bg-[#3B8BF7] text-white" : "bg-[#1A1A24] border border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#22222F]"}`}
                         >Prefer not to say</TapButton>
                     </div>
                 </div>

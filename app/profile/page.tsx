@@ -94,10 +94,10 @@ export default function ProfilePage() {
 
                 {/* HEADER CARD */}
                 <div className="px-5 mt-4 mb-8">
-                    <div className="relative bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] p-6 rounded-[24px] shadow-[0_12px_40px_rgba(255,107,53,0.25)] overflow-hidden">
+                    <div className="relative bg-gradient-to-br from-[#3B8BF7] to-[#5B9EF8] p-6 rounded-[24px] shadow-[0_12px_40px_rgba(59,139,247,0.25)] overflow-hidden">
                         <div className="flex items-center gap-4 relative z-10">
                             {/* Avatar */}
-                            <div className="w-[56px] h-[56px] rounded-full bg-[#FF8C35] border-2 border-white/20 shadow-md flex items-center justify-center shrink-0">
+                            <div className="w-[56px] h-[56px] rounded-full bg-[#5B9EF8] border-2 border-white/20 shadow-md flex items-center justify-center shrink-0">
                                 <span className="text-white font-black font-['Bricolage_Grotesque'] text-[20px]">
                                     {userData.name.charAt(0)}
                                 </span>
@@ -134,7 +134,7 @@ export default function ProfilePage() {
                     <div className="bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A] p-5">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Daily Targets</h3>
-                            <TapButton className="text-[#FF6B35] text-[14px] font-bold font-['DM_Sans']">
+                            <TapButton className="text-[#3B8BF7] text-[14px] font-bold font-['DM_Sans']">
                                 Edit
                             </TapButton>
                         </div>
@@ -142,7 +142,7 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-3 h-3 rounded-full bg-[#FF6B35]" />
+                                    <div className="w-3 h-3 rounded-full bg-[#3B8BF7]" />
                                     <span className="font-['DM_Sans'] text-[15px] font-medium text-white">Calories</span>
                                 </div>
                                 <span className="font-['Bricolage_Grotesque'] font-bold text-[18px] text-white">{userData.targets.cal}</span>
