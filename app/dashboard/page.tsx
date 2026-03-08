@@ -73,6 +73,7 @@ export default function DashboardPage() {
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showDemoBanner, setShowDemoBanner] = useState(true);
 
     const fetchDashboardData = async () => {
         try {
@@ -159,6 +160,17 @@ export default function DashboardPage() {
 
     return (
         <AppShell>
+            {data.profile?.email === "demo@snapmacros.app" && showDemoBanner && (
+                <div className="bg-[#FF6B35]/10 border-b border-[#FF6B35]/20 px-4 py-2 flex items-center justify-between z-20">
+                    <p className="text-[#FF6B35] text-[13px] text-center flex-1 font-['DM_Sans']">
+                        👀 You're in demo mode — snap any food to try it out!
+                    </p>
+                    <button onClick={() => setShowDemoBanner(false)} className="text-[#FF6B35] p-1 font-bold">
+                        ✕
+                    </button>
+                </div>
+            )}
+
             {/* 1. Fixed Header (app wrapper handles scrolling, but visually top) */}
             <div className="pt-[48px] px-[20px] mb-6 relative">
                 <div className="flex justify-between items-start">
