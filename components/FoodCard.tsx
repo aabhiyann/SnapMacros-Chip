@@ -82,31 +82,27 @@ export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
                 className="relative bg-[linear-gradient(160deg,#1E1E2A_0%,#1A1A24_100%)] p-[20px] rounded-[20px] flex items-center justify-between z-10 w-full touch-pan-y border border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.3)] transition-colors active:border-white/[0.10]"
             >
                 <div className="flex items-center gap-4 flex-1 overflow-hidden">
-                    <div className={`w-[48px] h-[48px] rounded-[14px] shrink-0 bg-gradient-to-br ${bgGradient} flex items-center justify-center text-[20px] shadow-inner`}>
+                    <div className={`w-[52px] h-[52px] rounded-[16px] shrink-0 bg-gradient-to-br ${bgGradient} flex items-center justify-center text-[20px] shadow-inner`}>
                         {log.image_url ? (
-                            <img src={log.image_url} alt="Food" className="w-full h-full object-cover rounded-[14px]" />
+                            <img src={log.image_url} alt="Food" className="w-full h-full object-cover rounded-[16px]" />
                         ) : (
                             <span>{log.description.charAt(0).toUpperCase()}</span>
                         )}
                     </div>
 
                     <div className="flex-1 min-w-0 pr-2">
-                        <h4 className="text-[15px] font-semibold text-white font-['DM_Sans'] truncate">{log.description}</h4>
-                        <div className="flex items-center gap-1 mt-0.5">
-                            <span className="text-[13px] text-[#A0A0B8] font-['DM_Sans'] truncate capitalize">
-                                {log.meal_type || "Snack"}
-                            </span>
+                        <h4 className="text-[16px] font-bold text-white font-['DM_Sans'] truncate">{log.description}</h4>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#6C63FF]/15 text-[#6C63FF] border border-[#6C63FF]/30">P: {log.protein}g</span>
+                            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#2DD4BF]/15 text-[#2DD4BF] border border-[#2DD4BF]/30">C: {log.carbs}g</span>
+                            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#F87171]/15 text-[#F87171] border border-[#F87171]/30">F: {log.fat}g</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end shrink-0 pl-2">
-                    <span className="text-[18px] font-bold text-white font-['Bricolage_Grotesque'] leading-none mb-1.5">{log.calories}</span>
-                    <div className="flex gap-1.5 mt-auto pb-0.5">
-                        <div className="w-2 h-2 rounded-full bg-[#6C63FF]" title={`Protein: ${log.protein}g`} />
-                        <div className="w-2 h-2 rounded-full bg-[#2DD4BF]" title={`Carbs: ${log.carbs}g`} />
-                        <div className="w-2 h-2 rounded-full bg-[#FBBF24]" title={`Fat: ${log.fat}g`} />
-                    </div>
+                <div className="flex flex-col items-end justify-center shrink-0 pl-3">
+                    <span className="text-[20px] font-[800] text-white font-['Bricolage_Grotesque'] tracking-tight leading-none text-right">{log.calories}</span>
+                    <span className="text-[12px] text-[#60607A] font-['DM_Sans'] mt-1 font-medium tracking-wide">cal</span>
                 </div>
             </motion.div>
         </motion.div>

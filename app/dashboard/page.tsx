@@ -174,15 +174,14 @@ export default function DashboardPage() {
             {/* 1. Frosted Glass Fixed Header */}
             <div className="fixed top-0 left-0 right-0 z-50 pt-[max(env(safe-area-inset-top),16px)] pb-4 px-[20px] bg-[rgba(15,15,20,0.85)] backdrop-blur-[20px] border-b border-white/[0.06] flex justify-between items-center max-w-md mx-auto">
                 <div className="flex flex-col">
-                    <span className="text-[#A0A0B8] text-[14px] font-[400] tracking-[0.1px] leading-[1.6] font-['DM_Sans']">{greeting}</span>
-                    <h1 className="flex items-center text-[20px] font-bold font-['Bricolage_Grotesque'] tracking-[-0.5px] whitespace-nowrap">
-                        <span className="text-white">Snap</span>
-                        <span className="text-[#FF6B35]">Macros</span>
+                    <span className="text-[#60607A] text-[13px] font-[500] tracking-wide font-['DM_Sans']">{greeting}</span>
+                    <h1 className="text-[24px] font-bold font-['Bricolage_Grotesque'] tracking-tight text-white leading-none mt-1">
+                        {data.profile.full_name?.split(' ')[0] || "Athlete"}
                     </h1>
                 </div>
                 {data.profile.streak_days > 0 ? (
-                    <div className="bg-gradient-to-br from-[#FF6B35]/20 to-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-full px-3 py-1 mt-1 shrink-0">
-                        <span className="text-[13px] font-semibold font-['DM_Sans'] text-[#FF6B35] tracking-wide">🔥 {data.profile.streak_days}</span>
+                    <div className="bg-gradient-to-br from-[#FF6B35]/20 to-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-full px-3 py-1 mt-1 shrink-0 shadow-[0_0_12px_rgba(255,107,53,0.3)]">
+                        <span className="text-[13px] font-bold font-['DM_Sans'] text-[#FF6B35] tracking-wide">🔥 {data.profile.streak_days}</span>
                     </div>
                 ) : (
                     <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 mt-1 shrink-0">
@@ -207,22 +206,22 @@ export default function DashboardPage() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.85 }} // Fades in at 850ms per spec
-                    className="flex-1 premium-card relative z-0 p-4"
+                    transition={{ delay: 0.85 }}
+                    className="flex-1 bg-[rgba(26,26,36,0.8)] border border-[rgba(255,255,255,0.04)] rounded-[16px] relative z-0 p-4 shadow-lg backdrop-blur-md"
                 >
-                    <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-4 h-4 bg-[#1E1E2A] border-l border-b border-white/[0.06] rotate-45 z-0" />
-                    <div className="relative z-10">
+                    <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-3 h-3 bg-[rgba(26,26,36,0.8)] border-l border-b border-[rgba(255,255,255,0.04)] rotate-45 z-0" />
+                    <div className="relative z-10 flex items-center h-full">
                         {data.current.calories > data.targets.calories + 50 ? (
-                            <>
-                                <p className="text-[14px] text-white font-['DM_Sans'] italic mb-1">
+                            <div>
+                                <p className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] italic mb-1">
                                     "Went a bit over today."
                                 </p>
-                                <p className="text-[13px] text-[#A0A0B8] font-['DM_Sans'] italic">
+                                <p className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] italic">
                                     "Tomorrow is what matters."
                                 </p>
-                            </>
+                            </div>
                         ) : (
-                            <p className="text-[14px] text-white font-['DM_Sans'] italic">
+                            <p className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] italic leading-snug">
                                 &quot;{data.chip.message}&quot;
                             </p>
                         )}
@@ -241,8 +240,12 @@ export default function DashboardPage() {
                     size={280}
                 >
                     <div className="flex flex-col items-center justify-center">
-                        <CountUp value={data.current.calories} className="text-[48px] font-['Bricolage_Grotesque'] font-[800] tracking-[-3px] text-white leading-none" delay={0.5} duration={0.6} />
-                        <span className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] mt-1">/ {data.targets.calories} cal</span>
+                        <CountUp value={data.current.calories} className="text-[52px] font-['Bricolage_Grotesque'] font-[800] tracking-[-2px] text-white leading-none" delay={0.5} duration={0.6} />
+                        <span className="text-[13px] text-[#60607A] font-medium tracking-wide font-['DM_Sans'] mt-1">/ {data.targets.calories} cal</span>
+
+                        <div className={`mt-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-wide font-bold font-['DM_Sans'] ${data.current.calories > data.targets.calories ? 'bg-[#EF4444]/20 border border-[#EF4444]/30 text-[#EF4444]' : 'bg-[#2DD4BF]/20 border border-[#2DD4BF]/30 text-[#2DD4BF]'}`}>
+                            {data.current.calories > data.targets.calories ? `${data.current.calories - data.targets.calories} over` : `${data.targets.calories - data.current.calories} left`}
+                        </div>
                     </div>
                 </MacroRings>
             </div>
