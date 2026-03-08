@@ -236,28 +236,28 @@ export default function SnapPage() {
             <div className="absolute top-[env(safe-area-inset-top)] left-0 right-0 z-50 px-[20px] pt-4 flex justify-between items-center">
                 <button
                     onClick={() => router.push("/dashboard")}
-                    className="w-[48px] h-[48px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
+                    className="w-[44px] h-[44px] rounded-full bg-[rgba(0,0,0,0.5)] backdrop-blur-[8px] flex items-center justify-center border border-[rgba(255,255,255,0.1)]"
                 >
-                    <X size={20} className="text-white" />
+                    <X size={20} strokeWidth={2.5} className="text-white" />
                 </button>
 
                 <div className="flex gap-3">
                     {torchSupported && (
                         <button
                             onClick={toggleTorch}
-                            className="w-[48px] h-[48px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
+                            className="w-[44px] h-[44px] rounded-full bg-[rgba(0,0,0,0.5)] backdrop-blur-[8px] flex items-center justify-center border border-[rgba(255,255,255,0.1)]"
                         >
-                            {isTorchOn ? <Zap size={20} className="text-[#FF6B35]" /> : <ZapOff size={20} className="text-white" />}
+                            {isTorchOn ? <Zap size={20} strokeWidth={2} fill="#FBBF24" stroke="#FBBF24" /> : <ZapOff size={20} strokeWidth={2} stroke="#60607A" />}
                         </button>
                     )}
-                    <label className="w-[48px] h-[48px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 cursor-pointer">
+                    <label className="w-[44px] h-[44px] rounded-full bg-[rgba(0,0,0,0.5)] backdrop-blur-[8px] flex items-center justify-center border border-[rgba(255,255,255,0.1)] cursor-pointer">
                         <input
                             type="file"
                             accept="image/*"
                             className="hidden"
                             onChange={handleFileUpload}
                         />
-                        <ImageIcon size={20} className="text-white" />
+                        <ImageIcon size={20} strokeWidth={2} className="text-white" />
                     </label>
                 </div>
             </div>

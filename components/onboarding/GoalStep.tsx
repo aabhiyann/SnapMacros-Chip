@@ -4,7 +4,7 @@ import { TapButton } from "@/components/ui/TapButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
-import { Check } from "lucide-react";
+import { Check, Dumbbell, TrendingUp, Scale, Flame, Scissors } from "lucide-react";
 
 interface GoalStepProps {
     data: OnboardingData;
@@ -13,11 +13,11 @@ interface GoalStepProps {
 }
 
 const GOALS = [
-    { id: "bulk", emoji: "🏋️", title: "Bulk", desc: "Build maximum muscle" },
-    { id: "lean_bulk", emoji: "💪", title: "Lean Bulk", desc: "Muscle with minimal fat gain" },
-    { id: "maintain", emoji: "⚖️", title: "Maintain", desc: "Stay exactly where you are" },
-    { id: "fat_loss", emoji: "🔥", title: "Fat Loss", desc: "Lose fat, keep muscle" },
-    { id: "cut", emoji: "✂️", title: "Cut", desc: "Aggressive definition phase" },
+    { id: "bulk", icon: Dumbbell, title: "Bulk", desc: "Build maximum muscle" },
+    { id: "lean_bulk", icon: TrendingUp, title: "Lean Bulk", desc: "Muscle with minimal fat gain" },
+    { id: "maintain", icon: Scale, title: "Maintain", desc: "Stay exactly where you are" },
+    { id: "fat_loss", icon: Flame, title: "Fat Loss", desc: "Lose fat, keep muscle" },
+    { id: "cut", icon: Scissors, title: "Cut", desc: "Aggressive definition phase" },
 ];
 
 export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
@@ -84,9 +84,9 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                                 : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#20202D]"
                                 }`}
                         >
-                            {/* Emoji Circle bg */}
-                            <div className={`w-[48px] h-[48px] rounded-[16px] flex items-center justify-center text-[24px] shrink-0 mr-4 transition-colors ${isSelected ? 'bg-[#FF6B35]/15' : 'bg-[#2A2A3A]'}`}>
-                                {g.emoji}
+                            {/* Icon Circle bg */}
+                            <div className={`w-[44px] h-[44px] rounded-[14px] flex items-center justify-center shrink-0 mr-4 transition-colors ${isSelected ? 'bg-[#FF6B35]/15' : 'bg-[#2A2A3A]'}`}>
+                                <g.icon size={24} stroke={isSelected ? '#FF6B35' : '#A0A0B8'} strokeWidth={2.5} />
                             </div>
 
                             <div className="flex-1 pr-4">

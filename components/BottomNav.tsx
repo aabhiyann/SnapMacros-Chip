@@ -22,8 +22,8 @@ export const BottomNav = React.memo(function BottomNav() {
 
     const TABS: Tab[] = [
         { name: "Home", path: "/dashboard", icon: Home, activeColor: "#FF6B35" },
-        { name: "Progress", path: "/progress", icon: BarChart2, activeColor: "#6C63FF" },
-        { name: "Profile", path: "/profile", icon: User, activeColor: "#2DD4BF" },
+        { name: "Progress", path: "/progress", icon: BarChart2, activeColor: "#FF6B35" },
+        { name: "Profile", path: "/profile", icon: User, activeColor: "#FF6B35" },
     ];
 
     const handleSnap = (e: React.MouseEvent) => {
@@ -107,7 +107,7 @@ function NavItem({ tab, isActive }: { tab: Tab, isActive: boolean }) {
                         className="absolute bottom-[8px] flex flex-col items-center justify-center"
                     >
                         <span
-                            className="text-[10px] font-semibold font-['DM_Sans'] tracking-wide"
+                            className="text-[10px] font-semibold font-['DM_Sans'] tracking-[0.5px] uppercase"
                             style={{ color: tab.activeColor }}
                         >
                             {tab.name}
