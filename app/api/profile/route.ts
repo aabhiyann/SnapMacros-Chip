@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { calculateFullProfile } from "@/lib/tdee";
 
 export async function GET() {
@@ -88,7 +88,23 @@ export async function POST(request: Request) {
             goalType: safeGoal,
         });
 
-        // 5. Upsert - use admin client if available (bypasses RLS when profile doesn't exist)
+        // 5. Ensure profile row exists (trigger may not have run), then upsert
+        const { data: existing } = await supabase
+            .from("profiles")
+            .select("user_id")
+            .eq("user_id", userId)
+            .maybeSingle();
+
+        if (!existing) {
+            const { error: insertErr } = await supabase
+                .from("profiles")
+                .insert({ user_id: userId });
+            if (insertErr) {
+                console.error("Profile insert error:", insertErr);
+                throw new Error(insertErr.message);
+            }
+        }
+
         const payload = {
             user_id: userId,
             name: name || "User",
@@ -100,19 +116,12 @@ export async function POST(request: Request) {
             updated_at: new Date().toISOString(),
         };
 
-        let data: unknown;
-        let error: { message: string } | null = null;
-
-        if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-            const admin = createAdminClient();
-            const result = await admin.from("profiles").upsert(payload, { onConflict: "user_id" }).select().single();
-            data = result.data;
-            error = result.error;
-        } else {
-            const result = await supabase.from("profiles").upsert(payload, { onConflict: "user_id" }).select().single();
-            data = result.data;
-            error = result.error;
-        }
+        const { data, error } = await supabase
+            .from("profiles")
+            .update(payload)
+            .eq("user_id", userId)
+            .select()
+            .single();
 
         if (error) throw new Error(error.message);
 

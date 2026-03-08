@@ -31,7 +31,7 @@ export default function SplashScreen() {
           .from("profiles")
           .select("onboarding_completed")
           .eq("user_id", session.user.id)
-          .single();
+          .maybeSingle();
 
         if (profile?.onboarding_completed) {
           router.replace("/dashboard");
