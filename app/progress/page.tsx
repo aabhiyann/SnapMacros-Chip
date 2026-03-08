@@ -38,7 +38,21 @@ export default function ProgressPage() {
 
     // Typewriter effect logic
     useEffect(() => {
-        if (!data?.roast || typewriterIndex >= data.roast.roast_text.length) return;
+        if (!data?.roast) return;
+
+        // Use a unique key for this roast (e.g. its id, week, or just "current")
+        const seenKey = `roast_seen_${data.roast.id || 'latest'}`;
+
+        if (sessionStorage.getItem(seenKey)) {
+            setTypewriterIndex(data.roast.roast_text.length);
+            return;
+        }
+
+        if (typewriterIndex >= data.roast.roast_text.length) {
+            sessionStorage.setItem(seenKey, "1");
+            return;
+        }
+
         const interval = setInterval(() => setTypewriterIndex(i => i + 1), 25);
         return () => clearInterval(interval);
     }, [data?.roast, typewriterIndex]);
@@ -295,7 +309,7 @@ export default function ProgressPage() {
                             <div>
                                 <h4 className="text-white text-[15px] font-bold font-['DM_Sans']">🔥 Week of {new Date(today.getTime() - 6 * 86400000).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</h4>
                             </div>
-                            <Chip emotion={data.roast.mascot_mood} size={40} />
+                            <Chip emotion="laughing" size={40} />
                         </div>
 
                         <h2 className="text-[24px] font-black font-['Bricolage_Grotesque'] text-white italic leading-tight mb-4">

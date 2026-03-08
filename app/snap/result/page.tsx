@@ -28,6 +28,7 @@ interface AnalysisData {
     fiber?: number;
     sugar?: number;
     detected_items?: string[];
+    chip_reaction?: "hype" | "shocked" | "happy";
 }
 
 const LOADING_LINES = [
@@ -443,7 +444,7 @@ export default function ResultPage() {
 
                 {/* Chip Reaction Row */}
                 <div className="flex items-center gap-4 bg-[#22222F] rounded-[20px] p-4 mb-6 relative overflow-hidden ring-1 ring-[#2A2A3A]">
-                    <Chip emotion={logSuccess ? "hype" : (data.calories * multiplier > 900 ? "shocked" : "hype")} size={80} />
+                    <Chip emotion={logSuccess ? "hype" : (data.chip_reaction || (data.calories * multiplier > 900 ? "shocked" : "hype"))} size={80} />
                     <div className="flex-1 bg-[#1A1A24] rounded-[14px] p-3 border border-[#2A2A3A] relative">
                         <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45" />
                         <p className="text-[14px] text-[#FFFFFF] font-['DM_Sans'] relative z-10 leading-snug">
