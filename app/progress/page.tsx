@@ -172,12 +172,12 @@ export default function ProgressPage() {
                 <div className="bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(255,107,53,0.25)] relative overflow-hidden flex items-center justify-between">
                     <div className="relative z-10">
                         <div className="flex items-center gap-2">
-                            <span className="text-[32px] leading-none">🔥</span>
-                            <h2 className="text-[52px] font-black font-['Bricolage_Grotesque'] leading-none text-white tracking-tight">
+                            <span className="text-[32px] leading-none mb-1">🔥</span>
+                            <h2 className="text-[56px] font-black font-['Bricolage_Grotesque'] leading-none text-white tracking-[-2px]">
                                 {data?.streak || 0}
                             </h2>
                         </div>
-                        <p className="text-white/90 font-['DM_Sans'] text-[14px] font-medium mt-1">
+                        <p className="text-white/60 font-['DM_Sans'] text-[15px] font-medium mt-1">
                             day streak
                         </p>
                         <div className="w-[120px] h-2 bg-black/20 rounded-full mt-4 overflow-hidden relative">
@@ -254,36 +254,38 @@ export default function ProgressPage() {
                         <p className="font-['DM_Sans'] text-[14px] text-white/70 font-medium">Log 3 days of meals to see your trends.</p>
                     </div>
                 ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={last7Days} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
-                            <XAxis dataKey="dayStr" stroke="#60607A" fontSize={11} tickLine={false} axisLine={false} />
-                            <YAxis
-                                stroke="#60607A"
-                                fontSize={11}
-                                tickLine={false}
-                                axisLine={false}
-                                domain={[0, 'dataMax']}
-                                ticks={[0, Math.max(...last7Days.map(d => d.calories), 2000)]}
-                            />
-                            <Tooltip
-                                cursor={{ fill: '#2A2A3A', opacity: 0.4 }}
-                                contentStyle={{ backgroundColor: '#1A1A24', border: '1px solid #2A2A3A', borderRadius: '12px' }}
-                                itemStyle={{ color: 'white', fontFamily: 'DM Sans', fontWeight: 'bold' }}
-                                labelStyle={{ color: '#A0A0B8', fontFamily: 'DM Sans', fontSize: '13px', marginBottom: '4px' }}
-                            />
-                            {/* Reference dashed line */}
-                            <ReferenceLine y={2000} stroke="#FF6B35" strokeDasharray="4 4" label={{ position: 'top', value: 'Your target', fill: '#FF6B35', fontSize: 10, fontFamily: 'DM Sans' }} />
-                            <Bar dataKey="calories" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                                {last7Days.map((entry, index) => {
-                                    let color = "#2A2A3A"; // no logs
-                                    if (entry.state === "hit") color = "#2DD4BF"; // green
-                                    if (entry.state === "logged") color = "#FF6B35"; // orange (under)
-                                    if (entry.calories > entry.target + 100) color = "#EF4444"; // red (over)
-                                    return <Cell key={`cell-\${index}`} fill={color} />;
-                                })}
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <div className="w-full h-[220px] bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A] p-4 pt-6 shadow-lg">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={last7Days} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+                                <XAxis dataKey="dayStr" stroke="#60607A" fontSize={11} tickLine={false} axisLine={false} />
+                                <YAxis
+                                    stroke="#60607A"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    domain={[0, 'dataMax']}
+                                    ticks={[0, Math.max(...last7Days.map(d => d.calories), 2000)]}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: '#2A2A3A', opacity: 0.4 }}
+                                    contentStyle={{ backgroundColor: '#0F0F14', border: '1px solid #2A2A3A', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
+                                    itemStyle={{ color: 'white', fontFamily: 'DM Sans', fontWeight: 'bold' }}
+                                    labelStyle={{ color: '#A0A0B8', fontFamily: 'DM Sans', fontSize: '13px', marginBottom: '4px' }}
+                                />
+                                {/* Reference dashed line */}
+                                <ReferenceLine y={2000} stroke="#FF6B35" strokeDasharray="4 4" label={{ position: 'top', value: 'Your target', fill: '#FF6B35', fontSize: 10, fontFamily: 'DM Sans' }} />
+                                <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={32}>
+                                    {last7Days.map((entry, index) => {
+                                        let color = "#2A2A3A"; // no logs
+                                        if (entry.state === "hit") color = "#2DD4BF"; // green
+                                        if (entry.state === "logged") color = "#FF6B35"; // orange (under)
+                                        if (entry.calories > entry.target + 100) color = "#EF4444"; // red (over)
+                                        return <Cell key={`cell-${index}`} fill={color} opacity={entry.isToday ? 1 : 0.6} />;
+                                    })}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 )}
             </div>
 
@@ -312,14 +314,13 @@ export default function ProgressPage() {
                             <Chip emotion="laughing" size={40} />
                         </div>
 
-                        <h2 className="text-[24px] font-black font-['Bricolage_Grotesque'] text-white italic leading-tight mb-4">
+                        <h2 className="text-[22px] font-black font-['Bricolage_Grotesque'] text-white italic leading-tight mb-4">
                             "{data.roast.roast_title}"
                         </h2>
 
-                        <div className="text-[#A0A0B8] text-[15px] font-['DM_Sans'] leading-[1.7] mb-6">
+                        <div className="text-[#A0A0B8] text-[15px] font-['DM_Sans'] leading-[1.8] mb-6">
                             {data.roast.roast_text.substring(0, typewriterIndex)}
                             {typewriterIndex < data.roast.roast_text.length && <span className="animate-pulse">|</span>}
-                            {/* Read more button logic natively handled in production via CSS line-clamping + expansio states, kept simple here to match type specs */}
                         </div>
 
                         <AnimatePresence>
@@ -329,9 +330,9 @@ export default function ProgressPage() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.4 }}
                                 >
-                                    <div className="bg-[#2DD4BF]/10 border-l-[3px] border-l-[#2DD4BF] p-4 mb-6">
-                                        <p className="text-[#2DD4BF] font-bold text-[11px] uppercase tracking-wide mb-1">💡 This week's tip:</p>
-                                        <p className="text-[#A0A0B8] font-['DM_Sans'] text-[14px]">{data.roast.tip_text}</p>
+                                    <div className="bg-[rgba(45,212,191,0.08)] border-l-[3px] border-l-[#2DD4BF] rounded-r-[12px] p-4 mb-6">
+                                        <p className="text-[#2DD4BF] font-bold text-[11px] uppercase tracking-wide mb-1">💡 This week's tip</p>
+                                        <p className="text-[#A0A0B8] font-['DM_Sans'] text-[14px] leading-relaxed">{data.roast.tip_text}</p>
                                     </div>
 
                                     <button
