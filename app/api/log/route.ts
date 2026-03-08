@@ -14,7 +14,9 @@ const FoodLogSchema = z.object({
 export async function POST(request: Request) {
     try {
         const supabase = createClient();
-        const userId = DEMO_USER_ID; // In prod: await supabase.auth.getUser()
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const userId = user.id;
 
         // 1. Parse and validate
         const body = await request.json();
@@ -105,7 +107,9 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     try {
         const supabase = createClient();
-        const userId = DEMO_USER_ID;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const userId = user.id;
 
         const { searchParams } = new URL(request.url);
         const id = searchParams.get("id");
@@ -130,7 +134,9 @@ export async function DELETE(request: Request) {
 export async function GET(request: Request) {
     try {
         const supabase = createClient();
-        const userId = DEMO_USER_ID;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const userId = user.id;
 
         // Default GET fetch to get recent history to populate feeds
         const { data, error } = await supabase

@@ -10,11 +10,10 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: Request) {
   try {
-    // 1. Validate Auth (Mocked with Demo ID for now, as per Supabase mock auth logic)
+    // 1. Validate Auth
     const supabase = createClient();
-    // const { data: { user }, error: authError } = await supabase.auth.getUser();
-    // if (authError || !user) return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
-    const user = { id: DEMO_USER_ID }; // MOCK
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
 
     // 4. Check rate limit
     const rl = getRateLimit(user.id, 30);
