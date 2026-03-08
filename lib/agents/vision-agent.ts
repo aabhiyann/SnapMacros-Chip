@@ -83,8 +83,16 @@ Analyze this food and return ONLY this JSON, nothing else:
             ]);
 
             const rawText = result.response.text();
-            const cleaned = rawText.replace(/```json\n?|```\n?/g, '').trim();
-            const parsed = JSON.parse(cleaned) as AnalysisResult;
+            const cleaned = rawText
+                .replace(/```json\n?/g, '')
+                .replace(/```\n?/g, '')
+                .trim();
+            const startIndex = cleaned.indexOf('{');
+            const endIndex = cleaned.lastIndexOf('}');
+            const jsonOnly = startIndex >= 0 && endIndex > startIndex
+                ? cleaned.slice(startIndex, endIndex + 1)
+                : cleaned;
+            const parsed = JSON.parse(jsonOnly) as AnalysisResult;
 
             if (!parsed.food_name || !parsed.macros || typeof parsed.macros.calories !== 'number') {
                 throw new Error('Invalid response structure from Gemini');
