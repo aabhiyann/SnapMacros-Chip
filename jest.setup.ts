@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom";
 
+// Mock fetch for API calls (e.g. bootstrap-demo)
+global.fetch = jest.fn().mockResolvedValue({ ok: true });
+
 // Global mock for Supabase client
 jest.mock("@/lib/supabase/client", () => ({
     createClient: jest.fn(() => ({

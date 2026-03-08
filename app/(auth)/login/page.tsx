@@ -72,6 +72,11 @@ export default function LoginPage() {
             });
             if (error) throw error;
 
+            // Ensure demo profile has onboarding_completed so we land on dashboard
+            if (email === "demo@snapmacros.app") {
+                await fetch("/api/bootstrap-demo", { method: "POST" });
+            }
+
             setUiState("success");
             await new Promise(resolve => setTimeout(resolve, 600)); // flash success
             router.push("/dashboard");
@@ -105,6 +110,9 @@ export default function LoginPage() {
                 password: "SnapMacros2026!",
             });
             if (error) throw new Error("Demo unavailable");
+
+            // Ensure demo profile has onboarding_completed so we land on dashboard
+            await fetch("/api/bootstrap-demo", { method: "POST" });
 
             // Mock network delay for UX
             await new Promise(r => setTimeout(r, 1000));
