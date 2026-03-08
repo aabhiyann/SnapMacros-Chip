@@ -58,6 +58,7 @@ export default function ResultPage() {
 
     const [status, setStatus] = useState<Status>("loading");
     const [bgImage, setBgImage] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     // Loading State
     const [loadingLineIdx, setLoadingLineIdx] = useState(0);
@@ -96,7 +97,7 @@ export default function ResultPage() {
         }, 1800);
 
         const abortController = new AbortController();
-        const timeoutId = setTimeout(() => abortController.abort(), 10000);
+        const timeoutId = setTimeout(() => abortController.abort(), 20000);
 
         const performAnalysis = async () => {
             try {
@@ -113,10 +114,15 @@ export default function ResultPage() {
                 });
 
                 clearTimeout(timeoutId);
+                const json = await res.json().catch(() => ({}));
 
-                if (!res.ok) throw new Error("API FAILED");
-
-                const json = await res.json();
+                if (!res.ok) {
+                    const msg = (json as { error?: string; details?: string }).error || (json as { details?: string }).details || "Analysis failed";
+                    setErrorMessage(msg);
+                    clearInterval(txtInt);
+                    setStatus("error");
+                    return;
+                }
 
                 clearInterval(txtInt);
                 setProgress(100);
@@ -124,10 +130,10 @@ export default function ResultPage() {
                 setTimeout(() => {
                     setData(json);
                     setManualMacros({
-                        calories: json.calories,
-                        protein: json.protein,
-                        carbs: json.carbs,
-                        fat: json.fat
+                        calories: json.calories ?? 0,
+                        protein: json.protein ?? 0,
+                        carbs: json.carbs ?? 0,
+                        fat: json.fat ?? 0
                     });
 
                     // Auto Meal Type
@@ -143,6 +149,7 @@ export default function ResultPage() {
             } catch (e) {
                 clearTimeout(timeoutId);
                 clearInterval(txtInt);
+                setErrorMessage(e instanceof Error ? e.message : "Network or request failed");
                 setStatus("error");
             }
         };
@@ -249,6 +256,26 @@ export default function ResultPage() {
         );
     }
 
+    const handleLogManually = () => {
+        const desc = sessionStorage.getItem("snap_description") || "My meal";
+        setData({
+            food_name: desc.slice(0, 40) || "My meal",
+            calories: 400,
+            protein: 25,
+            carbs: 50,
+            fat: 15,
+            confidence: "medium",
+            reasoning: "Entered manually — edit macros below if needed.",
+        });
+        setManualMacros({ calories: 400, protein: 25, carbs: 50, fat: 15 });
+        const hr = new Date().getHours();
+        if (hr < 11) setMealType("Breakfast");
+        else if (hr < 16) setMealType("Lunch");
+        else if (hr < 22) setMealType("Dinner");
+        else setMealType("Snack");
+        setStatus("success");
+    };
+
     if (status === "error") {
         return (
             <main className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center px-[20px] pb-[72px]">
@@ -256,11 +283,22 @@ export default function ResultPage() {
                 <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[28px] font-bold text-white text-center tracking-tight">
                     Chip couldn't figure that one out.
                 </h2>
-                <p className="text-[#A0A0B8] mb-12 text-center text-[15px] font-['DM_Sans'] px-4 max-w-[280px]">
+                <p className="text-[#A0A0B8] mb-4 text-center text-[15px] font-['DM_Sans'] px-4 max-w-[280px]">
                     Try a clearer photo or describe the meal.
                 </p>
+                {errorMessage && (
+                    <p className="text-[#F87171]/90 mb-6 text-center text-[13px] font-['DM_Sans'] px-4 max-w-[320px] break-words">
+                        {errorMessage}
+                    </p>
+                )}
 
                 <div className="w-full max-w-[320px] space-y-3">
+                    <button
+                        onClick={handleLogManually}
+                        className="w-full h-[56px] rounded-[16px] bg-[#2DD4BF]/20 border border-[#2DD4BF]/50 text-[#2DD4BF] font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.98] transition-transform"
+                    >
+                        Log meal manually (no AI)
+                    </button>
                     <button
                         onClick={() => router.push("/snap")}
                         className="w-full premium-btn"
