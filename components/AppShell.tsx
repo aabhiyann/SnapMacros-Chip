@@ -24,7 +24,7 @@ export function AppShell({ children, chipEmotion }: { children: React.ReactNode,
         const { data: profile } = await supabase
           .from("profiles")
           .select("onboarding_completed")
-          .eq("id", session.user.id)
+          .eq("user_id", session.user.id)
           .single();
 
         if (!profile?.onboarding_completed && pathname !== "/onboarding" && pathname !== "/") {
