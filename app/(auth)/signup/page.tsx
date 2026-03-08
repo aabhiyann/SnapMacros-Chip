@@ -98,8 +98,8 @@ export default function SignupPage() {
         try {
             const supabase = createClient();
             const redirectUrl = typeof window !== "undefined"
-                ? `${window.location.origin}/onboarding`
-                : (process.env.NEXT_PUBLIC_APP_URL || "https://snapmacros.vercel.app") + "/onboarding";
+                ? `${window.location.origin}/auth/callback`
+                : (process.env.NEXT_PUBLIC_APP_URL || "https://snapmacros.vercel.app") + "/auth/callback";
             const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
