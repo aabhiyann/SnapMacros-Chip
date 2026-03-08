@@ -22,11 +22,11 @@ export async function GET(request: Request) {
       .limit(parsed.data.limit);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message, code: "MEALS_FETCH_ERROR" }, { status: 500 });
     }
     return NextResponse.json({ meals: data ?? [] });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message, code: "INTERNAL_ERROR" }, { status: 500 });
   }
 }

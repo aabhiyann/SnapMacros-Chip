@@ -166,7 +166,7 @@ export default function SnapPage() {
                 <div className="absolute top-[env(safe-area-inset-top,20px)] left-[20px] z-50">
                     <button
                         onClick={() => router.push("/dashboard")}
-                        className="w-[44px] h-[44px] rounded-full bg-[#1A1A24] flex items-center justify-center border border-[#2A2A3A]"
+                        className="w-[48px] h-[48px] rounded-full bg-[#1A1A24] flex items-center justify-center border border-[#2A2A3A]"
                     >
                         <X size={20} className="text-white" />
                     </button>
@@ -236,7 +236,7 @@ export default function SnapPage() {
             <div className="absolute top-[env(safe-area-inset-top)] left-0 right-0 z-50 px-[20px] pt-4 flex justify-between items-center">
                 <button
                     onClick={() => router.push("/dashboard")}
-                    className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
+                    className="w-[48px] h-[48px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
                 >
                     <X size={20} className="text-white" />
                 </button>
@@ -245,12 +245,12 @@ export default function SnapPage() {
                     {torchSupported && (
                         <button
                             onClick={toggleTorch}
-                            className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
+                            className="w-[48px] h-[48px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10"
                         >
                             {isTorchOn ? <Zap size={20} className="text-[#FF6B35]" /> : <ZapOff size={20} className="text-white" />}
                         </button>
                     )}
-                    <label className="w-[44px] h-[44px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 cursor-pointer">
+                    <label className="w-[48px] h-[48px] rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 cursor-pointer">
                         <input
                             type="file"
                             accept="image/*"
@@ -321,10 +321,10 @@ export default function SnapPage() {
                     />
                 </div>
 
-                <div className="mt-6 flex justify-center items-center h-[44px]">
+                <div className="mt-6 flex justify-center items-center min-h-[48px]">
                     <button
                         onClick={() => setIsSheetOpen(true)}
-                        className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] active:text-white px-4 py-2"
+                        className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] active:text-white px-4 py-3 min-h-[48px] flex items-center justify-center"
                     >
                         or describe your meal
                     </button>

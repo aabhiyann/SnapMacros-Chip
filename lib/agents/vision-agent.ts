@@ -2,7 +2,11 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AnalysisResult } from '@/lib/types';
 import { logger } from '@/lib/logger';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+function getGenAI() {
+    const key = process.env.GOOGLE_AI_API_KEY;
+    if (!key) throw new Error("Missing GOOGLE_AI_API_KEY environment variable. Add it to .env.local");
+    return new GoogleGenerativeAI(key);
+}
 
 const SYSTEM_PROMPT = `You are NutriLens, an expert food scientist inside SnapMacros.
 
@@ -37,6 +41,7 @@ export async function analyzeFood(
     maxRetries = 2
 ): Promise<AnalysisResult> {
     const startTime = Date.now();
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const userPrompt = `${SYSTEM_PROMPT}

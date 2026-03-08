@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import html2canvas from "html2canvas";
-import Chip from "@/components/Chip";
+import { Chip } from "@/components/Chip";
 import { WeeklyRoast } from "@/lib/agents/roast-agent";
 
 // We use an absolutely positioned off-screen container for this

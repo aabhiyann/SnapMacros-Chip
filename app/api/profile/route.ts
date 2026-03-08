@@ -48,6 +48,6 @@ export async function POST(request: Request) {
 
     } catch (err) {
         console.error("Profile API Error:", err);
-        return NextResponse.json({ error: "Failed to sync profile configuration" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to sync profile configuration", code: "PROFILE_SYNC_ERROR" }, { status: 500 });
     }
 }

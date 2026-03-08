@@ -60,7 +60,27 @@ export default function ProfilePage() {
         router.push("/login");
     };
 
-    if (!userData) return <AppShell><div /></AppShell>;
+    function ProfileSkeleton() {
+        return (
+            <AppShell>
+                <div className="relative pb-[120px] animate-pulse">
+                    <div className="px-5 mt-4 mb-8">
+                        <div className="bg-[#1A1A24] h-[120px] rounded-[24px] border border-[#2A2A3A]" />
+                    </div>
+                    <div className="px-5 grid grid-cols-3 gap-3 mb-8">
+                        <div className="h-[90px] bg-[#1A1A24] rounded-[16px] border border-[#2A2A3A]" />
+                        <div className="h-[90px] bg-[#1A1A24] rounded-[16px] border border-[#2A2A3A]" />
+                        <div className="h-[90px] bg-[#1A1A24] rounded-[16px] border border-[#2A2A3A]" />
+                    </div>
+                    <div className="px-5 mb-10">
+                        <div className="h-[240px] bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A]" />
+                    </div>
+                </div>
+            </AppShell>
+        );
+    }
+
+    if (!userData) return <ProfileSkeleton />;
 
     return (
         <AppShell>

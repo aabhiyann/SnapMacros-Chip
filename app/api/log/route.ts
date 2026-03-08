@@ -98,7 +98,7 @@ export async function POST(request: Request) {
         });
     } catch (error) {
         console.error("Log error:", error);
-        return NextResponse.json({ error: "Failed to log food" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to log food", code: "LOG_CREATE_ERROR" }, { status: 500 });
     }
 }
 
@@ -122,7 +122,7 @@ export async function DELETE(request: Request) {
         return new NextResponse(null, { status: 204 });
     } catch (error) {
         console.error("Delete error:", error);
-        return NextResponse.json({ error: "Failed to delete log" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to delete log", code: "LOG_DELETE_ERROR" }, { status: 500 });
     }
 }
 
@@ -143,6 +143,6 @@ export async function GET(request: Request) {
         if (error) throw error;
         return NextResponse.json(data);
     } catch (err) {
-        return NextResponse.json({ error: "Failed to get history" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to get history", code: "LOG_FETCH_ERROR" }, { status: 500 });
     }
 }

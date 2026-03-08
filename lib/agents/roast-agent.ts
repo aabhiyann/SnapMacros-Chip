@@ -1,7 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+function getGenAI() {
+    const key = process.env.GOOGLE_AI_API_KEY;
+    if (!key) throw new Error("Missing GOOGLE_AI_API_KEY environment variable. Add it to .env.local");
+    return new GoogleGenerativeAI(key);
+}
 
 export interface RoastContext {
     user_name: string;
@@ -155,6 +159,7 @@ Return ONLY a JSON matching this exact schema:
   "mascot_mood": "happy" | "hype" | "shocked" | "laughing" | "sad" | "on_fire" | "thinking" | "sleepy"
 }`;
 
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const fullPrompt = `${SYSTEM_PROMPT}\n\n${prompt}`;
 

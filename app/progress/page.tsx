@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ProgressPage() {
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [showShare, setShowShare] = useState(false);
 
@@ -25,6 +26,7 @@ export default function ProgressPage() {
             setData(json);
         } catch (e) {
             console.error(e);
+            setError("Unable to load progress data");
         } finally {
             setIsLoading(false);
         }
@@ -59,7 +61,49 @@ export default function ProgressPage() {
         }
     };
 
-    if (isLoading) return <AppShell><div className="min-h-screen bg-[#0F0F14]" /></AppShell>;
+    function ProgressSkeleton() {
+        return (
+            <AppShell>
+                <div className="pt-6 px-5 mb-8 mt-4 animate-pulse">
+                    <div className="w-[150px] h-8 bg-[#2A2A3A] rounded mb-2" />
+                    <div className="w-[100px] h-4 bg-[#2A2A3A] rounded mb-6" />
+                    <div className="bg-[#1A1A24] rounded-[24px] h-[160px] w-full border border-[#2A2A3A]" />
+                </div>
+                <div className="px-5 mb-10 animate-pulse">
+                    <div className="w-[180px] h-4 bg-[#2A2A3A] rounded mb-4" />
+                    <div className="flex justify-between px-1">
+                        {[1, 2, 3, 4, 5, 6, 7].map(i => (
+                            <div key={i} className="flex flex-col items-center gap-2">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#2A2A3A]" />
+                                <div className="w-6 h-2 bg-[#2A2A3A] rounded" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="px-5 mb-12 h-[220px] animate-pulse">
+                    <div className="w-[200px] h-6 bg-[#2A2A3A] rounded mb-6" />
+                    <div className="w-full h-[180px] bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A]" />
+                </div>
+            </AppShell>
+        );
+    }
+
+    if (isLoading) return <ProgressSkeleton />;
+
+    if (error) {
+        return (
+            <AppShell>
+                <div className="flex flex-col items-center justify-center pt-32 px-4 text-center">
+                    <Chip emotion="sad" size={100} />
+                    <h2 className="text-white mt-6 mb-2 text-xl font-bold font-['Bricolage_Grotesque']">Oops.</h2>
+                    <p className="text-[#A0A0B8] mb-6 font-['DM_Sans']">{error}</p>
+                    <button onClick={() => { setError(null); setIsLoading(true); fetchProgress(); }} className="px-6 py-3 bg-[#FF6B35] text-white rounded-xl font-['DM_Sans'] font-semibold">
+                        Retry
+                    </button>
+                </div>
+            </AppShell>
+        );
+    }
 
     // Format 7 Day calendar data
     // Requirements: 7 circles, Mon-Sun, green (hit) | orange (logged) | gray (none)

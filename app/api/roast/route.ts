@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const limitKey = `roast-${userId}-${weekStart}`;
 
     const limitInfo = getRateLimit(limitKey, 3);
-    if (!limitInfo.allowed) {
+    if (!limitInfo.success) {
       return NextResponse.json({ error: "Rate limit reached. Only 3 roasts per week!" }, { status: 429 });
     }
 
@@ -55,6 +55,10 @@ export async function POST(request: Request) {
 
   } catch (err) {
     console.error("Roast Generation Error:", err);
-    return NextResponse.json({ error: "Failed to generate roast" }, { status: 500 });
+    const msg = err instanceof Error ? err.message : "Failed to generate roast";
+    if (msg.includes("Missing ") || msg.includes("MISSING_ENV")) {
+      return NextResponse.json({ error: msg, code: "MISSING_ENV_VAR" }, { status: 500 });
+    }
+    return NextResponse.json({ error: msg, code: "ROAST_FAILED" }, { status: 500 });
   }
 }
