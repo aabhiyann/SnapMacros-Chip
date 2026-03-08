@@ -31,23 +31,29 @@ export const metadata: Metadata = {
     title: "SnapMacros",
   },
   icons: {
-    icon: "/icons/icon.svg",
-    apple: "/icons/icon.svg",
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
   },
   openGraph: {
-    title: "SnapMacros",
-    description: "AI nutrition tracker — photograph food, get instant macro breakdown.",
+    title: "SnapMacros — Snap your food. Know your macros.",
+    description: "AI nutrition tracking with Chip, your hatching egg mascot.",
     url: "/",
     siteName: "SnapMacros",
     images: [
       {
-        url: "/icons/icon.svg",
-        width: 512,
-        height: 512,
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
       },
     ],
     locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SnapMacros — Snap your food. Know your macros.",
+    description: "AI nutrition tracking with Chip, your hatching egg mascot.",
+    images: ["/og-image.png"],
   },
 };
 

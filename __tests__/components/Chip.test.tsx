@@ -4,13 +4,15 @@ import { Chip } from "@/components/Chip";
 describe("Chip", () => {
   it("renders without crashing", () => {
     render(<Chip />);
-    const svg = document.querySelector("svg");
-    expect(svg).toBeInTheDocument();
+    const img = document.querySelector("img");
+    expect(img).toBeInTheDocument();
   });
 
   it("renders with default emotion happy", () => {
     render(<Chip />);
-    expect(document.querySelector("svg")).toBeInTheDocument();
+    const img = document.querySelector("img");
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute("src", expect.stringContaining("happy-state"));
   });
 
   it("renders all 8 emotions", () => {
@@ -26,15 +28,17 @@ describe("Chip", () => {
     ] as const;
     emotions.forEach((emotion) => {
       const { unmount } = render(<Chip emotion={emotion} />);
-      expect(document.querySelector("svg")).toBeInTheDocument();
+      const img = document.querySelector("img");
+      expect(img).toBeInTheDocument();
       unmount();
     });
   });
 
   it("accepts custom size", () => {
     render(<Chip size={120} />);
-    const svg = document.querySelector("svg");
-    expect(svg).toHaveAttribute("width", "120");
-    expect(svg).toHaveAttribute("height", "140");
+    const img = document.querySelector("img");
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute("width", "120");
+    expect(img).toHaveAttribute("height", "120");
   });
 });
