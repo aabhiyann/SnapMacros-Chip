@@ -19,7 +19,8 @@ export async function POST() {
 
         const { error } = await supabase
             .from("profiles")
-            .update({
+            .upsert({
+                user_id: user.id,
                 onboarding_completed: true,
                 name: "Alex",
                 target_calories: 2500,
@@ -28,14 +29,13 @@ export async function POST() {
                 target_fat: 80,
                 streak_days: 5,
                 updated_at: new Date().toISOString(),
-            })
-            .eq("user_id", user.id);
+            }, { onConflict: "user_id" });
 
         if (error) throw error;
 
         return NextResponse.json({ success: true });
     } catch (err) {
         console.error("Bootstrap demo error:", err);
-        return NextResponse.json({ error: "Failed to bootstrap demo" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to bootstrap demo", details: err instanceof Error ? err.message : String(err) }, { status: 500 });
     }
 }
