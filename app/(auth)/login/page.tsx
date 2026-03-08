@@ -9,7 +9,7 @@ import { TapButton } from "@/components/ui/TapButton";
 import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
 
-type UiState = "idle" | "loading" | "error" | "success";
+type UiState = "idle" | "loading" | "demo-loading" | "error" | "success";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -25,6 +25,7 @@ export default function LoginPage() {
         switch (uiState) {
             case "idle": return "happy";
             case "loading": return "thinking";
+            case "demo-loading": return "thinking";
             case "error": return "sad";
             case "success": return "hype";
             default: return "happy";
@@ -46,6 +47,8 @@ export default function LoginPage() {
             setErrMsg("Slow down! Wait 30 seconds and try again.");
         } else if (msg.includes("fetch") || msg.includes("network")) {
             setErrMsg("Connection issue. Check your wifi and try again.");
+        } else if (msg.includes("demo unavailable")) {
+            setErrMsg("Demo unavailable. Please sign up instead.");
         } else {
             setErrMsg("Something went wrong. Please try again.");
         }
@@ -63,33 +66,36 @@ export default function LoginPage() {
         try {
             const supabase = createClient();
 
-            // Allow demo user shortcut for review purposes
-            if (email === "demo@snapmacros.app" && password === "SnapMacros2026Demo!") {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) {
-                    // Provide fallback creation if someone dropped the db
-                    const { error: signUpError } = await supabase.auth.signUp({
-                        email,
-                        password,
-                    });
-                    if (signUpError) throw signUpError;
-                }
-            } else {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-            }
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+            if (error) throw error;
 
             setUiState("success");
             await new Promise(resolve => setTimeout(resolve, 600)); // flash success
             router.push("/dashboard");
         } catch (err: any) {
             handleAuthError(err.message || "Network Error");
+        }
+    };
+
+    const handleDemoLogin = async () => {
+        setUiState("demo-loading");
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.auth.signInWithPassword({
+                email: "demo@snapmacros.app",
+                password: "SnapMacros2026!",
+            });
+            if (error) throw new Error("Demo unavailable");
+
+            // Mock network delay for UX
+            await new Promise(r => setTimeout(r, 1000));
+            setUiState("success");
+            router.push("/dashboard");
+        } catch (err: any) {
+            handleAuthError(err.message || "Demo unavailable");
         }
     };
 
@@ -113,9 +119,11 @@ export default function LoginPage() {
                             <p className="font-body text-[18px] font-bold">Welcome back 👋</p>
                         </motion.div>
                     )}
-                    {uiState === "loading" && (
+                    {(uiState === "loading" || uiState === "demo-loading") && (
                         <motion.div key="load" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-4">
-                            <p className="font-body text-[#A0A0B8] italic">Authenticating...</p>
+                            <p className="font-body text-[#A0A0B8] italic">
+                                {uiState === "demo-loading" ? "Loading Chip's world..." : "Authenticating..."}
+                            </p>
                         </motion.div>
                     )}
                     {uiState === "error" && (
@@ -187,6 +195,14 @@ export default function LoginPage() {
                     ) : uiState === "success" ? (
                         "Success!"
                     ) : "Sign In"}
+                </TapButton>
+
+                <TapButton
+                    type="button"
+                    onClick={handleDemoLogin}
+                    className="w-full h-[56px] bg-[#1A1A24] border border-[#2A2A3A] text-white rounded-[16px] font-body font-bold text-[16px] hover:bg-[#2A2A3A] active:scale-[0.98] transition-all flex items-center justify-center -mt-2"
+                >
+                    Try Demo
                 </TapButton>
             </motion.form>
 

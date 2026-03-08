@@ -7,7 +7,9 @@ import { calculateFullProfile } from "@/lib/tdee";
 export async function GET() {
     try {
         const supabase = createClient();
-        const userId = DEMO_USER_ID; // In prod: await supabase.auth.getUser()
+        const { data: { user } } = await supabase.auth.getUser();
+        // Since layout protects this, user generally exists
+        const userId = user?.id || DEMO_USER_ID;
 
         // Mock constants for user goals since we don't have an onboarding flow saved yet
         const USER_GOALS = {
@@ -43,10 +45,10 @@ export async function GET() {
 
         if (logsError) throw logsError;
 
-        // 3. Fetch User Profile (Streaks)
+        // 3. Fetch User Profile (Streaks, Name)
         const { data: profile } = await supabase
             .from("profiles")
-            .select("streak_days, longest_streak")
+            .select("streak_days, longest_streak, name")
             .eq("user_id", userId)
             .single();
 
@@ -100,7 +102,8 @@ export async function GET() {
             remaining,
             profile: {
                 streak_days: streakDays,
-                name: "Abhiyan" // Mocked name
+                name: profile?.name || "Abhiyan", // Mocked name
+                email: user?.email || ""
             },
             logs: logs || [],
             chip: chipState,

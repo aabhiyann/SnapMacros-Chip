@@ -5,7 +5,12 @@ jest.mock("@/lib/supabase/client", () => ({
     createClient: jest.fn(() => ({
         auth: {
             getSession: jest.fn().mockResolvedValue({ data: { session: null } }),
-            signInWithPassword: jest.fn().mockResolvedValue({ data: {}, error: null }),
+            signInWithPassword: jest.fn(async ({ email }) => {
+                if (email === "wrong@test.com") {
+                    return { data: null, error: new Error("Invalid login credentials") };
+                }
+                return { data: {}, error: null };
+            }),
             signUp: jest.fn().mockResolvedValue({ data: {}, error: null }),
             signOut: jest.fn().mockResolvedValue({ error: null }),
         },
