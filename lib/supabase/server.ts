@@ -1,11 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 /**
  * Create a Supabase client for server-side use (API routes, Server Components).
- * For auth to work, use middleware + cookies(); until then this uses a minimal
- * cookie store so DB/storage calls work.
+ * Uses cookies from the request so auth.getUser() works in route handlers.
  */
-export function createClient() {
+export async function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -13,13 +13,20 @@ export function createClient() {
     throw new Error("Missing Supabase env: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
   }
 
+  const cookieStore = await cookies();
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
-        return [];
+        return cookieStore.getAll();
       },
-      setAll() {
-        // No-op when not using auth cookies; add middleware for auth
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {
+          // Ignore in route handlers / Server Components
+        }
       },
     },
   });

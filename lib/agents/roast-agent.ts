@@ -40,7 +40,7 @@ RULES:
 5. You must return your response as purely valid JSON, with NO surrounding markdown or extra text.`;
 
 export async function buildRoastContext(userId: string): Promise<RoastContext> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 7);

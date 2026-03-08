@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid query", details: parsed.error.flatten() }, { status: 400 });
     }
-    const supabase = createClient();
+        const supabase = await createClient();
     // Assume table: meals (id, user_id, image_url?, macros?, created_at, ...)
     const { data, error } = await supabase
       .from("meals")
