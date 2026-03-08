@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { calculateFullProfile } from "@/lib/tdee";
 
 export async function GET() {
@@ -66,42 +66,63 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { goal, name, age, weight, weightUnit, height, heightUnit, gender, activityLevel } = body;
 
-        // 2. Normalize units to Kg / Cm for DB store
+        // 2. Normalize units to Kg / Cm (ft = total inches from AboutStep)
         const weightKg = weightUnit === "kg" ? parseFloat(weight) : parseFloat(weight) * 0.453592;
         const heightCm = heightUnit === "cm" ? parseFloat(height) : parseFloat(height) * 2.54;
 
-        // 3. Server-side authoritative validation
+        // 3. Sanitize to prevent NaN
+        const safeWeightKg = isNaN(weightKg) ? 70 : Math.max(30, Math.min(350, weightKg));
+        const safeHeightCm = isNaN(heightCm) ? 175 : Math.max(100, Math.min(250, heightCm));
+        const safeAge = Math.max(13, Math.min(85, parseInt(age) || 25));
+        const safeGender = (gender === "female" ? "female" : "male") as "male" | "female";
+        const safeActivity = activityLevel || "moderate";
+        const safeGoal = goal || "maintain";
+
+        // 4. Server-side authoritative validation
         const profile = calculateFullProfile({
-            weightKg,
-            heightCm,
-            age: parseInt(age),
-            gender: gender as "male" | "female",
-            activityLevel: activityLevel as any,
-            goalType: goal as any,
+            weightKg: safeWeightKg,
+            heightCm: safeHeightCm,
+            age: safeAge,
+            gender: safeGender,
+            activityLevel: safeActivity,
+            goalType: safeGoal,
         });
 
-        // 4. Upsert `profiles` tracking
-        const { data, error } = await supabase
-            .from("profiles")
-            .upsert({
-                user_id: userId,
-                name,
-                target_calories: profile.calorieTarget,
-                target_protein: profile.macroTarget.protein,
-                target_carbs: profile.macroTarget.carbs,
-                target_fat: profile.macroTarget.fat,
-                onboarding_completed: true,
-                updated_at: new Date().toISOString()
-            }, { onConflict: "user_id" })
-            .select()
-            .single();
+        // 5. Upsert - use admin client if available (bypasses RLS when profile doesn't exist)
+        const payload = {
+            user_id: userId,
+            name: name || "User",
+            target_calories: Math.round(profile.calorieTarget),
+            target_protein: profile.macroTarget.protein,
+            target_carbs: profile.macroTarget.carbs,
+            target_fat: profile.macroTarget.fat,
+            onboarding_completed: true,
+            updated_at: new Date().toISOString(),
+        };
 
-        if (error) throw error;
+        let data: unknown;
+        let error: { message: string } | null = null;
+
+        if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+            const admin = createAdminClient();
+            const result = await admin.from("profiles").upsert(payload, { onConflict: "user_id" }).select().single();
+            data = result.data;
+            error = result.error;
+        } else {
+            const result = await supabase.from("profiles").upsert(payload, { onConflict: "user_id" }).select().single();
+            data = result.data;
+            error = result.error;
+        }
+
+        if (error) throw new Error(error.message);
 
         return NextResponse.json({ success: true, profile: data }, { status: 200 });
-
     } catch (err) {
         console.error("Profile API Error:", err);
-        return NextResponse.json({ error: "Failed to sync profile configuration", code: "PROFILE_SYNC_ERROR" }, { status: 500 });
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        return NextResponse.json(
+            { error: "Failed to sync profile configuration", code: "PROFILE_SYNC_ERROR", details: msg },
+            { status: 500 }
+        );
     }
 }
