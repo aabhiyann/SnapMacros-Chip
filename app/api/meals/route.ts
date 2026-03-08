@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 
 const querySchema = z.object({
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid query", details: parsed.error.flatten() }, { status: 400 });
     }
-        const supabase = await createClient();
+    const supabase = await createClient();
     // Assume table: meals (id, user_id, image_url?, macros?, created_at, ...)
     const { data, error } = await supabase
       .from("meals")
