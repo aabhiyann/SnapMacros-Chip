@@ -3,19 +3,28 @@ export function calculateBMR(weightKg: number, heightCm: number, age: number, ge
     return gender === "male" ? base + 5 : base - 161;
 }
 
-export function calculateTDEE(bmr: number, activityLevel: "sedentary" | "moderate" | "active"): number {
-    const multipliers = { sedentary: 1.2, moderate: 1.55, active: 1.725 };
-    return bmr * multipliers[activityLevel];
+const ACTIVITY_MULTIPLIERS: Record<string, number> = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+    extra_active: 1.9,
+};
+
+export function calculateTDEE(bmr: number, activityLevel: string): number {
+    const mult = ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55;
+    return bmr * mult;
 }
 
-export function getCalorieTarget(tdee: number, goalType: "maintain" | "cut" | "bulk"): number {
+export function getCalorieTarget(tdee: number, goalType: string): number {
     let target = tdee;
-    if (goalType === "cut") target -= 500;
-    if (goalType === "bulk") target += 500;
+    if (goalType === "cut" || goalType === "fat_loss") target -= 500;
+    if (goalType === "bulk" || goalType === "lean_bulk") target += 500;
     return Math.max(target, 1200); // floor at 1200
 }
 
-export function getMacroTargets(calorieTarget: number, goalType: "maintain" | "cut" | "bulk") {
+export function getMacroTargets(calorieTarget: number, _goalType?: string) {
     const pCal = calorieTarget * 0.3;
     const cCal = calorieTarget * 0.4;
     const fCal = calorieTarget * 0.3;
@@ -32,8 +41,8 @@ export function calculateFullProfile(params: {
     heightCm: number;
     age: number;
     gender: "male" | "female";
-    activityLevel: "sedentary" | "moderate" | "active";
-    goalType: "maintain" | "cut" | "bulk";
+    activityLevel: string;
+    goalType: string;
 }) {
     const bmr = calculateBMR(params.weightKg, params.heightCm, params.age, params.gender);
     const tdee = calculateTDEE(bmr, params.activityLevel);
