@@ -1,10 +1,18 @@
 "use client";
 import { TapButton } from "@/components/ui/TapButton";
-
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Chip } from "@/components/Chip";
 
 export function WelcomeStep({ onNext }: { onNext: () => void }) {
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push("/login");
+    };
     return (
         <div className="flex-1 flex flex-col px-[20px] pt-[80px] pb-[160px] overflow-y-auto w-full max-w-md mx-auto relative h-screen">
 
@@ -102,6 +110,12 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                 >
                     Less than 60 seconds <span className="mx-2 font-black">·</span> Free
                 </motion.p>
+                <button
+                    onClick={handleSignOut}
+                    className="mt-3 font-['DM_Sans'] text-[12px] text-[#60607A] hover:text-[#A0A0B8] transition-colors"
+                >
+                    Sign out
+                </button>
             </div>
         </div>
     );
