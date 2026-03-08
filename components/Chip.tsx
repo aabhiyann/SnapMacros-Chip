@@ -20,16 +20,16 @@ export interface ChipProps {
   className?: string;
 }
 
-// Map each emotion to the best available image
+// Map each emotion to transparent PNG image
 const EMOTION_IMAGES: Record<ChipEmotion, string> = {
-  happy: "/happy-state.png",
-  hype: "/hype-state.png",
-  shocked: "/shocked-state.png",
-  laughing: "/laughing-state.png",
-  sad: "/sad-state.png",
-  on_fire: "/on-fire-state.png",
-  thinking: "/thinking-state.png",
-  sleepy: "/sleepy-state.png",
+  happy: "/icons/happy-state.png",
+  hype: "/icons/hype-state.png",
+  sad: "/icons/sad-state.png",
+  thinking: "/icons/thinking-state.png",
+  laughing: "/icons/laughing-state.png",
+  shocked: "/icons/shocked-state.png",
+  on_fire: "/icons/on-fire-state.png",
+  sleepy: "/icons/sleepy-state.png",
 };
 
 // Framer Motion variants
@@ -107,7 +107,13 @@ export const Chip = React.memo(function Chip({
         animate={{ opacity: 1, scale: 1, ...variant.animate }}
         exit={{ opacity: 0, scale: 0.85 }}
         transition={{ duration: 0.35 }}
-        style={{ width: size, height: size, display: "inline-block" }}
+        style={{
+          width: size,
+          height: size,
+          display: "inline-block",
+          background: "none",
+          backgroundColor: "transparent",
+        }}
         className={className}
       >
         <div
@@ -115,6 +121,8 @@ export const Chip = React.memo(function Chip({
             position: "relative",
             width: size,
             height: size,
+            background: "none",
+            backgroundColor: "transparent",
           }}
         >
           <Image
@@ -126,6 +134,7 @@ export const Chip = React.memo(function Chip({
               objectFit: "contain",
               width: "100%",
               height: "100%",
+              background: "none",
             }}
             priority
           />
