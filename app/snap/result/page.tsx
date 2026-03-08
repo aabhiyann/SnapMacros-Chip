@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chip } from "@/components/Chip";
 import CountUp from "react-countup";
 import confetti from "canvas-confetti";
-import { Check, Edit2 } from "lucide-react";
+import { Check, Edit2, CheckCircle, HelpCircle, AlertCircle } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
@@ -334,14 +334,14 @@ export default function ResultPage() {
                         {data.food_name}
                     </h2>
                     <div className={cn(
-                        "text-[11px] tracking-[0.5px] font-bold uppercase py-1.5 px-3 rounded-full shrink-0 mt-3",
-                        data.confidence === "high" ? "bg-green-500/10 border border-green-500/20 text-green-500" :
-                            data.confidence === "medium" ? "bg-amber-500/10 border border-amber-500/20 text-amber-500" :
-                                "bg-red-500/10 border border-red-500/20 text-red-500"
+                        "flex items-center gap-1.5 py-1 px-3 rounded-full shrink-0 mt-3 font-['DM_Sans'] text-[12px] font-medium",
+                        data.confidence === "high" ? "bg-[#2DD4BF]/10 border border-[#2DD4BF]/20 text-[#2DD4BF]" :
+                            data.confidence === "medium" ? "bg-[#FBBF24]/10 border border-[#FBBF24]/20 text-[#FBBF24]" :
+                                "bg-[#F87171]/10 border border-[#F87171]/20 text-[#F87171]"
                     )}>
-                        {data.confidence === "high" ? "✓ Confident" :
-                            data.confidence === "medium" ? "~ Best Guess" :
-                                "⚠️ Unsure"}
+                        {data.confidence === "high" ? <><CheckCircle size={13} /> Confident</> :
+                            data.confidence === "medium" ? <><HelpCircle size={13} /> Best Guess</> :
+                                <><AlertCircle size={13} /> Unsure</>}
                     </div>
                 </div>
 
@@ -506,9 +506,9 @@ export default function ResultPage() {
                         <button
                             onClick={() => setIsEditing(true)}
                             disabled={isLogging}
-                            className="w-full h-[40px] rounded-[14px] text-[#A0A0B8] hover:text-white font-['DM_Sans'] text-[14px] font-medium flex items-center justify-center gap-2"
+                            className="w-full h-[40px] rounded-[14px] text-[#A0A0B8] hover:text-white font-['DM_Sans'] text-[14px] font-medium flex items-center justify-center gap-[6px]"
                         >
-                            <Edit2 size={14} /> Edit Macros
+                            <Edit2 size={14} /> <span>Edit Macros</span>
                         </button>
                     )}
                 </div>

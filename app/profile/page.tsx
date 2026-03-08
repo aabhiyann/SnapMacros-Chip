@@ -4,7 +4,7 @@ import { TapButton } from "@/components/ui/TapButton";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, Settings, Award, ChevronRight, User as UserIcon, Bell } from "lucide-react";
+import { LogOut, Settings, Award, ChevronRight, User as UserIcon, Bell, Target, Edit3, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
@@ -23,8 +23,8 @@ const SettingRow = ({ icon: Icon, label, value, onClick, isDanger }: any) => (
         className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
     >
         <div className="flex items-center gap-4 text-left">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDanger ? 'bg-[#EF4444]/10 text-[#EF4444]' : 'bg-[#2A2A3A] text-white'}`}>
-                <Icon size={18} />
+            <div className={`w-[36px] h-[36px] rounded-[10px] flex items-center justify-center shrink-0 ${isDanger ? 'bg-[#EF4444]/10 text-[#EF4444]' : 'bg-[#2A2A3A] text-white'}`}>
+                <Icon size={18} strokeWidth={2.5} />
             </div>
             <span className={`font-['DM_Sans'] font-medium text-[16px] ${isDanger ? 'text-[#EF4444]' : 'text-white'}`}>{label}</span>
         </div>
@@ -169,10 +169,10 @@ export default function ProfilePage() {
                 {/* SETTINGS LIST */}
                 <div className="px-5">
                     <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[24px] overflow-hidden">
-                        <SettingRow icon={UserIcon} label="Edit Profile" />
-                        <SettingRow icon={Award} label="Change Goal" value={userData.goal} onClick={() => router.push('/onboarding?step=1')} />
+                        <SettingRow icon={Edit3} label="Edit Profile" />
+                        <SettingRow icon={Target} label="Change Goal" value={userData.goal} onClick={() => router.push('/onboarding?step=1')} />
                         <SettingRow icon={Bell} label="Notifications" value="On" />
-                        <SettingRow icon={Settings} label="About SnapMacros" value="v1.0.0" />
+                        <SettingRow icon={Info} label="About SnapMacros" value="v1.0.0" />
                         <SettingRow
                             icon={LogOut}
                             label="Sign Out"

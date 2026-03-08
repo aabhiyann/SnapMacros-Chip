@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion";
-import { Trash2 } from "lucide-react";
+import { Trash2, Sunrise, Sun, Moon, Apple } from "lucide-react";
 
 export interface FoodLog {
     id: string;
@@ -22,13 +22,24 @@ interface FoodCardProps {
     index?: number; // Used for staggered entry animation
 }
 
+// Used for original card background if image is not present, though we now use icons
 const MEAL_COLORS: Record<string, string> = {
-    breakfast: "from-[#FBBF24] to-[#F59E0B]",
-    lunch: "from-[#2DD4BF] to-[#0D9488]",
-    dinner: "from-[#6C63FF] to-[#4F46E5]",
-    snack: "from-[#FF6B35] to-[#E85D2C]",
-    other: "from-[#A0A0B8] to-[#60607A]"
+    breakfast: "from-[#FBBF24]/20 to-[#F59E0B]/20",
+    lunch: "from-[#FF6B35]/20 to-[#E85D2C]/20",
+    dinner: "from-[#6C63FF]/20 to-[#4F46E5]/20",
+    snack: "from-[#2DD4BF]/20 to-[#0D9488]/20",
+    other: "from-[#A0A0B8]/20 to-[#60607A]/20"
 };
+
+function getMealIcon(type?: string) {
+    switch (type) {
+        case "breakfast": return <Sunrise size={20} stroke="#FBBF24" strokeWidth={2.5} />;
+        case "lunch": return <Sun size={20} stroke="#FF6B35" strokeWidth={2.5} />;
+        case "dinner": return <Moon size={20} stroke="#6C63FF" strokeWidth={2.5} />;
+        case "snack": return <Apple size={20} stroke="#2DD4BF" strokeWidth={2.5} />;
+        default: return <Sun size={20} stroke="#A0A0B8" strokeWidth={2.5} />;
+    }
+}
 
 export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
     const x = useMotionValue(0);
@@ -61,13 +72,13 @@ export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.65 + (index * 0.06), duration: 0.3, ease: "easeOut" }}
-            className="relative mb-3 rounded-2xl overflow-hidden bg-[#E85D2C]" // Deep red background reveals on swipe
+            className="relative mb-3 rounded-2xl overflow-hidden bg-[#F87171]" // Red background reveals on swipe
             ref={containerRef}
         >
             {/* Background delete action */}
-            <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center p-4">
+            <div className="absolute inset-y-0 right-0 w-[56px] flex items-center justify-center">
                 <motion.div style={{ opacity: deleteOpacity }} className="flex flex-col items-center">
-                    <Trash2 size={24} className="text-white" />
+                    <Trash2 size={18} stroke="white" strokeWidth={2.5} />
                 </motion.div>
             </div>
 
@@ -82,20 +93,20 @@ export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
                 className="relative bg-[linear-gradient(160deg,#1E1E2A_0%,#1A1A24_100%)] p-[20px] rounded-[20px] flex items-center justify-between z-10 w-full touch-pan-y border border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.3)] transition-colors active:border-white/[0.10]"
             >
                 <div className="flex items-center gap-4 flex-1 overflow-hidden">
-                    <div className={`w-[52px] h-[52px] rounded-[16px] shrink-0 bg-gradient-to-br ${bgGradient} flex items-center justify-center text-[20px] shadow-inner`}>
+                    <div className={`w-[52px] h-[52px] rounded-[16px] shrink-0 bg-gradient-to-br ${bgGradient} flex items-center justify-center shadow-inner`}>
                         {log.image_url ? (
                             <img src={log.image_url} alt="Food" className="w-full h-full object-cover rounded-[16px]" />
                         ) : (
-                            <span>{log.description.charAt(0).toUpperCase()}</span>
+                            getMealIcon(log.meal_type)
                         )}
                     </div>
 
                     <div className="flex-1 min-w-0 pr-2">
                         <h4 className="text-[16px] font-bold text-white font-['DM_Sans'] truncate">{log.description}</h4>
-                        <div className="flex items-center gap-1.5 mt-1.5">
-                            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#6C63FF]/15 text-[#6C63FF] border border-[#6C63FF]/30">P: {log.protein}g</span>
-                            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#2DD4BF]/15 text-[#2DD4BF] border border-[#2DD4BF]/30">C: {log.carbs}g</span>
-                            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#F87171]/15 text-[#F87171] border border-[#F87171]/30">F: {log.fat}g</span>
+                        <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                            <span className="macro-pill macro-pill--protein">P: {log.protein}g</span>
+                            <span className="macro-pill macro-pill--carbs">C: {log.carbs}g</span>
+                            <span className="macro-pill macro-pill--fat">F: {log.fat}g</span>
                         </div>
                     </div>
                 </div>

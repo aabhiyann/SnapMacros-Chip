@@ -7,6 +7,7 @@ import { ShareableRoast } from "@/components/roast/ShareableRoast";
 import { WeeklyRoast } from "@/lib/agents/roast-agent";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
+import { Flame, Share2 } from "lucide-react";
 
 export default function ProgressPage() {
     const [data, setData] = useState<any>(null);
@@ -172,7 +173,7 @@ export default function ProgressPage() {
                 <div className="bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] rounded-[24px] p-6 shadow-[0_12px_40px_rgba(255,107,53,0.25)] relative overflow-hidden flex items-center justify-between">
                     <div className="relative z-10">
                         <div className="flex items-center gap-2">
-                            <span className="text-[32px] leading-none mb-1">🔥</span>
+                            <Flame size={32} strokeWidth={2.5} className="text-white mb-1" />
                             <h2 className="text-[56px] font-black font-['Bricolage_Grotesque'] leading-none text-white tracking-[-2px]">
                                 {data?.streak || 0}
                             </h2>
@@ -337,9 +338,9 @@ export default function ProgressPage() {
 
                                     <button
                                         onClick={() => setShowShare(true)}
-                                        className="w-full flex items-center justify-center gap-2 bg-[#2A2A3A] hover:bg-[#323246] transition-colors text-white py-3.5 rounded-[14px] font-bold font-['DM_Sans']"
+                                        className="w-full flex items-center justify-center gap-[6px] bg-[#2A2A3A] hover:bg-[#323246] transition-colors text-white py-3.5 rounded-[14px] font-bold font-['DM_Sans']"
                                     >
-                                        Share My Roast 🔥
+                                        <Share2 size={16} strokeWidth={2.5} /> <span>Share My Roast</span>
                                     </button>
                                 </motion.div>
                             )}

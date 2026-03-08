@@ -4,6 +4,7 @@ import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
+import { Armchair, PersonStanding, Bike, Dumbbell, Zap } from "lucide-react";
 
 interface ActivityStepProps {
     data: OnboardingData;
@@ -12,11 +13,11 @@ interface ActivityStepProps {
 }
 
 const ACTIVITIES = [
-    { id: "sedentary", emoji: "🛋️", title: "Sedentary", desc: "Desk job, very little movement" },
-    { id: "light", emoji: "🚶", title: "Lightly Active", desc: "1–3 workouts per week" },
-    { id: "moderate", emoji: "🏃", title: "Moderately Active", desc: "3–5 workouts per week" },
-    { id: "active", emoji: "🏋️", title: "Very Active", desc: "6–7 intense workouts / week" },
-    { id: "very_active", emoji: "⚡", title: "Athlete", desc: "Twice-daily training or physical labor" },
+    { id: "sedentary", icon: Armchair, title: "Sedentary", desc: "Desk job, very little movement" },
+    { id: "light", icon: PersonStanding, title: "Lightly Active", desc: "1–3 workouts per week" },
+    { id: "moderate", icon: Bike, title: "Moderately Active", desc: "3–5 workouts per week" },
+    { id: "active", icon: Dumbbell, title: "Very Active", desc: "6–7 intense workouts / week" },
+    { id: "very_active", icon: Zap, title: "Athlete", desc: "Twice-daily training or physical labor" },
 ];
 
 export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
@@ -69,9 +70,9 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                                 : "bg-[#1A1A24] border-l-transparent hover:bg-[#22222F]"
                                 }`}
                         >
-                            {/* Emoji */}
-                            <div className="pl-[16px] text-[28px]">
-                                {act.emoji}
+                            {/* Icon */}
+                            <div className="pl-[16px] flex items-center justify-center">
+                                <act.icon size={26} stroke={isSelected ? '#FF6B35' : '#A0A0B8'} strokeWidth={2.5} />
                             </div>
 
                             {/* Content */}

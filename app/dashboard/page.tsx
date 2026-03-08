@@ -7,6 +7,7 @@ import { MacroRings } from "@/components/MacroRings";
 import { MealTimeline } from "@/components/MealTimeline";
 import { CountUp } from "@/components/rings/CountUp";
 import { motion } from "framer-motion";
+import { Flame } from "lucide-react";
 
 // Helper component for the spec-driven skeleton
 function DashboardSkeleton() {
@@ -180,12 +181,14 @@ export default function DashboardPage() {
                     </h1>
                 </div>
                 {data.profile.streak_days > 0 ? (
-                    <div className="bg-gradient-to-br from-[#FF6B35]/20 to-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-full px-3 py-1 mt-1 shrink-0 shadow-[0_0_12px_rgba(255,107,53,0.3)]">
-                        <span className="text-[13px] font-bold font-['DM_Sans'] text-[#FF6B35] tracking-wide">🔥 {data.profile.streak_days}</span>
+                    <div className="bg-gradient-to-br from-[#FF6B35]/20 to-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-full px-3 py-1 mt-1 shrink-0 shadow-[0_0_12px_rgba(255,107,53,0.3)] flex items-center gap-1.5">
+                        <Flame size={14} stroke="#FF6B35" strokeWidth={2.5} />
+                        <span className="text-[13px] font-bold font-['DM_Sans'] text-[#FF6B35] tracking-wide">{data.profile.streak_days}</span>
                     </div>
                 ) : (
-                    <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 mt-1 shrink-0">
-                        <span className="text-[13px] font-semibold font-['DM_Sans'] text-[#A0A0B8] tracking-wide">🔥 0</span>
+                    <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 mt-1 shrink-0 flex items-center gap-1.5">
+                        <Flame size={14} stroke="#A0A0B8" strokeWidth={2.5} />
+                        <span className="text-[13px] font-semibold font-['DM_Sans'] text-[#A0A0B8] tracking-wide">0</span>
                     </div>
                 )}
             </div>
