@@ -82,89 +82,131 @@ export const Chip = React.memo(function Chip({ emotion = "happy", size = 80, cla
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
       >
-        {/* Cracked shell (top) */}
-        <motion.g variants={variants}>
-          <path
-            d="M20 28 Q40 22 60 28 Q58 38 50 42 Q40 36 30 42 Q22 38 20 28 Z"
-            fill="#E8E4DC"
-            stroke="#C4BEB4"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M38 24 L42 44 M35 32 L48 36"
-            stroke="#A89F92"
-            strokeWidth="1"
-            opacity={0.8}
-          />
+        <defs>
+          <linearGradient id="shellGradient" x1="30%" y1="20%" x2="70%" y2="90%">
+            <stop offset="0%" stopColor="#FDFAF4" />
+            <stop offset="60%" stopColor="#FAF7F0" />
+            <stop offset="100%" stopColor="#EDE5D8" />
+          </linearGradient>
+          <linearGradient id="flameGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#FF6B35" />
+            <stop offset="50%" stopColor="#FF8540" />
+            <stop offset="100%" stopColor="#FBBF24" />
+          </linearGradient>
+        </defs>
+
+        {/* Drop shadow (ground) */}
+        <ellipse cx="40" cy="76" rx="18" ry="4" fill="rgba(0,0,0,0.2)" />
+
+        {/* Head peeking out (round) - placed behind the body so the shell covers the bottom */}
+        <motion.g variants={variants} animate="head" style={{ transformOrigin: "40px 38px" }}>
+          <circle cx="40" cy="38" r="16" fill="url(#shellGradient)" stroke="#E0DAD0" strokeWidth="1" />
+
+          {/* Blush for hype/laughing */}
+          {(emotion === "hype" || emotion === "laughing") && (
+            <g>
+              <ellipse cx="28" cy="42" rx="5" ry="3" fill="#FFB3A7" opacity="0.6" />
+              <ellipse cx="52" cy="42" rx="5" ry="3" fill="#FFB3A7" opacity="0.6" />
+            </g>
+          )}
+
+          {/* Left Eye */}
+          <motion.g variants={variants} animate="eye" style={{ transformOrigin: "32px 36px" }}>
+            <ellipse cx="32" cy="36" rx="6" ry="7" fill="#FFFFFF" />
+            <ellipse cx="33" cy="36" rx="3.5" ry="4.5" fill="#2D2A26" />
+            <circle cx="34.5" cy="33.5" r="1.5" fill="#FFFFFF" />
+          </motion.g>
+
+          {/* Right Eye */}
+          <motion.g variants={variants} animate="eye" style={{ transformOrigin: "48px 36px" }}>
+            <ellipse cx="48" cy="36" rx="6" ry="7" fill="#FFFFFF" />
+            <ellipse cx="47" cy="36" rx="3.5" ry="4.5" fill="#2D2A26" />
+            <circle cx="48.5" cy="33.5" r="1.5" fill="#FFFFFF" />
+          </motion.g>
+
+          {/* Mouth / expression hint */}
+          {emotion === "happy" && (
+            <path d="M36 44 Q40 48 44 44" stroke="#2D2A26" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          )}
+          {emotion === "laughing" && (
+            <path d="M35 44 Q40 50 45 44" stroke="#2D2A26" strokeWidth="2" strokeLinecap="round" fill="none" />
+          )}
+          {emotion === "sad" && (
+            <path d="M36 46 Q40 43 44 46" stroke="#2D2A26" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          )}
         </motion.g>
 
-        {/* Egg body (cream oval) */}
+        {/* Egg body (Shell body oval with gradient) */}
         <motion.ellipse
           cx="40"
-          cy="52"
+          cy="56"
           rx="24"
-          ry="22"
-          fill="#F5F0E6"
-          stroke="#E0DAD0"
-          strokeWidth="1.5"
+          ry="20"
+          fill="url(#shellGradient)"
           variants={variants}
           animate="body"
         />
 
-        {/* Head peeking out (round) */}
-        <motion.g variants={variants} animate="head" style={{ transformOrigin: "40px 38px" }}>
-          <circle cx="40" cy="38" r="14" fill="#F5F0E6" stroke="#E0DAD0" strokeWidth="1" />
+        {/* Rim highlight and Irregular crack line attached to the body */}
+        <motion.g variants={variants} animate="body">
+          {/* Subtle rim highlight at the top of the body for 3D/glossy effect */}
+          <ellipse cx="40" cy="38" rx="14" ry="2" fill="#FFFFFF" opacity="0.4" />
 
-          {/* Eyes */}
-          <motion.ellipse
-            cx="35"
-            cy="36"
-            rx="3"
-            ry="4"
-            fill="#2D2A26"
-            variants={variants}
-            animate="eye"
-            style={{ transformOrigin: "35px 36px" }}
+          {/* Irregular organic crack line */}
+          <path
+            d="M 28 42 L 32 38 L 36 41 L 40 37 L 44 40 L 48 38 L 52 42"
+            stroke="#C4B5A0"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            opacity={0.8}
           />
-          <motion.ellipse
-            cx="45"
-            cy="36"
-            rx="3"
-            ry="4"
-            fill="#2D2A26"
-            variants={variants}
-            animate="eye"
-            style={{ transformOrigin: "45px 36px" }}
-          />
+        </motion.g>
 
-          {/* Mouth / expression hint */}
-          {emotion === "happy" && (
-            <path d="M35 42 Q40 46 45 42" stroke="#2D2A26" strokeWidth="1.5" fill="none" />
-          )}
-          {emotion === "laughing" && (
-            <path d="M34 44 Q40 50 46 44" stroke="#2D2A26" strokeWidth="2" fill="none" />
-          )}
-          {emotion === "sad" && (
-            <path d="M35 46 Q40 42 45 46" stroke="#2D2A26" strokeWidth="1.5" fill="none" />
-          )}
+        {/* Cracked shell hat (top) - keeping it to retain the egg vibe if desired, though softened */}
+        <motion.g variants={variants}>
+          <path
+            d="M 30 24 Q 40 18 50 24 Q 48 32 44 34 Q 40 30 36 34 Q 32 30 30 24 Z"
+            fill="url(#shellGradient)"
+            stroke="#C4BEB4"
+            strokeWidth="1"
+            strokeLinejoin="round"
+          />
         </motion.g>
 
         {/* Flame effect for on_fire */}
         {isOnFire && (
-          <motion.g
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            style={{ transformOrigin: "40px 20px" }}
-          >
-            <path
-              d="M40 12 Q44 22 40 28 Q36 22 40 12"
-              fill="#FF6B35"
-              opacity={0.9}
+          <motion.g style={{ transformOrigin: "40px 15px" }}>
+            {/* Center Flame */}
+            <motion.path
+              d="M40 8 Q45 18 40 22 Q35 18 40 8"
+              fill="url(#flameGradient)"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.8, 1, 0.8],
+              }}
+              transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut" }}
             />
-            <path
-              d="M40 16 Q42 24 40 30 Q38 24 40 16"
-              fill="#FBBF24"
-              opacity={0.8}
+            {/* Left Flame */}
+            <motion.path
+              d="M34 14 Q38 20 34 24 Q30 20 34 14"
+              fill="url(#flameGradient)"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.6, 0.9, 0.6],
+              }}
+              transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut", delay: 0.2 }}
+            />
+            {/* Right Flame */}
+            <motion.path
+              d="M46 14 Q50 20 46 24 Q42 20 46 14"
+              fill="url(#flameGradient)"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.6, 0.9, 0.6],
+              }}
+              transition={{ repeat: Infinity, duration: 0.7, ease: "easeInOut", delay: 0.4 }}
             />
           </motion.g>
         )}
