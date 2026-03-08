@@ -16,7 +16,9 @@ function getWeekStart(d: Date) {
 export async function POST(request: Request) {
   try {
     const supabase = createClient();
-    const userId = DEMO_USER_ID;
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userId = user.id;
 
     // 1. Rate Limit: 3 roasts per week per user
     // We use our existing in-memory limiter but segment by week string

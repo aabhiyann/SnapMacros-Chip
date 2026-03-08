@@ -5,7 +5,9 @@ import { DEMO_USER_ID } from "@/lib/auth";
 export async function GET(request: Request) {
     try {
         const supabase = createClient();
-        const userId = DEMO_USER_ID;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const userId = user.id;
 
         const { searchParams } = new URL(request.url);
         const days = parseInt(searchParams.get("days") || "7");

@@ -6,7 +6,13 @@ import { calculateFullProfile } from "@/lib/tdee";
 export async function POST(request: Request) {
     try {
         const supabase = createClient();
-        const userId = DEMO_USER_ID;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+        }
+
+        const userId = user.id;
 
         // 1. Process Frontend Body
         const body = await request.json();
