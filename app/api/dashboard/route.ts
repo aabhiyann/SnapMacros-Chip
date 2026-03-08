@@ -12,17 +12,36 @@ export async function GET() {
         // Since layout protects this, user generally exists
         const userId = user?.id || DEMO_USER_ID;
 
-        // Mock constants for user goals since we don't have an onboarding flow saved yet
+        // 3. Fetch User Profile (Streaks, Name, Targets)
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("streak_days, longest_streak, name, target_calories, target_protein, target_carbs, target_fat")
+            .eq("user_id", userId)
+            .single();
+
+        const streakDays = profile?.streak_days || 0;
+
+        // Use profile targets when available; fallback to calculated defaults
         const USER_GOALS = {
             weightKg: 75,
             heightCm: 175,
             age: 28,
             gender: "male" as const,
             activityLevel: "active" as const,
-            goalType: "maintain" as const, // Or cut/bulk
+            goalType: "maintain" as const,
         };
 
-        const targets = calculateFullProfile(USER_GOALS);
+        const calculatedTargets = calculateFullProfile(USER_GOALS);
+        const targets = (profile?.target_calories != null && profile?.target_protein != null)
+            ? {
+                calorieTarget: profile.target_calories,
+                macroTarget: {
+                    protein: profile.target_protein,
+                    carbs: profile.target_carbs ?? calculatedTargets.macroTarget.carbs,
+                    fat: profile.target_fat ?? calculatedTargets.macroTarget.fat,
+                },
+            }
+            : calculatedTargets;
         const today = new Date().toISOString().split("T")[0];
 
         // 1. Fetch Daily Summary
@@ -45,15 +64,6 @@ export async function GET() {
             .order("created_at", { ascending: false });
 
         if (logsError) throw logsError;
-
-        // 3. Fetch User Profile (Streaks, Name)
-        const { data: profile } = await supabase
-            .from("profiles")
-            .select("streak_days, longest_streak, name")
-            .eq("user_id", userId)
-            .single();
-
-        const streakDays = profile?.streak_days || 0;
 
         // Calculate Percentages & Remaining
         const percentages = {

@@ -20,7 +20,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
 
     const targets = useMemo(() => {
         const weightKg = data.weightUnit === "kg" ? parseFloat(data.weight) : parseFloat(data.weight) * 0.453592;
-        const heightCm = data.heightUnit === "cm" ? parseFloat(data.height) : parseFloat(data.height) * 30.48;
+        const heightCm = data.heightUnit === "cm" ? parseFloat(data.height) : parseFloat(data.height) * 2.54;
 
         return calculateFullProfile({
             weightKg: isNaN(weightKg) ? 70 : weightKg,
@@ -89,28 +89,19 @@ export function ResultsStep({ data }: ResultsStepProps) {
                 return;
             }
 
-            const weightKg = data.weightUnit === "kg" ? parseFloat(data.weight) : parseFloat(data.weight) * 0.453592;
-            const heightCm = data.heightUnit === "cm" ? parseFloat(data.height) : parseFloat(data.height) * 30.48;
-
-            // Save to Supabase directly
+            // Save to Supabase directly (profiles table: name, target_*, onboarding_completed)
             const { error: updateError } = await supabase
                 .from('profiles')
                 .update({
                     name: data.name,
-                    age: parseInt(data.age) || 25,
-                    weight_kg: isNaN(weightKg) ? 70 : weightKg,
-                    height_cm: isNaN(heightCm) ? 175 : heightCm,
-                    gender: data.gender,
-                    activity: data.activityLevel,
-                    goal: data.goal,
-                    tdee: Math.round(targets.tdee),
-                    cal_target: targets.calorieTarget,
-                    protein_g: targets.macroTarget.protein,
-                    carbs_g: targets.macroTarget.carbs,
-                    fat_g: targets.macroTarget.fat,
+                    target_calories: targets.calorieTarget,
+                    target_protein: targets.macroTarget.protein,
+                    target_carbs: targets.macroTarget.carbs,
+                    target_fat: targets.macroTarget.fat,
                     onboarding_completed: true,
+                    updated_at: new Date().toISOString(),
                 })
-                .eq('id', user.id);
+                .eq('user_id', user.id);
 
             if (updateError) {
                 console.error('Profile save error:', updateError);

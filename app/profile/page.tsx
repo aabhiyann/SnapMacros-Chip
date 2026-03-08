@@ -46,19 +46,27 @@ export default function ProfilePage() {
     const supabase = createClient();
     const [showSignOutConf, setShowSignOutConf] = useState(false);
     const [userData, setUserData] = useState<any>(null);
-
     useEffect(() => {
-        // We would normally fetch current user profile here
-        // For now we will mock the presentation data
-        setUserData({
-            name: "Alex",
-            goal: "Maintain",
-            joined: "Jan 2026",
-            mealsLogged: 42,
-            bestStreak: 12,
-            roastsReceived: 3,
-            targets: { cal: 2150, pro: 160, carb: 200, fat: 80 }
-        });
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch("/api/profile");
+                if (!res.ok) throw new Error("Failed to fetch profile");
+                const data = await res.json();
+                setUserData(data);
+            } catch (err) {
+                console.error(err);
+                setUserData({
+                    name: "User",
+                    goal: "Maintain",
+                    joined: "—",
+                    mealsLogged: 0,
+                    bestStreak: 0,
+                    roastsReceived: 0,
+                    targets: { cal: 2000, pro: 150, carb: 250, fat: 65 },
+                });
+            }
+        };
+        fetchProfile();
     }, []);
 
     const handleSignOut = async () => {
