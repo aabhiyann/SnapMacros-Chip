@@ -108,7 +108,7 @@ export default function SignupPage() {
             <div className="absolute top-10 w-full flex justify-center">
                 <h1 className="text-[30px] font-black font-heading tracking-tight">
                     <span className="text-white">Snap</span>
-                    <span className="text-[#FF6B35]">Macros</span>
+                    <span className="text-[#3B8BF7]">Macros</span>
                 </h1>
             </div>
 
@@ -159,7 +159,7 @@ export default function SignupPage() {
                         placeholder="What should Chip call you?"
                         value={name}
                         onChange={e => { setName(e.target.value); if (uiState === 'error') setUiState('idle'); }}
-                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 font-body focus:outline-none focus:ring-1 focus:ring-[#FF6B35] focus:border-[#FF6B35] transition-colors placeholder:text-[#60607A]"
+                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 font-body focus:outline-none focus:ring-1 focus:ring-[#3B8BF7] focus:border-[#3B8BF7] transition-colors placeholder:text-[#60607A]"
                     />
                 </div>
 
@@ -169,7 +169,7 @@ export default function SignupPage() {
                         placeholder="Email"
                         value={email}
                         onChange={e => { setEmail(e.target.value); if (uiState === 'error') setUiState('idle'); }}
-                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 font-body focus:outline-none focus:ring-1 focus:ring-[#FF6B35] focus:border-[#FF6B35] transition-colors placeholder:text-[#60607A]"
+                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 font-body focus:outline-none focus:ring-1 focus:ring-[#3B8BF7] focus:border-[#3B8BF7] transition-colors placeholder:text-[#60607A]"
                     />
                 </div>
 
@@ -179,7 +179,7 @@ export default function SignupPage() {
                         placeholder="Password"
                         value={password}
                         onChange={e => { setPassword(e.target.value); if (uiState === 'error') setUiState('idle'); }}
-                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 pr-14 font-body focus:outline-none focus:ring-1 focus:ring-[#FF6B35] focus:border-[#FF6B35] transition-colors placeholder:text-[#60607A]"
+                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 pr-14 font-body focus:outline-none focus:ring-1 focus:ring-[#3B8BF7] focus:border-[#3B8BF7] transition-colors placeholder:text-[#60607A]"
                     />
                     <TapButton
                         type="button"
@@ -196,7 +196,7 @@ export default function SignupPage() {
                         placeholder="Confirm Password"
                         value={confirmPassword}
                         onChange={e => { setConfirmPassword(e.target.value); if (uiState === 'error') setUiState('idle'); }}
-                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 pr-14 font-body focus:outline-none focus:ring-1 focus:ring-[#FF6B35] focus:border-[#FF6B35] transition-colors placeholder:text-[#60607A]"
+                        className="w-full bg-[#1A1A24] text-white border border-[#2A2A3A] rounded-[16px] h-[52px] px-5 pr-14 font-body focus:outline-none focus:ring-1 focus:ring-[#3B8BF7] focus:border-[#3B8BF7] transition-colors placeholder:text-[#60607A]"
                     />
                     <TapButton
                         type="button"
@@ -243,7 +243,7 @@ export default function SignupPage() {
 
             <div className="absolute bottom-10 text-center w-full z-10">
                 <Link href="/login" className="text-[#A0A0B8] font-body text-[14px] font-medium hover:underline min-h-[44px] inline-flex items-center">
-                    Already have an account? <span className="text-[#FF6B35] ml-1 font-bold">Sign in</span>
+                    Already have an account? <span className="text-[#3B8BF7] ml-1 font-bold">Sign in</span>
                 </Link>
             </div>
         </main>

@@ -56,7 +56,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.2, type: "spring", stiffness: 300, damping: 25 }}
-                        className="bg-[#FF6B35]/10 border border-[#FF6B35]/30 text-[#FF6B35] px-4 py-2 rounded-full font-['DM_Sans'] font-bold text-[14px]"
+                        className="bg-[#3B8BF7]/10 border border-[#3B8BF7]/30 text-[#3B8BF7] px-4 py-2 rounded-full font-['DM_Sans'] font-bold text-[14px]"
                     >
                         📷 Snap Food
                     </motion.div>

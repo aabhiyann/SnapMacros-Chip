@@ -33,7 +33,11 @@ const config: Config = {
         bg: "#0F0F14",
         card: "#1A1A24",
         elevated: "#22222F",
-        primary: "#FF6B35",
+        primary: {
+          DEFAULT: '#3B8BF7',
+          10: 'rgba(59,139,247,0.10)',
+          20: 'rgba(59,139,247,0.20)',
+        },
         secondary: "#6C63FF",
         success: "#2DD4BF",
         warning: "#FBBF24",

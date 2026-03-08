@@ -106,7 +106,7 @@ export default function LoginPage() {
                 {/* Radial Glow */}
                 <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] pointer-events-none"
-                    style={{ background: 'radial-gradient(circle at center, rgba(255,107,53,0.15) 0%, transparent 70%)' }}
+                    style={{ background: 'radial-gradient(circle at center, rgba(59,139,247,0.15) 0%, transparent 70%)' }}
                 />
 
                 {/* Mascot Area */}
@@ -118,7 +118,7 @@ export default function LoginPage() {
                 <div className="text-center mt-2 z-10">
                     <h1 className="text-[28px] font-bold font-['Bricolage_Grotesque'] tracking-tight leading-none mb-1">
                         <span className="text-white">Snap</span>
-                        <span className="text-[#FF6B35]">Macros</span>
+                        <span className="text-[#3B8BF7]">Macros</span>
                     </h1>
                     <p className="font-['DM_Sans'] text-[14px] text-[#60607A]">Snap. Track. Roast.</p>
                 </div>
@@ -218,13 +218,13 @@ export default function LoginPage() {
 
                 <div className="mt-8 text-center flex items-center justify-center gap-2">
                     <span className="text-[#60607A] font-['DM_Sans'] text-[14px]">New here?</span>
-                    <Link href="/signup" className="text-white font-['DM_Sans'] text-[14px] font-medium hover:text-[#FF6B35] transition-colors">
+                    <Link href="/signup" className="text-white font-['DM_Sans'] text-[14px] font-medium hover:text-[#3B8BF7] transition-colors">
                         Sign up
                     </Link>
                 </div>
 
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center w-full z-10">
-                    <button onClick={handleDemoLogin} className="text-[#FF6B35] font-['DM_Sans'] text-[13px] font-semibold tracking-wide hover:opacity-80 transition-opacity flex items-center justify-center gap-1 mx-auto">
+                    <button onClick={handleDemoLogin} className="text-[#3B8BF7] font-['DM_Sans'] text-[13px] font-semibold tracking-wide hover:opacity-80 transition-opacity flex items-center justify-center gap-1 mx-auto">
                         Try Demo &rarr;
                     </button>
                 </div>

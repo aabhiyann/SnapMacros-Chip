@@ -51,7 +51,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
                     particleCount: 28,
                     spread: 100,
                     origin: { y: 0.5, x: 0.5 },
-                    colors: ["#FF6B35", "#6C63FF", "#2DD4BF", "#FBBF24", "#FFFFFF"],
+                    colors: ["#3B8BF7", "#6C63FF", "#2DD4BF", "#FBBF24", "#FFFFFF"],
                     shapes: ['square'],
                     ticks: 60, // Fade out fast over ~1s
                     gravity: 1.2
@@ -132,7 +132,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.4 }}
-                        className="w-full bg-gradient-to-br from-[#FF6B35] to-[#FF8540] rounded-[20px] p-6 text-center shadow-[0_12px_40px_rgba(255,107,53,0.3)] mb-4"
+                        className="w-full bg-gradient-to-br from-[#3B8BF7] to-[#5B9EF8] rounded-[20px] p-6 text-center shadow-[0_12px_40px_rgba(59,139,247,0.3)] mb-4"
                     >
                         <div className="text-[24px] mb-2 leading-none">🔥</div>
                         <div className="text-[52px] font-bold font-['Bricolage_Grotesque'] text-white leading-none mb-1">
@@ -178,7 +178,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
                         <TapButton
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
+                            className="w-full h-[56px] bg-[#3B8BF7] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(59,139,247,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
                         >
                             {isSubmitting ? "Launching..." : "Start Tracking 🚀"}
                         </TapButton>

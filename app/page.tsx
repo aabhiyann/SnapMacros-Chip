@@ -65,7 +65,7 @@ export default function SplashScreen() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="text-[#FF6B35] font-heading font-bold text-[32px]"
+          className="text-[#3B8BF7] font-heading font-bold text-[32px]"
         >
           Macros
         </motion.span>

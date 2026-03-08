@@ -59,7 +59,7 @@ export function PWAInstallBanner() {
                     className="fixed bottom-[100px] left-4 right-4 z-[9999] bg-[#1A1A24] border border-[#2A2A3A] shadow-2xl rounded-2xl p-4 flex items-center justify-between"
                 >
                     <div className="flex gap-3 text-left">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#FF8C35] flex flex-shrink-0 items-center justify-center text-white text-[18px]">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3B8BF7] to-[#FF8C35] flex flex-shrink-0 items-center justify-center text-white text-[18px]">
                             🥚
                         </div>
                         <div className="flex flex-col flex-1 justify-center">

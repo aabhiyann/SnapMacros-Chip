@@ -80,26 +80,26 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
                             animate={isSelected ? { scale: [0.98, 1.02, 1] } : { scale: 1 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
                             className={`w-full flex items-center p-4 rounded-[16px] text-left transition-all duration-200 border ${isSelected
-                                ? "bg-[rgba(255,107,53,0.08)] border-[#FF6B35]"
+                                ? "bg-[rgba(59,139,247,0.08)] border-[#3B8BF7]"
                                 : "bg-[#1A1A24] border-[#2A2A3A] hover:bg-[#20202D]"
                                 }`}
                         >
                             {/* Icon Circle bg */}
-                            <div className={`w-[44px] h-[44px] rounded-[14px] flex items-center justify-center shrink-0 mr-4 transition-colors ${isSelected ? 'bg-[#FF6B35]/15' : 'bg-[#2A2A3A]'}`}>
-                                <g.icon size={24} stroke={isSelected ? '#FF6B35' : '#A0A0B8'} strokeWidth={2.5} />
+                            <div className={`w-[44px] h-[44px] rounded-[14px] flex items-center justify-center shrink-0 mr-4 transition-colors ${isSelected ? 'bg-[#3B8BF7]/15' : 'bg-[#2A2A3A]'}`}>
+                                <g.icon size={24} stroke={isSelected ? '#3B8BF7' : '#A0A0B8'} strokeWidth={2.5} />
                             </div>
 
                             <div className="flex-1 pr-4">
                                 <h3 className={`text-[16px] font-bold font-['DM_Sans'] leading-tight mb-0.5 text-white`}>
                                     {g.title}
                                 </h3>
-                                <p className={`text-[13px] font-['DM_Sans'] leading-snug ${isSelected ? 'text-[#FF6B35]/80' : 'text-[#A0A0B8]'}`}>
+                                <p className={`text-[13px] font-['DM_Sans'] leading-snug ${isSelected ? 'text-[#3B8BF7]/80' : 'text-[#A0A0B8]'}`}>
                                     {g.desc}
                                 </p>
                             </div>
 
                             {/* Radio Circle */}
-                            <div className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'border-[#FF6B35] bg-[#FF6B35]' : 'border-[#60607A] bg-transparent'}`}>
+                            <div className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'border-[#3B8BF7] bg-[#3B8BF7]' : 'border-[#60607A] bg-transparent'}`}>
                                 {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
                             </div>
                         </motion.button>

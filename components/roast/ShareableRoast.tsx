@@ -60,7 +60,7 @@ export function ShareableRoast({ roast, isVisible, onClose }: { roast: WeeklyRoa
                     {/* Branding */}
                     <div className="flex items-center justify-between mb-8 opacity-60">
                         <span className="font-heading font-bold text-white text-[16px]">SnapMacros</span>
-                        <span className="font-['DM_Sans'] text-[#FF6B35] font-bold text-[13px]">WEEKLY ROAST</span>
+                        <span className="font-['DM_Sans'] text-[#3B8BF7] font-bold text-[13px]">WEEKLY ROAST</span>
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center">
@@ -99,7 +99,7 @@ export function ShareableRoast({ roast, isVisible, onClose }: { roast: WeeklyRoa
                     <button onClick={onClose} className="flex-1 py-3 rounded-full bg-[#2A2A3A] text-white font-bold font-['DM_Sans'] active:scale-95 transition-transform">
                         Cancel
                     </button>
-                    <button onClick={handleShare} className="flex-1 py-3 rounded-full bg-[#FF6B35] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(255,107,53,0.3)] active:scale-95 transition-transform">
+                    <button onClick={handleShare} className="flex-1 py-3 rounded-full bg-[#3B8BF7] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(59,139,247,0.3)] active:scale-95 transition-transform">
                         Share to IG
                     </button>
                 </div>

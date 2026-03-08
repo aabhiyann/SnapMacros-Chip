@@ -23,12 +23,12 @@ const DescribeMealSheet = ({ isOpen, onClose, onSubmit, isAnalyzing }: any) => {
                     value={desc}
                     onChange={(e) => setDesc(e.target.value)}
                     placeholder="e.g., grilled salmon with rice and broccoli"
-                    className="w-full h-[120px] bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-4 text-white font-['DM_Sans'] text-[15px] resize-none focus:outline-none focus:border-[#FF6B35] transition-colors mb-4 placeholder:text-[#60607A]"
+                    className="w-full h-[120px] bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-4 text-white font-['DM_Sans'] text-[15px] resize-none focus:outline-none focus:border-[#3B8BF7] transition-colors mb-4 placeholder:text-[#60607A]"
                 />
                 <button
                     onClick={() => onSubmit(desc)}
                     disabled={!desc.trim() || isAnalyzing}
-                    className="w-full h-[56px] rounded-[16px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-bold flex items-center justify-center disabled:opacity-50 active:scale-[0.98] transition-all"
+                    className="w-full h-[56px] rounded-[16px] bg-[#3B8BF7] text-white font-['DM_Sans'] text-[16px] font-bold flex items-center justify-center disabled:opacity-50 active:scale-[0.98] transition-all"
                 >
                     {isAnalyzing ? "Analyzing..." : "Analyze This \u2192"}
                 </button>
@@ -144,13 +144,13 @@ export default function SnapPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={PLACEHOLDERS[placeholderIdx]}
-                className="w-full bg-black/20 border border-[#2A2A3A] rounded-[12px] p-4 text-[#FFFFFF] font-['DM_Sans'] text-[16px] h-[120px] resize-none focus:outline-none focus:border-[#FF6B35] transition-colors"
+                className="w-full bg-black/20 border border-[#2A2A3A] rounded-[12px] p-4 text-[#FFFFFF] font-['DM_Sans'] text-[16px] h-[120px] resize-none focus:outline-none focus:border-[#3B8BF7] transition-colors"
                 style={{ backgroundColor: "rgba(255,255,255,0.03)" }}
             />
             <button
                 onClick={handleDescribeSubmit}
                 disabled={!description.trim()}
-                className="mt-4 w-full h-[56px] rounded-[14px] bg-[#FF6B35] text-white font-['DM_Sans'] text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-transform"
+                className="mt-4 w-full h-[56px] rounded-[14px] bg-[#3B8BF7] text-white font-['DM_Sans'] text-[16px] font-semibold flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 transition-transform"
             >
                 Analyze This &rarr;
             </button>
@@ -173,7 +173,7 @@ export default function SnapPage() {
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10">
-                    <Chip emotion="thinking" size={100} className="mb-6 drop-shadow-[0_0_30px_rgba(255,107,53,0.3)]" />
+                    <Chip emotion="thinking" size={100} className="mb-6 drop-shadow-[0_0_30px_rgba(59,139,247,0.3)]" />
                     <h2 className="font-['Bricolage_Grotesque'] text-[28px] font-bold text-white mb-3 tracking-tight">Camera access blocked.</h2>
                     <p className="text-[#A0A0B8] text-[15px] font-['DM_Sans'] max-w-[280px] mx-auto mb-8 leading-relaxed">
                         Allow camera in Settings or describe your meal instead.
@@ -271,17 +271,17 @@ export default function SnapPage() {
                         className="absolute inset-0"
                     >
                         {/* Top Left */}
-                        <div className="absolute top-0 left-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
-                        <div className="absolute top-0 left-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute top-0 left-0 w-[24px] h-[3px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
+                        <div className="absolute top-0 left-0 w-[3px] h-[24px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
                         {/* Top Right */}
-                        <div className="absolute top-0 right-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
-                        <div className="absolute top-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute top-0 right-0 w-[24px] h-[3px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
+                        <div className="absolute top-0 right-0 w-[3px] h-[24px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
                         {/* Bottom Left */}
-                        <div className="absolute bottom-0 left-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
-                        <div className="absolute bottom-0 left-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute bottom-0 left-0 w-[24px] h-[3px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
+                        <div className="absolute bottom-0 left-0 w-[3px] h-[24px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
                         {/* Bottom Right */}
-                        <div className="absolute bottom-0 right-0 w-[24px] h-[3px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
-                        <div className="absolute bottom-0 right-0 w-[3px] h-[24px] bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.8)] rounded-full" />
+                        <div className="absolute bottom-0 right-0 w-[24px] h-[3px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
+                        <div className="absolute bottom-0 right-0 w-[3px] h-[24px] bg-[#3B8BF7] shadow-[0_0_12px_rgba(59,139,247,0.8)] rounded-full" />
                     </motion.div>
                 </div>
                 <div className="text-white text-[13px] font-['DM_Sans'] drop-shadow-md tracking-wide">
@@ -309,7 +309,7 @@ export default function SnapPage() {
                 className="absolute bottom-0 left-0 right-0 z-30 pt-16 pb-[calc(20px+env(safe-area-inset-bottom))] flex flex-col items-center"
                 style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)" }}
             >
-                <div className="relative w-[80px] h-[80px] flex items-center justify-center rounded-full border-[3px] border-white/80 shadow-[0_0_30px_rgba(255,107,53,0.6)]">
+                <div className="relative w-[80px] h-[80px] flex items-center justify-center rounded-full border-[3px] border-white/80 shadow-[0_0_30px_rgba(59,139,247,0.6)]">
                     <motion.button
                         onPointerDown={() => {
                             if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
@@ -317,7 +317,7 @@ export default function SnapPage() {
                         onClick={capture}
                         whileTap={{ scale: 1.15 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
-                        className="w-[64px] h-[64px] bg-gradient-to-br from-[#FF8040] to-[#FF6B35] rounded-full focus:outline-none"
+                        className="w-[64px] h-[64px] bg-gradient-to-br from-[#5B9EF8] to-[#3B8BF7] rounded-full focus:outline-none"
                     />
                 </div>
 

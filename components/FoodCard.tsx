@@ -25,7 +25,7 @@ interface FoodCardProps {
 // Used for original card background if image is not present, though we now use icons
 const MEAL_COLORS: Record<string, string> = {
     breakfast: "from-[#FBBF24]/20 to-[#F59E0B]/20",
-    lunch: "from-[#FF6B35]/20 to-[#E85D2C]/20",
+    lunch: "from-[#3B8BF7]/20 to-[#E85D2C]/20",
     dinner: "from-[#6C63FF]/20 to-[#4F46E5]/20",
     snack: "from-[#2DD4BF]/20 to-[#0D9488]/20",
     other: "from-[#A0A0B8]/20 to-[#60607A]/20"
@@ -34,7 +34,7 @@ const MEAL_COLORS: Record<string, string> = {
 function getMealIcon(type?: string) {
     switch (type) {
         case "breakfast": return <Sunrise size={20} stroke="#FBBF24" strokeWidth={2.5} />;
-        case "lunch": return <Sun size={20} stroke="#FF6B35" strokeWidth={2.5} />;
+        case "lunch": return <Sun size={20} stroke="#3B8BF7" strokeWidth={2.5} />;
         case "dinner": return <Moon size={20} stroke="#6C63FF" strokeWidth={2.5} />;
         case "snack": return <Apple size={20} stroke="#2DD4BF" strokeWidth={2.5} />;
         default: return <Sun size={20} stroke="#A0A0B8" strokeWidth={2.5} />;
