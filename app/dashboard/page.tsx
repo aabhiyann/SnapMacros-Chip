@@ -171,25 +171,28 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {/* 1. Fixed Header (app wrapper handles scrolling, but visually top) */}
-            <div className="pt-[48px] px-[20px] mb-6 relative">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{greeting}</span>
-                        <h1 className="text-white text-[22px] font-bold font-['DM_Sans'] leading-tight">{data.profile.name}</h1>
-                    </div>
-                    {data.profile.streak_days > 0 ? (
-                        <div className="bg-[#FF6B35]/10 text-[#FF6B35] px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-[#FF6B35]/50">
-                            <span className="text-[12px] font-bold font-['DM_Sans']">🔥 {data.profile.streak_days} days</span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-1.5 pt-1">
-                            <span className="text-[12px] text-[#A0A0B8] font-['DM_Sans']">Start a streak 🔥</span>
-                        </div>
-                    )}
+            {/* 1. Frosted Glass Fixed Header */}
+            <div className="fixed top-0 left-0 right-0 z-50 pt-[max(env(safe-area-inset-top),16px)] pb-4 px-[20px] bg-[rgba(15,15,20,0.85)] backdrop-blur-[20px] border-b border-white/[0.06] flex justify-between items-center max-w-md mx-auto">
+                <div className="flex flex-col">
+                    <span className="text-[#A0A0B8] text-[14px] font-[400] tracking-[0.1px] leading-[1.6] font-['DM_Sans']">{greeting}</span>
+                    <h1 className="flex items-center text-[20px] font-bold font-['Bricolage_Grotesque'] tracking-[-0.5px] whitespace-nowrap">
+                        <span className="text-white">Snap</span>
+                        <span className="text-[#FF6B35]">Macros</span>
+                    </h1>
                 </div>
-                <p className="text-[#60607A] text-[13px] font-['DM_Sans'] mt-2 tracking-wide uppercase">{todayDate}</p>
+                {data.profile.streak_days > 0 ? (
+                    <div className="bg-gradient-to-br from-[#FF6B35]/20 to-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-full px-3 py-1 mt-1 shrink-0">
+                        <span className="text-[13px] font-semibold font-['DM_Sans'] text-[#FF6B35] tracking-wide">🔥 {data.profile.streak_days}</span>
+                    </div>
+                ) : (
+                    <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 mt-1 shrink-0">
+                        <span className="text-[13px] font-semibold font-['DM_Sans'] text-[#A0A0B8] tracking-wide">🔥 0</span>
+                    </div>
+                )}
             </div>
+
+            {/* Spacer for fixed header */}
+            <div className="h-[88px]" />
 
             {/* 2. Chip + Speech Row | Mount: x:-40->0 spring (300ms delay) */}
             <div className="px-[20px] mb-6 flex items-center gap-4 min-h-[120px]">
@@ -205,9 +208,9 @@ export default function DashboardPage() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.85 }} // Fades in at 850ms per spec
-                    className="flex-1 bg-[#1A1A24] rounded-[14px] p-4 border border-[#2A2A3A] relative shadow-lg z-0"
+                    className="flex-1 premium-card relative z-0 p-4"
                 >
-                    <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45 z-0" />
+                    <div className="absolute top-1/2 -left-[6px] -translate-y-1/2 w-4 h-4 bg-[#1E1E2A] border-l border-b border-white/[0.06] rotate-45 z-0" />
                     <div className="relative z-10">
                         {data.current.calories > data.targets.calories + 50 ? (
                             <>
@@ -238,7 +241,7 @@ export default function DashboardPage() {
                     size={280}
                 >
                     <div className="flex flex-col items-center justify-center">
-                        <CountUp value={data.current.calories} className="text-[48px] font-['Bricolage_Grotesque'] font-bold text-white leading-none tracking-tight" delay={0.5} duration={0.6} />
+                        <CountUp value={data.current.calories} className="text-[48px] font-['Bricolage_Grotesque'] font-[800] tracking-[-3px] text-white leading-none" delay={0.5} duration={0.6} />
                         <span className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] mt-1">/ {data.targets.calories} cal</span>
                     </div>
                 </MacroRings>

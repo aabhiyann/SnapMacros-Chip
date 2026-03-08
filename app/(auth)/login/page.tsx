@@ -187,8 +187,8 @@ export default function LoginPage() {
 
                 <TapButton
                     type="submit"
-                    className={`w-full h-[56px] rounded-[16px] font-body font-bold text-[16px] text-white shadow-[0_8px_32px_rgba(255,107,53,0.3)] transition-all flex items-center justify-center mt-2 ${uiState === "success" ? "bg-[#2DD4BF] shadow-none" : "bg-[#FF6B35] hover:brightness-110 active:scale-[0.98]"
-                        }`}
+                    disabled={uiState === "loading"}
+                    className="w-full premium-btn mt-2"
                 >
                     {uiState === "loading" ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />

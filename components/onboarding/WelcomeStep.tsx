@@ -89,7 +89,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                 >
                     <TapButton
                         onClick={onNext}
-                        className="w-full h-[56px] bg-[#FF6B35] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(255,107,53,0.35)] transition-transform active:scale-[0.98] mb-4"
+                        className="w-full premium-btn mb-4"
                     >
                         Let's Get Started &rarr;
                     </TapButton>

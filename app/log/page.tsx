@@ -148,7 +148,7 @@ export default function LogPage() {
                     type="text"
                     value={mealName}
                     onChange={(e) => setMealName(e.target.value)}
-                    className="w-full bg-card border border-elevated rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors"
+                    className="w-full premium-input"
                   />
                 </div>
 

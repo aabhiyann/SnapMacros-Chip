@@ -9,7 +9,7 @@ interface TapButtonProps extends HTMLMotionProps<"button"> {
 export function TapButton({ children, className = "", ...props }: TapButtonProps) {
     return (
         <motion.button
-            whileTap={{ scale: 0.96 }}
+            whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className={className}
             {...props}
