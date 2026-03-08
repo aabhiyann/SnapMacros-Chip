@@ -31,8 +31,8 @@ export const metadata: Metadata = {
     title: "SnapMacros",
   },
   icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/apple-touch-icon.png",
+    icon: "/icons/icon-512.png",
+    apple: "/icons/icon-512.png",
   },
   openGraph: {
     title: "SnapMacros — Snap your food. Know your macros.",
