@@ -65,22 +65,65 @@ export function ResultsStep({ data }: ResultsStepProps) {
         };
     }, []);
 
+    const [error, setError] = useState<string | null>(null);
+
     const handleSubmit = async () => {
         setIsSubmitting(true);
+        setError(null);
+
         try {
-            // POST /api/profile with full OnboardingData + Set onboarding_complete = true in DB
-            const res = await fetch("/api/profile", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
+            // Get Supabase Client
+            const { createClient } = await import("@/lib/supabase/client");
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
 
-            if (!res.ok) throw new Error("Failed to save profile");
+            if (!user) {
+                // Fallback to API route if no active session found (e.g. demo)
+                const res = await fetch("/api/profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error("Failed to save profile via API");
+                router.push("/dashboard");
+                return;
+            }
 
-            // router.push('/dashboard')
-            router.push("/dashboard");
-        } catch (e) {
-            console.error(e);
+            const weightKg = data.weightUnit === "kg" ? parseFloat(data.weight) : parseFloat(data.weight) * 0.453592;
+            const heightCm = data.heightUnit === "cm" ? parseFloat(data.height) : parseFloat(data.height) * 30.48;
+
+            // Save to Supabase directly
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({
+                    name: data.name,
+                    age: parseInt(data.age) || 25,
+                    weight_kg: isNaN(weightKg) ? 70 : weightKg,
+                    height_cm: isNaN(heightCm) ? 175 : heightCm,
+                    gender: data.gender,
+                    activity: data.activityLevel,
+                    goal: data.goal,
+                    tdee: Math.round(targets.tdee),
+                    cal_target: targets.calorieTarget,
+                    protein_g: targets.macroTarget.protein,
+                    carbs_g: targets.macroTarget.carbs,
+                    fat_g: targets.macroTarget.fat,
+                    onboarding_completed: true,
+                })
+                .eq('id', user.id);
+
+            if (updateError) {
+                console.error('Profile save error:', updateError);
+                setError('Could not save your profile. Please try again.');
+                setIsSubmitting(false);
+                return;
+            }
+
+            router.push('/dashboard');
+
+        } catch (err) {
+            console.error('Onboarding error:', err);
+            setError('Something went wrong. Please try again.');
             setIsSubmitting(false);
         }
     };
@@ -175,12 +218,13 @@ export function ResultsStep({ data }: ResultsStepProps) {
                         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
                         className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]"
                     >
+                        {error && <p className="text-center font-['DM_Sans'] text-[#F87171] text-[14px] mb-2">{error}</p>}
                         <TapButton
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                             className="w-full h-[56px] bg-[#3B8BF7] rounded-[16px] font-['DM_Sans'] text-[18px] font-bold text-white shadow-[0_8px_32px_rgba(59,139,247,0.35)] transition-transform active:scale-[0.98] disabled:bg-[#2A2A3A] disabled:text-[#60607A] disabled:shadow-none"
                         >
-                            {isSubmitting ? "Launching..." : "Start Tracking 🚀"}
+                            {isSubmitting ? "Saving..." : "Start Tracking 🚀"}
                         </TapButton>
                     </motion.div>
                 </div>
