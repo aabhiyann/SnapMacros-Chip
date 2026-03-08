@@ -153,7 +153,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                             <Minus size={18} />
                         </TapButton>
                         <input
-                            type="number"
+                            type="number" inputMode="numeric" pattern="[0-9]*"
                             value={localData.age}
                             onChange={(e) => setLocalData(prev => ({ ...prev, age: e.target.value }))}
                             placeholder="25"
@@ -173,7 +173,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                     <label className="block text-[#A0A0B8] text-[11px] font-bold uppercase mb-2 ml-1 tracking-wider">WEIGHT</label>
                     <div className="flex gap-2">
                         <input
-                            type="number"
+                            type="number" inputMode="numeric" pattern="[0-9]*"
                             value={localData.weight}
                             onChange={(e) => setLocalData(prev => ({ ...prev, weight: e.target.value }))}
                             placeholder="0"
@@ -201,7 +201,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                     <div className="flex gap-2">
                         {localData.heightUnit === "cm" ? (
                             <input
-                                type="number"
+                                type="number" inputMode="numeric" pattern="[0-9]*"
                                 value={localData.height}
                                 onChange={(e) => setLocalData(prev => ({ ...prev, height: e.target.value }))}
                                 placeholder="175"
@@ -211,7 +211,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                             <div className="flex-1 flex gap-2">
                                 <div className="flex-1 relative">
                                     <input
-                                        type="number"
+                                        type="number" inputMode="numeric" pattern="[0-9]*"
                                         value={getFeetInches(localData.height).ft}
                                         onChange={(e) => handleHeightFtChange("ft", e.target.value)}
                                         placeholder="5"
@@ -221,7 +221,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                                 </div>
                                 <div className="flex-1 relative">
                                     <input
-                                        type="number"
+                                        type="number" inputMode="numeric" pattern="[0-9]*"
                                         value={getFeetInches(localData.height).in}
                                         onChange={(e) => handleHeightFtChange("in", e.target.value)}
                                         placeholder="9"

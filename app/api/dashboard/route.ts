@@ -114,6 +114,6 @@ export async function GET() {
         });
     } catch (error) {
         console.error("Dashboard API Error:", error);
-        return NextResponse.json({ error: "Failed to load dashboard data" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to load dashboard data", code: "DASHBOARD_ERROR" }, { status: 500 });
     }
 }

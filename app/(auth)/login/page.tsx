@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { TapButton } from "@/components/ui/TapButton";
 import { Chip } from "@/components/Chip";
+import { createClient } from "@/lib/supabase/client";
 
 type UiState = "idle" | "loading" | "error" | "success";
 
@@ -60,18 +61,33 @@ export default function LoginPage() {
         setUiState("loading");
 
         try {
-            // Mock network delay
-            await new Promise(resolve => setTimeout(resolve, 800));
+            const supabase = createClient();
 
-            // Mock demo user routing
+            // Allow demo user shortcut for review purposes
             if (email === "demo@snapmacros.app" && password === "SnapMacros2026Demo!") {
-                setUiState("success");
-                await new Promise(resolve => setTimeout(resolve, 600)); // flash success
-                router.push("/dashboard");
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) {
+                    // Provide fallback creation if someone dropped the db
+                    const { error: signUpError } = await supabase.auth.signUp({
+                        email,
+                        password,
+                    });
+                    if (signUpError) throw signUpError;
+                }
             } else {
-                // Trigger generic wrong password message to demonstrate the UI
-                throw new Error("Invalid login credentials");
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
             }
+
+            setUiState("success");
+            await new Promise(resolve => setTimeout(resolve, 600)); // flash success
+            router.push("/dashboard");
         } catch (err: any) {
             handleAuthError(err.message || "Network Error");
         }

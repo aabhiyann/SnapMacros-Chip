@@ -59,6 +59,6 @@ export async function GET(request: Request) {
         });
     } catch (err) {
         console.error("Progress API Error:", err);
-        return NextResponse.json({ error: "Failed to load progress" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to load progress", code: "PROGRESS_FETCH_ERROR" }, { status: 500 });
     }
 }

@@ -355,7 +355,7 @@ export default function ResultPage() {
                     <div className="bg-[#FF6B35]/10 border border-[#FF6B35]/25 rounded-[16px] p-4 flex flex-col">
                         <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Calories 🔥</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.calories} onChange={e => setManualMacros({ ...manualMacros, calories: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.calories} onChange={e => setManualMacros({ ...manualMacros, calories: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
                             <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
                                 <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.calories * multiplier)} />
@@ -366,7 +366,7 @@ export default function ResultPage() {
                     <div className="bg-[#6C63FF]/10 border border-[#6C63FF]/25 rounded-[16px] p-4 flex flex-col">
                         <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Protein 💜</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.protein} onChange={e => setManualMacros({ ...manualMacros, protein: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.protein} onChange={e => setManualMacros({ ...manualMacros, protein: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
                             <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
                                 <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.protein * multiplier)} />g
@@ -377,7 +377,7 @@ export default function ResultPage() {
                     <div className="bg-[#2DD4BF]/10 border border-[#2DD4BF]/25 rounded-[16px] p-4 flex flex-col">
                         <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Carbs 💚</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.carbs} onChange={e => setManualMacros({ ...manualMacros, carbs: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.carbs} onChange={e => setManualMacros({ ...manualMacros, carbs: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
                             <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
                                 <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.carbs * multiplier)} />g
@@ -388,7 +388,7 @@ export default function ResultPage() {
                     <div className="bg-[#FBBF24]/10 border border-[#FBBF24]/25 rounded-[16px] p-4 flex flex-col">
                         <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Fat 🟡</span>
                         {isEditing ? (
-                            <input type="number" value={manualMacros.fat} onChange={e => setManualMacros({ ...manualMacros, fat: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
+                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.fat} onChange={e => setManualMacros({ ...manualMacros, fat: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
                         ) : (
                             <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
                                 <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.fat * multiplier)} />g

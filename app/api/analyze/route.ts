@@ -71,15 +71,21 @@ export async function POST(request: Request) {
     } catch (aiErr) {
       const msg = aiErr instanceof Error ? aiErr.message : "Analysis failed";
 
-      // Handle timeout mapping conceptually if it was a deep network timeout
+      if (msg.includes("Missing ") || msg.includes("MISSING_ENV")) {
+        return NextResponse.json({ error: msg, code: "MISSING_ENV_VAR" }, { status: 500 });
+      }
+
       if (msg.toLowerCase().includes("timeout")) {
         return NextResponse.json({ error: "Analysis timed out", code: "TIMEOUT" }, { status: 504 });
       }
 
-      return NextResponse.json({ error: "Analysis failed", code: "AI_ERROR", details: msg }, { status: 500 });
+      return NextResponse.json({ error: msg, code: "AI_ERROR" }, { status: 500 });
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Server error";
-    return NextResponse.json({ error: msg, code: "UNKNOWN" }, { status: 500 });
+    if (msg.includes("Missing ") || msg.includes("MISSING_ENV")) {
+      return NextResponse.json({ error: msg, code: "MISSING_ENV_VAR" }, { status: 500 });
+    }
+    return NextResponse.json({ error: msg, code: "INTERNAL_ERROR" }, { status: 500 });
   }
 }

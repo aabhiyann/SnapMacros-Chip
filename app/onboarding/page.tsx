@@ -67,7 +67,7 @@ export default function OnboardingPage() {
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             onClick={goPrev}
-                            className="w-[44px] h-[44px] rounded-full bg-[#1A1A24] flex items-center justify-center border border-[#2A2A3A] hover:bg-[#2A2A3A] transition-colors"
+                            className="w-[48px] h-[48px] rounded-full bg-[#1A1A24] flex items-center justify-center border border-[#2A2A3A] hover:bg-[#2A2A3A] transition-colors"
                         >
                             <ChevronLeft size={24} className="text-white" />
                         </motion.button>

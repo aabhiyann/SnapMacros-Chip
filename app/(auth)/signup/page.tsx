@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { TapButton } from "@/components/ui/TapButton";
 import { Chip } from "@/components/Chip";
+import { createClient } from "@/lib/supabase/client";
 
 type UiState = "idle" | "loading" | "error" | "success";
 
@@ -79,8 +80,18 @@ export default function SignupPage() {
         setUiState("loading");
 
         try {
-            // Fake auth 
-            await new Promise(r => setTimeout(r, 1200));
+            const supabase = createClient();
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: name,
+                    }
+                }
+            });
+
+            if (error) throw error;
 
             // Success routing to onboarding
             setUiState("success");
