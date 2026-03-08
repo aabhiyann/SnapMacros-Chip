@@ -92,7 +92,8 @@ function parseGeminiResponse(rawText: string): AnalysisResult {
     };
 }
 
-const MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+// Models available in Google AI Studio (generativelanguage.googleapis.com)
+const MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'];
 
 export async function analyzeFood(
     imageBase64: string,
