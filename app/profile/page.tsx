@@ -8,6 +8,8 @@ import { LogOut, Settings, Award, ChevronRight, User as UserIcon, Bell, Target, 
 import { useRouter } from "next/navigation";
 import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Mock out our components for the UI shell building phase
 const StatCard = ({ label, value }: { label: string, value: string | number }) => (
@@ -17,7 +19,7 @@ const StatCard = ({ label, value }: { label: string, value: string | number }) =
     </div>
 );
 
-const SettingRow = ({ icon: Icon, label, value, onClick, isDanger }: any) => (
+const SettingRow = ({ icon: Icon, label, value, rightElement, onClick, isDanger }: any) => (
     <TapButton
         onClick={onClick}
         className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
@@ -29,8 +31,12 @@ const SettingRow = ({ icon: Icon, label, value, onClick, isDanger }: any) => (
             <span className={`font-['DM_Sans'] font-medium text-[16px] ${isDanger ? 'text-[#EF4444]' : 'text-white'}`}>{label}</span>
         </div>
         <div className="flex items-center gap-3">
-            {value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>}
-            <ChevronRight size={18} className="text-[#60607A]" />
+            {rightElement ? rightElement : (
+                <>
+                    {value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>}
+                    <ChevronRight size={18} className="text-[#60607A]" />
+                </>
+            )}
         </div>
     </TapButton>
 );
@@ -171,7 +177,7 @@ export default function ProfilePage() {
                     <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[24px] overflow-hidden">
                         <SettingRow icon={Edit3} label="Edit Profile" />
                         <SettingRow icon={Target} label="Change Goal" value={userData.goal} onClick={() => router.push('/onboarding?step=1')} />
-                        <SettingRow icon={Bell} label="Notifications" value="On" />
+                        <SettingRow icon={Bell} label="Notifications" rightElement={<Switch defaultChecked />} />
                         <SettingRow icon={Info} label="About SnapMacros" value="v1.0.0" />
                         <SettingRow
                             icon={LogOut}
@@ -184,44 +190,37 @@ export default function ProfilePage() {
             </div>
 
             {/* SIGN OUT CONFIRMATION MODAL */}
-            <AnimatePresence>
-                {showSignOutConf && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-5"
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[32px] w-full max-w-[340px] p-6 text-center shadow-2xl"
-                        >
-                            <div className="flex justify-center mb-4">
-                                <div className="w-16 h-16 rounded-full bg-[#EF4444]/10 flex items-center justify-center text-[#EF4444]">
-                                    <LogOut size={32} />
-                                </div>
-                            </div>
-                            <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Sign out?</h3>
-                            <p className="text-[#A0A0B8] font-['DM_Sans'] text-[15px] mb-8">
-                                You'll lose your streak reminder notifications.
-                            </p>
+            <Dialog open={showSignOutConf} onOpenChange={setShowSignOutConf}>
+                <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 text-center max-w-[340px] [&>button]:hidden">
+                    <DialogHeader className="hidden">
+                        <DialogTitle>Sign Out</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex justify-center mb-4 mt-2">
+                        <div className="w-16 h-16 rounded-full bg-[#EF4444]/10 flex items-center justify-center text-[#EF4444]">
+                            <LogOut size={32} />
+                        </div>
+                    </div>
+                    <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Sign out?</h3>
+                    <p className="text-[#A0A0B8] font-['DM_Sans'] text-[15px] mb-8">
+                        You'll lose your streak reminder notifications.
+                    </p>
 
-                            <div className="flex gap-3">
-                                <TapButton
-                                    onClick={() => setShowSignOutConf(false)}
-                                    className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']"
-                                >
-                                    Cancel
-                                </TapButton>
-                                <TapButton
-                                    onClick={handleSignOut}
-                                    className="flex-1 py-4 rounded-xl bg-[#EF4444] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(239,68,68,0.3)]"
-                                >
-                                    Sign Out
-                                </TapButton>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    <div className="flex gap-3">
+                        <TapButton
+                            onClick={() => setShowSignOutConf(false)}
+                            className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']"
+                        >
+                            Cancel
+                        </TapButton>
+                        <TapButton
+                            onClick={handleSignOut}
+                            className="flex-1 py-4 rounded-xl bg-[#EF4444] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(239,68,68,0.3)]"
+                        >
+                            Sign Out
+                        </TapButton>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
         </AppShell>
     );

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, DM_Sans, Geist } from "next/font/google";
+import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
 import { PwaRegister } from "@/components/PwaRegister";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -64,10 +65,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(bricolage.variable, dmSans.variable, "font-sans", geist.variable)}>
+    <html lang="en" className={cn(bricolage.variable, dmSans.variable, "font-sans")}>
       <body className="font-body antialiased bg-bg text-text">
         <PwaRegister />
         <AppShell>{children}</AppShell>
+        <Toaster />
       </body>
     </html>
   );
