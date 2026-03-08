@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             .from("logs")
             .insert({
                 user_id: userId,
-                food_name: parsed.data.food_name,
+                meal_name: parsed.data.food_name,
                 calories: parsed.data.calories,
                 protein: parsed.data.protein,
                 carbs: parsed.data.carbs,

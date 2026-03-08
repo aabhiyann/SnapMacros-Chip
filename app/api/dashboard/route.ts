@@ -105,7 +105,10 @@ export async function GET() {
                 name: profile?.name || "Abhiyan", // Mocked name
                 email: user?.email || ""
             },
-            logs: logs || [],
+            logs: (logs || []).map((l) => ({
+                ...l,
+                description: (l as { meal_name?: string; description?: string }).meal_name || (l as { meal_name?: string; description?: string }).description || "",
+            })),
             chip: chipState,
         };
 
