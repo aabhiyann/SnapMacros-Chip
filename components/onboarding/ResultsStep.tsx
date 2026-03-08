@@ -134,6 +134,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
                         transition={{ delay: 0.5, duration: 0.4 }}
                         className="w-full bg-gradient-to-br from-[#FF6B35] to-[#FF8540] rounded-[20px] p-6 text-center shadow-[0_12px_40px_rgba(255,107,53,0.3)] mb-4"
                     >
+                        <div className="text-[24px] mb-2 leading-none">🔥</div>
                         <div className="text-[52px] font-bold font-['Bricolage_Grotesque'] text-white leading-none mb-1">
                             <CountUp end={targets.calorieTarget} duration={1} delay={0.5} />
                         </div>

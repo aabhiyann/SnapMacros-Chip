@@ -63,6 +63,7 @@ export async function POST(request: Request) {
         confidence: result.confidence || "medium",
         reasoning: result.confidence_note || result.fun_note || "",
         detected_items: result.items_detected || [],
+        chip_reaction: result.chip_reaction || "happy",
       };
 
       // 7. Return Result
