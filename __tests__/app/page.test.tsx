@@ -32,7 +32,7 @@ jest.mock("framer-motion", () => {
 describe("App Launch / Splash Screen", () => {
     let mockReplace: jest.Mock;
     let mockGetSession: jest.Mock;
-    let mockSingle: jest.Mock;
+    let mockMaybeSingle: jest.Mock;
 
     beforeEach(() => {
         jest.useFakeTimers();
@@ -41,9 +41,9 @@ describe("App Launch / Splash Screen", () => {
         (useRouter as jest.Mock).mockReturnValue({ replace: mockReplace });
 
         mockGetSession = jest.fn();
-        mockSingle = jest.fn();
+        mockMaybeSingle = jest.fn();
 
-        const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
+        const mockEq = jest.fn().mockReturnValue({ maybeSingle: mockMaybeSingle });
         const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
 
         const mockSupabase = {
@@ -87,7 +87,7 @@ describe("App Launch / Splash Screen", () => {
 
     it("routes to /onboarding when user is authenticated but hasn't completed onboarding", async () => {
         mockGetSession.mockResolvedValue({ data: { session: { user: { id: "123" } } } });
-        mockSingle.mockResolvedValue({ data: null });
+        mockMaybeSingle.mockResolvedValue({ data: null });
 
         render(<AppLaunchPage />);
 
@@ -100,7 +100,7 @@ describe("App Launch / Splash Screen", () => {
 
     it("routes to /dashboard when user is authenticated and has completed onboarding", async () => {
         mockGetSession.mockResolvedValue({ data: { session: { user: { id: "123" } } } });
-        mockSingle.mockResolvedValue({ data: { onboarding_completed: true } });
+        mockMaybeSingle.mockResolvedValue({ data: { onboarding_completed: true } });
 
         render(<AppLaunchPage />);
 

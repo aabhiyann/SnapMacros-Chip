@@ -25,7 +25,7 @@ export function AppShell({ children, chipEmotion }: { children: React.ReactNode,
           .from("profiles")
           .select("onboarding_completed")
           .eq("user_id", session.user.id)
-          .single();
+          .maybeSingle();
 
         if (!profile?.onboarding_completed) {
           // Demo user: bootstrap profile so they land on dashboard

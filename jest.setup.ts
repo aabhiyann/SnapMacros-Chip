@@ -20,7 +20,8 @@ jest.mock("@/lib/supabase/client", () => ({
         from: jest.fn(() => ({
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({ data: { onboarding_completed: true } })
+            single: jest.fn().mockResolvedValue({ data: { onboarding_completed: true } }),
+            maybeSingle: jest.fn().mockResolvedValue({ data: { onboarding_completed: true } })
         }))
     }))
 }));
