@@ -17,6 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://snapmacros.vercel.app"),
   title: "SnapMacros",
   description: "AI nutrition tracker — photograph food, get instant macro breakdown. Chip is your mascot.",
   manifest: "/manifest.json",
@@ -26,9 +27,24 @@ export const metadata: Metadata = {
     title: "SnapMacros",
   },
   icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/apple-touch-icon.png",
-  }
+    icon: "/icons/icon.svg",
+    apple: "/icons/icon.svg",
+  },
+  openGraph: {
+    title: "SnapMacros",
+    description: "AI nutrition tracker — photograph food, get instant macro breakdown.",
+    url: "/",
+    siteName: "SnapMacros",
+    images: [
+      {
+        url: "/icons/icon.svg",
+        width: 512,
+        height: 512,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export const viewport = {
