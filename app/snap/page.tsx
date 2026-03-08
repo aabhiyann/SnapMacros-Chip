@@ -95,7 +95,10 @@ export default function SnapPage() {
         }
     }, [isTorchOn]);
 
-    const handleUserMediaError = () => setHasCamera(false);
+    const handleUserMediaError = (err: unknown) => {
+        console.error("Camera error:", err);
+        setHasCamera(false);
+    };
 
     const capture = useCallback(() => {
         if (webcamRef.current) {
@@ -219,7 +222,11 @@ export default function SnapPage() {
                 audio={false}
                 screenshotFormat="image/jpeg"
                 screenshotQuality={0.85}
-                videoConstraints={{ facingMode: "environment" }}
+                videoConstraints={{
+                    facingMode: { ideal: "environment" },
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                }}
                 onUserMedia={handleUserMedia}
                 onUserMediaError={handleUserMediaError}
                 className="w-full h-full object-cover"

@@ -41,6 +41,9 @@ export async function analyzeFood(
     maxRetries = 2
 ): Promise<AnalysisResult> {
     const startTime = Date.now();
+    console.log("Vision agent called, API key exists:", !!process.env.GOOGLE_AI_API_KEY);
+    console.log("Image size (chars):", imageBase64.length);
+    console.log("Media type:", mediaType);
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
