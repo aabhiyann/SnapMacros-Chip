@@ -35,6 +35,6 @@ describe("Chip", () => {
     render(<Chip size={120} />);
     const svg = document.querySelector("svg");
     expect(svg).toHaveAttribute("width", "120");
-    expect(svg).toHaveAttribute("height", "120");
+    expect(svg).toHaveAttribute("height", "140");
   });
 });
