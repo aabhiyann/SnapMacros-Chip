@@ -22,32 +22,14 @@ export interface ChipProps {
 
 // Map each emotion to the best available image
 const EMOTION_IMAGES: Record<ChipEmotion, string> = {
-  happy: "/icons/happy-state.png",
-  hype: "/icons/happy-state.png",
-  shocked: "/icons/chip.png",
-  laughing: "/icons/happy-state.png",
-  sad: "/icons/sad-state.png",
-  on_fire: "/icons/on-fire-state.png",
-  thinking: "/icons/chip.png",
-  sleepy: "/icons/sad-state.png",
-};
-
-// CSS filters for emotions using fallback images
-const EMOTION_FILTERS: Partial<Record<ChipEmotion, string>> = {
-  hype: "brightness(1.15) saturate(1.3)",
-  shocked: "contrast(1.1) saturate(0.9)",
-  laughing: "brightness(1.1) hue-rotate(5deg)",
-  thinking: "brightness(0.95) saturate(0.85)",
-  sleepy: "brightness(0.85) saturate(0.7)",
-};
-
-// Emoji badges for emotions without unique images
-const EMOTION_BADGES: Partial<Record<ChipEmotion, string>> = {
-  hype: "🎉",
-  shocked: "😱",
-  laughing: "😂",
-  thinking: "🤔",
-  sleepy: "💤",
+  happy: "/happy-state.png",
+  hype: "/hype-state.png",
+  shocked: "/shocked-state.png",
+  laughing: "/laughing-state.png",
+  sad: "/sad-state.png",
+  on_fire: "/on-fire-state.png",
+  thinking: "/thinking-state.png",
+  sleepy: "/sleepy-state.png",
 };
 
 // Framer Motion variants
@@ -116,8 +98,6 @@ export const Chip = React.memo(function Chip({
 }: ChipProps) {
   const imageSrc = EMOTION_IMAGES[emotion];
   const variant = variants[emotion];
-  const filter = EMOTION_FILTERS[emotion] || "none";
-  const badge = EMOTION_BADGES[emotion];
 
   return (
     <AnimatePresence mode="wait">
@@ -146,24 +126,9 @@ export const Chip = React.memo(function Chip({
               objectFit: "contain",
               width: "100%",
               height: "100%",
-              filter,
             }}
             priority
           />
-          {badge && (
-            <span
-              style={{
-                position: "absolute",
-                bottom: 0,
-                right: 0,
-                fontSize: size * 0.28,
-                lineHeight: 1,
-                filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))",
-              }}
-            >
-              {badge}
-            </span>
-          )}
         </div>
       </motion.div>
     </AnimatePresence>
