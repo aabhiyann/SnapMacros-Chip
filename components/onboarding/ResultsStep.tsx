@@ -72,49 +72,35 @@ export function ResultsStep({ data }: ResultsStepProps) {
         setError(null);
 
         try {
-            // Get Supabase Client
-            const { createClient } = await import("@/lib/supabase/client");
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-
-            if (!user) {
-                // Fallback to API route if no active session found (e.g. demo)
-                const res = await fetch("/api/profile", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
-                if (!res.ok) throw new Error("Failed to save profile via API");
-                router.push("/dashboard");
-                return;
-            }
-
-            // Save to Supabase directly (profiles table: name, target_*, onboarding_completed)
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({
+            // Use API route - server-side upsert handles both new and existing profiles reliably
+            const res = await fetch("/api/profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    goal: data.goal,
                     name: data.name,
-                    target_calories: targets.calorieTarget,
-                    target_protein: targets.macroTarget.protein,
-                    target_carbs: targets.macroTarget.carbs,
-                    target_fat: targets.macroTarget.fat,
-                    onboarding_completed: true,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('user_id', user.id);
+                    age: data.age,
+                    weight: data.weight,
+                    weightUnit: data.weightUnit,
+                    height: data.height,
+                    heightUnit: data.heightUnit,
+                    gender: data.gender,
+                    activityLevel: data.activityLevel,
+                }),
+            });
 
-            if (updateError) {
-                console.error('Profile save error:', updateError);
-                setError('Could not save your profile. Please try again.');
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                console.error("Profile save error:", errData);
+                setError("Could not save your profile. Please try again.");
                 setIsSubmitting(false);
                 return;
             }
 
-            router.push('/dashboard');
-
+            router.push("/dashboard");
         } catch (err) {
-            console.error('Onboarding error:', err);
-            setError('Something went wrong. Please try again.');
+            console.error("Onboarding error:", err);
+            setError("Something went wrong. Please try again.");
             setIsSubmitting(false);
         }
     };
