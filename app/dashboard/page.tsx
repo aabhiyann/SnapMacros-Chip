@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { AppShell } from "@/components/AppShell";
 
 interface DashboardLog {
@@ -100,7 +101,7 @@ export default function DashboardPage() {
 
     const fetchDashboardData = async () => {
         try {
-            const res = await fetch("/api/dashboard");
+            const res = await fetch(api("/api/dashboard"));
             if (!res.ok) throw new Error("Failed to fetch dashboard");
             const json = await res.json();
             setData(json);
@@ -135,7 +136,7 @@ export default function DashboardPage() {
         });
 
         try {
-            const res = await fetch(`/api/log?id=${id}`, { method: "DELETE" });
+            const res = await fetch(api(`/api/log?id=${id}`), { method: "DELETE" });
             if (!res.ok) throw new Error("Delete failed");
             // Optionally refetch to ensure perfect sync
             fetchDashboardData();

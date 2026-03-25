@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { MealCardSkeleton } from "@/components/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
@@ -24,7 +25,7 @@ export default function MealsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/meals");
+      const res = await fetch(api("/api/meals"));
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error((data as { error?: string }).error ?? "Failed to load meals");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -43,7 +44,7 @@ export default function LogPage() {
   const analyzeImage = async (base64: string, mimeType: string) => {
     setAnalyzing(true);
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch(api("/api/analyze"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBase64: base64, mediaType: mimeType }),
@@ -67,7 +68,7 @@ export default function LogPage() {
     if (!result || !mealName) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/log", {
+      const res = await fetch(api("/api/log"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,7 +65,7 @@ export default function LoginPage() {
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
             if (email === "demo@snapmacros.app") {
-                await fetch("/api/bootstrap-demo", { method: "POST" });
+                await fetch(api("/api/bootstrap-demo"), { method: "POST" });
             }
             setUiState("success");
             await new Promise(resolve => setTimeout(resolve, 600));
@@ -115,7 +116,7 @@ export default function LoginPage() {
                 password: "SnapMacros2026!",
             });
             if (error) throw new Error("Demo unavailable");
-            await fetch("/api/bootstrap-demo", { method: "POST" });
+            await fetch(api("/api/bootstrap-demo"), { method: "POST" });
             await new Promise(r => setTimeout(r, 1000));
             setUiState("success");
             router.push("/dashboard");
