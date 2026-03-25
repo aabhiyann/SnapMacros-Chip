@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Chip } from "@/components/Chip";
@@ -124,7 +125,7 @@ export default function ResultPage() {
                 formData.append("image", file);
                 if (textDesc) formData.append("portionHint", textDesc);
 
-                const res = await fetch("/api/analyze", {
+                const res = await fetch(api("/api/analyze"), {
                     method: "POST",
                     body: formData,
                     signal: abortController.signal,
@@ -198,7 +199,7 @@ export default function ResultPage() {
                 fat: Math.round(manualMacros.fat * multiplier),
             };
 
-            const res = await fetch("/api/log", {
+            const res = await fetch(api("/api/log"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(finalPayload),

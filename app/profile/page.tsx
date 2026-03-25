@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { TapButton } from "@/components/ui/TapButton";
 
 interface UserData {
@@ -59,7 +60,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await fetch("/api/profile");
+                const res = await fetch(api("/api/profile"));
                 if (!res.ok) throw new Error("Failed to fetch profile");
                 const data = await res.json();
                 setUserData(data);
@@ -87,7 +88,7 @@ export default function ProfilePage() {
     const handleDeleteAccount = async () => {
         setIsDeleting(true);
         try {
-            const res = await fetch("/api/account", { method: "DELETE" });
+            const res = await fetch(api("/api/account"), { method: "DELETE" });
             if (!res.ok) throw new Error("Deletion failed");
             await supabase.auth.signOut();
             router.push("/login");
