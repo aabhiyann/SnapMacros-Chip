@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/auth";
 import { buildRoastContext, getRoastType, generateRoast } from "@/lib/agents/roast-agent";
 import { getRateLimit } from "@/lib/rate-limit";
 
@@ -13,7 +12,7 @@ function getWeekStart(d: Date) {
   return date.toISOString().split("T")[0];
 }
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();

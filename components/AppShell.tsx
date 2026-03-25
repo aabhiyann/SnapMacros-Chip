@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { BottomNav } from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/client";
 
-export function AppShell({ children, chipEmotion }: { children: React.ReactNode, chipEmotion?: string }) {
+export function AppShell({ children }: { children: React.ReactNode, chipEmotion?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isAuth, setIsAuth] = useState<boolean | null>(null);

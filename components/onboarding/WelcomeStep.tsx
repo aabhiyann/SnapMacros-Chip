@@ -34,7 +34,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                 >
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1A1A24] border-t border-l border-[#2A2A3A] rotate-45" />
                     <p className="font-['DM_Sans'] text-[15px] font-medium text-white relative z-10 leading-relaxed text-center">
-                        Hey! I'm Chip. 🥚<br /><span className="text-[#A0A0B8]">Your nutrition best friend.</span>
+                        Hey! I&apos;m Chip. 🥚<br /><span className="text-[#A0A0B8]">Your nutrition best friend.</span>
                     </p>
                 </motion.div>
             </div>
@@ -56,7 +56,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                     transition={{ delay: 1.0, duration: 0.4 }}
                     className="font-['DM_Sans'] text-[#A0A0B8] text-[15px] leading-relaxed max-w-[300px] mb-8"
                 >
-                    Photograph your food for instant macro analysis. Set goals. Get roasted by me. Let's go.
+                    Photograph your food for instant macro analysis. Set goals. Get roasted by me. Let&apos;s go.
                 </motion.p>
 
                 <div className="flex flex-wrap justify-center gap-3">
@@ -99,7 +99,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                         onClick={onNext}
                         className="w-full premium-btn mb-4"
                     >
-                        Let's Get Started &rarr;
+                        Let&apos;s Get Started &rarr;
                     </TapButton>
                 </motion.div>
                 <motion.p

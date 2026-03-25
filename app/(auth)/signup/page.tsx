@@ -45,8 +45,8 @@ export default function SignupPage() {
                 },
             });
             if (error) throw error;
-        } catch (err: any) {
-            handleAuthError(err.message || "Google sign-in failed");
+        } catch (err: unknown) {
+            handleAuthError(err instanceof Error ? err.message : "Google sign-in failed");
         }
     };
 
@@ -100,7 +100,7 @@ export default function SignupPage() {
             const redirectUrl = typeof window !== "undefined"
                 ? `${window.location.origin}/auth/callback`
                 : (process.env.NEXT_PUBLIC_APP_URL || "https://snapmacros.vercel.app") + "/auth/callback";
-            const { data, error } = await supabase.auth.signUp({
+            const { error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
@@ -117,8 +117,8 @@ export default function SignupPage() {
             setUiState("success");
             await new Promise(r => setTimeout(r, 600)); // flash success
             router.push("/onboarding");
-        } catch (err: any) {
-            handleAuthError(err.message || "Network Error");
+        } catch (err: unknown) {
+            handleAuthError(err instanceof Error ? err.message : "Network Error");
         }
     };
 

@@ -9,7 +9,7 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { Chip } from "@/components/Chip";
 import { TapButton } from "@/components/ui/TapButton";
 
-const DescribeMealSheet = ({ isOpen, onClose, onSubmit, isAnalyzing }: any) => {
+const DescribeMealSheet = ({ isOpen, onClose, onSubmit, isAnalyzing }: { isOpen: boolean; onClose: () => void; onSubmit: (text: string) => void; isAnalyzing: boolean }) => {
     const [desc, setDesc] = useState("");
     return (
         <BottomSheet isOpen={isOpen} onClose={onClose} className="bg-[#22222F]">
@@ -72,7 +72,7 @@ export default function SnapPage() {
         const track = stream.getVideoTracks()[0];
         if (track) {
             const capabilities = track.getCapabilities && track.getCapabilities();
-            // @ts-ignore - TS doesn't officially fully type all capabilities everywhere yet
+            // @ts-expect-error - TS doesn't officially fully type all capabilities everywhere yet
             if (capabilities && capabilities.torch) {
                 setTorchSupported(true);
             }
@@ -86,7 +86,7 @@ export default function SnapPage() {
             try {
                 const newTorchState = !isTorchOn;
                 await track.applyConstraints({
-                    advanced: [{ torch: newTorchState } as any]
+                    advanced: [{ torch: newTorchState } as MediaTrackConstraintSet]
                 });
                 setIsTorchOn(newTorchState);
             } catch (error) {

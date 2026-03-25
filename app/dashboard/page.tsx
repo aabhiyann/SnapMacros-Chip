@@ -2,7 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { Chip } from "@/components/Chip";
+
+interface DashboardLog {
+    id: string;
+    description: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    created_at: string;
+    image_url?: string;
+    meal_type?: string;
+    [key: string]: unknown;
+}
+
+interface DashboardData {
+    logs: DashboardLog[];
+    current: { calories: number; protein: number; carbs: number; fat: number };
+    targets: { calories: number; protein: number; carbs: number; fat: number };
+    chip: { emotion: ChipEmotion; message: string };
+    profile: { email: string; name: string; streak_days: number; [key: string]: unknown };
+    [key: string]: unknown;
+}
+import { Chip, ChipEmotion } from "@/components/Chip";
 import { MacroRings } from "@/components/MacroRings";
 import { MealTimeline } from "@/components/MealTimeline";
 import { CountUp } from "@/components/rings/CountUp";
@@ -71,7 +93,7 @@ function DashboardSkeleton() {
 }
 
 export default function DashboardPage() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showDemoBanner, setShowDemoBanner] = useState(true);
@@ -117,7 +139,7 @@ export default function DashboardPage() {
             if (!res.ok) throw new Error("Delete failed");
             // Optionally refetch to ensure perfect sync
             fetchDashboardData();
-        } catch (err) {
+        } catch {
             // Revert optimistic delete
             setData({ ...data, logs: previousLogs });
             console.error("Failed to delete log");
@@ -156,15 +178,13 @@ export default function DashboardPage() {
     const hr = new Date().getHours();
     const greeting = hr < 12 ? "Good morning," : hr < 18 ? "Good afternoon," : "Good evening,";
 
-    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'short', day: 'numeric' };
-    const todayDate = new Date().toLocaleDateString('en-US', dateOptions);
 
     return (
         <AppShell>
             {data.profile?.email === "demo@snapmacros.app" && showDemoBanner && (
                 <div className="bg-[#3B8BF7]/10 border-b border-[#3B8BF7]/20 px-4 py-2 flex items-center justify-between z-20">
                     <p className="text-[#3B8BF7] text-[13px] text-center flex-1 font-['DM_Sans']">
-                        👀 You're in demo mode — snap any food to try it out!
+                        👀 You&apos;re in demo mode — snap any food to try it out!
                     </p>
                     <button onClick={() => setShowDemoBanner(false)} className="text-[#3B8BF7] p-1 font-bold">
                         ✕
@@ -217,10 +237,10 @@ export default function DashboardPage() {
                         {data.current.calories > data.targets.calories + 50 ? (
                             <div>
                                 <p className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] italic mb-1">
-                                    "Went a bit over today."
+                                    &quot;Went a bit over today.&quot;
                                 </p>
                                 <p className="text-[14px] text-[#A0A0B8] font-['DM_Sans'] italic">
-                                    "Tomorrow is what matters."
+                                    &quot;Tomorrow is what matters.&quot;
                                 </p>
                             </div>
                         ) : (

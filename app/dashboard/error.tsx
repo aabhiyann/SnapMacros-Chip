@@ -3,7 +3,7 @@
 import { AppShell } from "@/components/AppShell";
 import { Chip } from "@/components/Chip";
 
-export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <AppShell>
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">

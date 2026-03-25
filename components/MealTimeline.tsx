@@ -40,7 +40,7 @@ export function MealTimeline({ logs, isLoading, onDeleteLog }: MealTimelineProps
     if (isLoading) {
         return (
             <div className="mt-8 px-[20px] pb-12">
-                <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] mb-4 border-l-[3px] border-[#3B8BF7] pl-3">Today's Meals</h3>
+                <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] mb-4 border-l-[3px] border-[#3B8BF7] pl-3">Today&apos;s Meals</h3>
                 <SkeletonCard />
                 <SkeletonCard />
                 <SkeletonCard />
@@ -52,7 +52,7 @@ export function MealTimeline({ logs, isLoading, onDeleteLog }: MealTimelineProps
         return (
             <div className="mt-8 px-[20px] pb-12">
                 <div className="flex items-center justify-between mb-6 sticky top-0 bg-[#0F0F14]/90 backdrop-blur-md z-30 py-3">
-                    <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] border-l-[3px] border-[#3B8BF7] pl-3">Today's Meals</h3>
+                    <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] border-l-[3px] border-[#3B8BF7] pl-3">Today&apos;s Meals</h3>
                     <button
                         onClick={() => router.push("/snap")}
                         className="w-[44px] h-[44px] rounded-full bg-[#3B8BF7] flex items-center justify-center text-white shadow-md shadow-[#3B8BF7]/30 transition-transform active:scale-95"

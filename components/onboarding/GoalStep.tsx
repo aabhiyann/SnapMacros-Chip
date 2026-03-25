@@ -4,7 +4,7 @@ import { TapButton } from "@/components/ui/TapButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Chip } from "@/components/Chip";
 import { OnboardingData } from "./types";
-import { Check, Dumbbell, TrendingUp, Scale, Flame, Scissors } from "lucide-react";
+import { Dumbbell, TrendingUp, Scale, Flame, Scissors } from "lucide-react";
 
 interface GoalStepProps {
     data: OnboardingData;
@@ -60,7 +60,7 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
             {/* Header */}
             <div className="mb-8 w-full pr-[90px]">
                 <h1 className="text-[28px] font-bold font-['Bricolage_Grotesque'] leading-tight mb-2">
-                    What's your goal?
+                    What&apos;s your goal?
                 </h1>
                 <p className="text-[#A0A0B8] text-[15px] font-['DM_Sans']">
                     This shapes your calorie target and macro split.
@@ -69,13 +69,13 @@ export function GoalStep({ data, updateData, onNext }: GoalStepProps) {
 
             {/* List */}
             <div className="flex flex-col gap-3 mb-auto relative z-10 w-full">
-                {GOALS.map((g, i) => {
+                {GOALS.map((g) => {
                     const isSelected = data.goal === g.id;
 
                     return (
                         <motion.button
                             key={g.id}
-                            onClick={() => updateData({ goal: g.id as any })}
+                            onClick={() => updateData({ goal: g.id as OnboardingData["goal"] })}
                             whileTap={{ scale: 0.98 }}
                             animate={isSelected ? { scale: [0.98, 1.02, 1] } : { scale: 1 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
