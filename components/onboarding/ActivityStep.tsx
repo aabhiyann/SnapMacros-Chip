@@ -45,7 +45,7 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                     >
                         <div className="absolute -top-2 right-6 w-4 h-4 bg-[#1A1A24] border-t border-l border-[#2A2A3A] rotate-45" />
                         <p className="text-[#FFFFFF] text-[12px] font-medium font-['DM_Sans'] relative z-10 text-center">
-                            Be honest. I won't judge. Much. 👀
+                            Be honest. I won&apos;t judge. Much. 👀
                         </p>
                     </motion.div>
                 </AnimatePresence>
@@ -64,7 +64,7 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                     return (
                         <TapButton
                             key={act.id}
-                            onClick={() => updateData({ activityLevel: act.id as any })}
+                            onClick={() => updateData({ activityLevel: act.id as OnboardingData["activityLevel"] })}
                             className={`flex items-center h-[72px] rounded-[16px] border-l-[4px] border border-y-[#2A2A3A] border-r-[#2A2A3A] transition-all duration-200 relative overflow-hidden ${isSelected
                                 ? "bg-[rgba(59,139,247,0.08)] border-l-[#3B8BF7] border-y-[#3B8BF7] border-r-[#3B8BF7] border-y-2 border-r-2 shadow-[0_0_24px_rgba(59,139,247,0.15)]"
                                 : "bg-[#1A1A24] border-l-transparent hover:bg-[#22222F]"

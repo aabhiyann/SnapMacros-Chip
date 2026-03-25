@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/auth";
 import { getMascotState } from "@/lib/agents/chip-agent";
 import { calculateFullProfile } from "@/lib/tdee";
 
 export async function GET() {
     try {
         const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        // Since layout protects this, user generally exists
-        const userId = user?.id || DEMO_USER_ID;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ error: "Unauthorized", code: "AUTH_REQUIRED" }, { status: 401 });
+        }
+        const userId = user.id;
 
         // 3. Fetch User Profile (Streaks, Name, Targets)
         const { data: profile } = await supabase
@@ -113,7 +114,7 @@ export async function GET() {
             remaining,
             profile: {
                 streak_days: streakDays,
-                name: profile?.name || "Abhiyan", // Mocked name
+                name: profile?.name || user.email?.split('@')[0] || "User",
                 email: user?.email || ""
             },
             logs: (logs || []).map((l) => ({

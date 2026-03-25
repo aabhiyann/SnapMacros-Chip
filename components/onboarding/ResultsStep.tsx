@@ -27,8 +27,8 @@ export function ResultsStep({ data }: ResultsStepProps) {
             heightCm: isNaN(heightCm) ? 175 : heightCm,
             age: parseInt(data.age) || 25,
             gender: data.gender as "male" | "female" || "male",
-            activityLevel: data.activityLevel as any || "sedentary",
-            goalType: data.goal as any || "maintain",
+            activityLevel: data.activityLevel || "sedentary",
+            goalType: data.goal || "maintain",
         });
     }, [data]);
 
@@ -137,7 +137,7 @@ export function ResultsStep({ data }: ResultsStepProps) {
                                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                                 className="text-[28px] font-bold font-['Bricolage_Grotesque'] mt-4 text-center"
                             >
-                                {data.name || "There"}, you're all set! 🎉
+                                {data.name || "There"}, you&apos;re all set! 🎉
                             </motion.h2>
                         </motion.div>
                     )}

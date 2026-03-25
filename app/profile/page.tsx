@@ -1,12 +1,20 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import { TapButton } from "@/components/ui/TapButton";
 
-import { useEffect, useState } from "react";
+interface UserData {
+    name: string;
+    goal: string;
+    joined: string;
+    mealsLogged: number;
+    bestStreak: number;
+    roastsReceived: number;
+    targets: { cal: number; pro: number; carb: number; fat: number };
+    [key: string]: unknown;
+}
 import { AppShell } from "@/components/AppShell";
-import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, Settings, Award, ChevronRight, User as UserIcon, Bell, Target, Edit3, Info } from "lucide-react";
+import { LogOut, ChevronRight, Bell, Target, Edit3, Info, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,7 +27,7 @@ const StatCard = ({ label, value }: { label: string, value: string | number }) =
     </div>
 );
 
-const SettingRow = ({ icon: Icon, label, value, rightElement, onClick, isDanger }: any) => (
+const SettingRow = ({ icon: Icon, label, value, rightElement, onClick, isDanger }: { icon: LucideIcon; label: string; value?: string; rightElement?: JSX.Element; onClick?: () => void; isDanger?: boolean }) => (
     <TapButton
         onClick={onClick}
         className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
@@ -45,7 +53,7 @@ export default function ProfilePage() {
     const router = useRouter();
     const supabase = createClient();
     const [showSignOutConf, setShowSignOutConf] = useState(false);
-    const [userData, setUserData] = useState<any>(null);
+    const [userData, setUserData] = useState<UserData | null>(null);
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -210,7 +218,7 @@ export default function ProfilePage() {
                     </div>
                     <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Sign out?</h3>
                     <p className="text-[#A0A0B8] font-['DM_Sans'] text-[15px] mb-8">
-                        You'll lose your streak reminder notifications.
+                        You&apos;ll lose your streak reminder notifications.
                     </p>
 
                     <div className="flex gap-3">

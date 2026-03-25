@@ -77,10 +77,27 @@ export default function ResultPage() {
 
     const logBtnRef = useRef<HTMLButtonElement>(null);
 
+    // Safe sessionStorage accessor (unavailable in private browsing / Capacitor native context)
+    function getSessionItem(key: string): string | null {
+        try {
+            return sessionStorage.getItem(key);
+        } catch {
+            return null;
+        }
+    }
+
+    function removeSessionItem(key: string) {
+        try {
+            sessionStorage.removeItem(key);
+        } catch {
+            // ignore
+        }
+    }
+
     // Initialize
     useEffect(() => {
-        const imgData = sessionStorage.getItem("snap_image");
-        const textDesc = sessionStorage.getItem("snap_description");
+        const imgData = getSessionItem("snap_image");
+        const textDesc = getSessionItem("snap_description");
 
         if (!imgData && !textDesc) {
             router.push("/snap");
@@ -117,7 +134,12 @@ export default function ResultPage() {
                 const json = await res.json().catch(() => ({}));
 
                 if (!res.ok) {
-                    const msg = (json as { error?: string; details?: string }).error || (json as { details?: string }).details || "Analysis failed";
+                    const code = (json as { code?: string }).code;
+                    const rawMsg = (json as { error?: string; details?: string }).error || (json as { details?: string }).details || "Analysis failed";
+                    // Use server message for quota/429; avoid showing long raw API errors
+                    const msg = res.status === 429 || code === "QUOTA_EXCEEDED" || rawMsg.toLowerCase().includes("quota")
+                        ? "Daily AI limit reached. You can still log this meal manually below."
+                        : rawMsg;
                     setErrorMessage(msg);
                     clearInterval(txtInt);
                     setStatus("error");
@@ -200,8 +222,8 @@ export default function ResultPage() {
             }
 
             setTimeout(() => {
-                sessionStorage.removeItem("snap_image");
-                sessionStorage.removeItem("snap_description");
+                removeSessionItem("snap_image");
+                removeSessionItem("snap_description");
                 router.push("/dashboard");
             }, 1200);
 
@@ -257,7 +279,7 @@ export default function ResultPage() {
     }
 
     const handleLogManually = () => {
-        const desc = sessionStorage.getItem("snap_description") || "My meal";
+        const desc = getSessionItem("snap_description") || "My meal";
         setData({
             food_name: desc.slice(0, 40) || "My meal",
             calories: 400,
@@ -276,17 +298,18 @@ export default function ResultPage() {
         setStatus("success");
     };
 
+    const isQuotaError = errorMessage?.toLowerCase().includes("limit") ?? false;
     if (status === "error") {
         return (
             <main className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center px-[20px] pb-[72px]">
                 <Chip emotion="sad" size={120} className="drop-shadow-[0_0_20px_rgba(59,139,247,0.2)]" />
                 <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[28px] font-bold text-white text-center tracking-tight">
-                    Chip couldn't figure that one out.
+                    {isQuotaError ? "Daily AI limit reached" : "Chip couldn't figure that one out."}
                 </h2>
                 <p className="text-[#A0A0B8] mb-4 text-center text-[15px] font-['DM_Sans'] px-4 max-w-[280px]">
-                    Try a clearer photo or describe the meal.
+                    {isQuotaError ? "You can still log this meal manually below." : "Try a clearer photo or describe the meal."}
                 </p>
-                {errorMessage && (
+                {errorMessage && !isQuotaError && (
                     <p className="text-[#F87171]/90 mb-6 text-center text-[13px] font-['DM_Sans'] px-4 max-w-[320px] break-words">
                         {errorMessage}
                     </p>

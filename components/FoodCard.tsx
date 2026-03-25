@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion";
+import { motion, useMotionValue, useTransform, useAnimation, type PanInfo } from "framer-motion";
 import { Trash2, Sunrise, Sun, Moon, Apple } from "lucide-react";
 
 export interface FoodLog {
@@ -51,7 +51,7 @@ export function FoodCard({ log, onDelete, index = 0 }: FoodCardProps) {
     const SWIPE_THRESHOLD = -80; // Negative X threshold to trigger delete
     const deleteOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
 
-    const handleDragEnd = async (e: any, { offset, velocity }: any) => {
+    const handleDragEnd = async (_e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
         if (offset.x < SWIPE_THRESHOLD || velocity.x < -500) {
             // Trigger Delete
             setIsDeleting(true);

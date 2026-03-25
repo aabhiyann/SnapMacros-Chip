@@ -80,8 +80,8 @@ export default function LoginPage() {
             setUiState("success");
             await new Promise(resolve => setTimeout(resolve, 600)); // flash success
             router.push("/dashboard");
-        } catch (err: any) {
-            handleAuthError(err.message || "Network Error");
+        } catch (err: unknown) {
+            handleAuthError(err instanceof Error ? err.message : "Network Error");
         }
     };
 
@@ -96,8 +96,8 @@ export default function LoginPage() {
                 },
             });
             if (error) throw error;
-        } catch (err: any) {
-            handleAuthError(err.message || "Google sign-in failed");
+        } catch (err: unknown) {
+            handleAuthError(err instanceof Error ? err.message : "Google sign-in failed");
         }
     };
 
@@ -118,8 +118,8 @@ export default function LoginPage() {
             await new Promise(r => setTimeout(r, 1000));
             setUiState("success");
             router.push("/dashboard");
-        } catch (err: any) {
-            handleAuthError(err.message || "Demo unavailable");
+        } catch (err: unknown) {
+            handleAuthError(err instanceof Error ? err.message : "Demo unavailable");
         }
     };
 
@@ -172,7 +172,7 @@ export default function LoginPage() {
                         )}
                         {uiState === "success" && (
                             <motion.div key="succ" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                                <p className="font-['Bricolage_Grotesque'] text-[#2DD4BF] font-bold text-[24px]">We're in! 🚀</p>
+                                <p className="font-['Bricolage_Grotesque'] text-[#2DD4BF] font-bold text-[24px]">We&apos;re in! 🚀</p>
                             </motion.div>
                         )}
                     </AnimatePresence>

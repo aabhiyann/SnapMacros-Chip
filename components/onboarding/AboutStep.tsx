@@ -27,8 +27,8 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
 
     const handleHeightFtChange = (type: "ft" | "in", val: string) => {
         const current = getFeetInches(localData.height);
-        let newFt = parseFloat(type === "ft" ? val : current.ft || "0") || 0;
-        let newIn = parseFloat(type === "in" ? val : current.in || "0") || 0;
+        const newFt = parseFloat(type === "ft" ? val : current.ft || "0") || 0;
+        const newIn = parseFloat(type === "in" ? val : current.in || "0") || 0;
         const totalInches = (newFt * 12) + newIn;
         setLocalData(prev => ({ ...prev, height: totalInches > 0 ? totalInches.toString() : "" }));
     };
@@ -90,11 +90,6 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
     const isAgeInvalid = !isNaN(ageNum) && (ageNum < 13 || ageNum > 85);
     const isWeightInvalid = !isNaN(weightInKg) && (weightInKg < 30 || weightInKg > 350);
 
-    const isComplete = !isNameInvalid &&
-        localData.age !== "" && !isAgeInvalid &&
-        localData.weight !== "" && !isWeightInvalid &&
-        localData.height !== "" &&
-        localData.gender !== "";
 
     return (
         <div className="flex-1 flex flex-col pt-[120px] pb-[160px] px-[20px] overflow-y-auto relative">
@@ -217,7 +212,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                                         placeholder="5"
                                         className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] pr-8 pl-2 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
                                     />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-bold">'</span>
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-bold">&apos;</span>
                                 </div>
                                 <div className="flex-1 relative">
                                     <input
@@ -227,7 +222,7 @@ export function AboutStep({ data, updateData, onNext }: AboutStepProps) {
                                         placeholder="9"
                                         className="w-full bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] h-[52px] pr-8 pl-2 text-center text-white font-['Bricolage_Grotesque'] font-bold text-[22px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
                                     />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-bold">"</span>
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-bold">&quot;</span>
                                 </div>
                             </div>
                         )}

@@ -1,6 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+interface DailySummary {
+    date: string;
+    total_calories: number;
+    [key: string]: unknown;
+}
+
+interface ProgressData {
+    summaries: DailySummary[];
+    streak: number;
+    longest_streak: number;
+    roast?: WeeklyRoast & { id?: string };
+    [key: string]: unknown;
+}
 import { AppShell } from "@/components/AppShell";
 import { Chip } from "@/components/Chip";
 import { ShareableRoast } from "@/components/roast/ShareableRoast";
@@ -10,7 +24,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Share2 } from "lucide-react";
 
 export default function ProgressPage() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<ProgressData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -133,7 +147,7 @@ export default function ProgressPage() {
         const dtStr = d.toISOString().split("T")[0];
 
         // Find summary
-        const summary = data?.summaries.find((s: any) => s.date === dtStr);
+        const summary = data?.summaries.find((s) => s.date === dtStr);
         const calories = summary?.total_calories || 0;
         // Mock target
         const target = 2000;
@@ -155,13 +169,13 @@ export default function ProgressPage() {
     });
 
     const daysHit = last7Days.filter(d => d.state === "hit").length;
-    const isFireStreak = data?.streak >= 7;
+    const isFireStreak = (data?.streak ?? 0) >= 7;
 
     // Render Roast State A or B safely
     const roastStateA = !data?.roast;
 
     return (
-        <AppShell chipEmotion={data?.streak >= 7 ? "on_fire" : "happy"}>
+        <AppShell chipEmotion={(data?.streak ?? 0) >= 7 ? "on_fire" : "happy"}>
 
             {/* 1. STREAK CARD */}
             <div className="pt-6 px-5 mb-8 mt-4">
@@ -248,7 +262,7 @@ export default function ProgressPage() {
 
             {/* 3. WEEKLY CHART */}
             <div className="px-5 mb-12 h-[220px]">
-                <h3 className="font-['Bricolage_Grotesque'] font-bold text-white mb-6 text-[20px]">This week's calories</h3>
+                <h3 className="font-['Bricolage_Grotesque'] font-bold text-white mb-6 text-[20px]">This week&apos;s calories</h3>
                 {daysHit < 3 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A]">
                         <Chip emotion="thinking" size={64} className="mb-3" />
@@ -316,24 +330,24 @@ export default function ProgressPage() {
                         </div>
 
                         <h2 className="text-[22px] font-black font-['Bricolage_Grotesque'] text-white italic leading-tight mb-4">
-                            "{data.roast.roast_title}"
+                            &quot;{data?.roast?.roast_title}&quot;
                         </h2>
 
                         <div className="text-[#A0A0B8] text-[15px] font-['DM_Sans'] leading-[1.8] mb-6">
-                            {data.roast.roast_text.substring(0, typewriterIndex)}
-                            {typewriterIndex < data.roast.roast_text.length && <span className="animate-pulse">|</span>}
+                            {data?.roast?.roast_text.substring(0, typewriterIndex)}
+                            {typewriterIndex < (data?.roast?.roast_text.length ?? 0) && <span className="animate-pulse">|</span>}
                         </div>
 
                         <AnimatePresence>
-                            {typewriterIndex >= data.roast.roast_text.length && (
+                            {typewriterIndex >= (data?.roast?.roast_text.length ?? 0) && (
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.4 }}
                                 >
                                     <div className="bg-[rgba(45,212,191,0.08)] border-l-[3px] border-l-[#2DD4BF] rounded-r-[12px] p-4 mb-6">
-                                        <p className="text-[#2DD4BF] font-bold text-[11px] uppercase tracking-wide mb-1">💡 This week's tip</p>
-                                        <p className="text-[#A0A0B8] font-['DM_Sans'] text-[14px] leading-relaxed">{data.roast.tip_text}</p>
+                                        <p className="text-[#2DD4BF] font-bold text-[11px] uppercase tracking-wide mb-1">💡 This week&apos;s tip</p>
+                                        <p className="text-[#A0A0B8] font-['DM_Sans'] text-[14px] leading-relaxed">{data?.roast?.tip_text}</p>
                                     </div>
 
                                     <button
@@ -350,11 +364,13 @@ export default function ProgressPage() {
                 }
             </div >
 
-            <ShareableRoast
-                roast={data?.roast}
-                isVisible={showShare}
-                onClose={() => setShowShare(false)}
-            />
+            {data?.roast && (
+                <ShareableRoast
+                    roast={data.roast}
+                    isVisible={showShare}
+                    onClose={() => setShowShare(false)}
+                />
+            )}
 
         </AppShell >
     );

@@ -24,7 +24,7 @@ export function getCalorieTarget(tdee: number, goalType: string): number {
     return Math.max(target, 1200); // floor at 1200
 }
 
-export function getMacroTargets(calorieTarget: number, _goalType?: string) {
+export function getMacroTargets(calorieTarget: number) {
     const pCal = calorieTarget * 0.3;
     const cCal = calorieTarget * 0.4;
     const fCal = calorieTarget * 0.3;
@@ -47,6 +47,6 @@ export function calculateFullProfile(params: {
     const bmr = calculateBMR(params.weightKg, params.heightCm, params.age, params.gender);
     const tdee = calculateTDEE(bmr, params.activityLevel);
     const calorieTarget = getCalorieTarget(tdee, params.goalType);
-    const macroTarget = getMacroTargets(calorieTarget, params.goalType);
+    const macroTarget = getMacroTargets(calorieTarget);
     return { bmr, tdee, calorieTarget, macroTarget };
 }
