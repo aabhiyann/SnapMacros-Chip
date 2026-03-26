@@ -45,3 +45,10 @@ coverage
 **/public/workbox-*.js
 **/public/worker-*.js
 **/public/sw.js.map
+
+# Capacitor / iOS
+ios/App/Pods
+ios/App/App.xcworkspace/xcshareddata
+ios/App/DerivedData
+ios/App/.xcode.env.local
+**/*.xcodeproj/project.xcworkspace/xcuserdata
