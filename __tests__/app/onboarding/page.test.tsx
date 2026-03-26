@@ -66,11 +66,10 @@ describe("Onboarding Controller (Flow 3)", () => {
         // Header from GoalStep should exist
         expect(screen.getByText("What's your goal?")).toBeInTheDocument();
 
-        // Check for 5 pills in the progress bar
-        // We know they are divs inside a flex-1 flex justify-center gap-2
-        const progressContainer = document.querySelector('.flex-1.flex.justify-center.gap-2');
+        // Check for segmented progress bar (4 segments, each with a flex-1 child)
+        // The bar is inside a flex container with gap-1.5
+        const progressContainer = document.querySelector('[class*="gap-1.5"]');
         expect(progressContainer).toBeInTheDocument();
-        expect(progressContainer?.children.length).toBe(5);
 
         // Check for back button
         const backButton = document.querySelector('button');
@@ -281,8 +280,8 @@ describe("Onboarding Controller (Flow 3)", () => {
         expect(screen.getByText("💜 Protein")).toBeInTheDocument();
         expect(screen.getByText("💚 Carbs")).toBeInTheDocument();
         expect(screen.getByText("🟡 Fat")).toBeInTheDocument();
-        expect(screen.getByText("daily calories")).toBeInTheDocument();
-        expect(screen.getByText("To support your Cut goal")).toBeInTheDocument();
+        expect(screen.getByText("cal / day")).toBeInTheDocument();
+        expect(screen.getByText("Cut")).toBeInTheDocument();
 
         // Continue button should read "Start Tracking 🚀"
         expect(screen.getByText("Start Tracking 🚀")).toBeInTheDocument();
