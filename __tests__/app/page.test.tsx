@@ -66,11 +66,7 @@ describe("App Launch / Splash Screen", () => {
         expect(screen.getByText("Macros")).toBeInTheDocument();
         expect(screen.getByText("Snap. Track. Roast.")).toBeInTheDocument();
 
-        await act(async () => {
-            jest.advanceTimersByTime(900);
-        });
-
-        expect(screen.getByText(/Hey! Let's track something/)).toBeInTheDocument();
+        // Speech bubble removed in simplified splash — just verify wordmark is present
     });
 
     it("routes to /login when user is not authenticated", async () => {
@@ -79,7 +75,7 @@ describe("App Launch / Splash Screen", () => {
 
         // Fast-forward past the 1200ms animation timeout
         await act(async () => {
-            jest.advanceTimersByTime(1200);
+            jest.advanceTimersByTime(1000);
         });
 
         expect(mockReplace).toHaveBeenCalledWith("/login");
@@ -92,7 +88,7 @@ describe("App Launch / Splash Screen", () => {
         render(<AppLaunchPage />);
 
         await act(async () => {
-            jest.advanceTimersByTime(1200);
+            jest.advanceTimersByTime(1000);
         });
 
         expect(mockReplace).toHaveBeenCalledWith("/onboarding");
@@ -105,7 +101,7 @@ describe("App Launch / Splash Screen", () => {
         render(<AppLaunchPage />);
 
         await act(async () => {
-            jest.advanceTimersByTime(1200);
+            jest.advanceTimersByTime(1000);
         });
 
         expect(mockReplace).toHaveBeenCalledWith("/dashboard");
