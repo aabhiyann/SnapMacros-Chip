@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chip } from "@/components/Chip";
 import CountUp from "react-countup";
 import confetti from "canvas-confetti";
-import { Check, Edit2, CheckCircle, HelpCircle, AlertCircle } from "lucide-react";
+import { Check, Edit2, CheckCircle, HelpCircle, AlertCircle, ChevronLeft } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
@@ -39,8 +39,28 @@ const LOADING_LINES = [
     "Almost there...",
 ];
 
-// Fallback 1x1 transparent pixel for text-only analysis
 const TRANSPARENT_PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+const MEAL_TYPES = [
+    { label: "Breakfast", emoji: "🌅" },
+    { label: "Lunch",     emoji: "☀️" },
+    { label: "Dinner",    emoji: "🌙" },
+    { label: "Snack",     emoji: "🍎" },
+];
+
+const MACRO_PILLS = [
+    { key: "calories" as const, label: "Cal",     color: "#4F9EFF", bg: "rgba(79,158,255,0.12)",  border: "rgba(79,158,255,0.25)",  unit: ""  },
+    { key: "protein"  as const, label: "Protein", color: "#7C6FFF", bg: "rgba(124,111,255,0.12)", border: "rgba(124,111,255,0.25)", unit: "g" },
+    { key: "carbs"    as const, label: "Carbs",   color: "#34D8BC", bg: "rgba(52,216,188,0.12)",  border: "rgba(52,216,188,0.25)",  unit: "g" },
+    { key: "fat"      as const, label: "Fat",     color: "#FFC84A", bg: "rgba(255,200,74,0.12)",  border: "rgba(255,200,74,0.25)",  unit: "g" },
+];
+
+function getSessionItem(key: string): string | null {
+    try { return sessionStorage.getItem(key); } catch { return null; }
+}
+function removeSessionItem(key: string) {
+    try { sessionStorage.removeItem(key); } catch { /* ignore */ }
+}
 
 function dataURLtoFile(dataurl: string, filename: string) {
     const arr = dataurl.split(",");
@@ -48,99 +68,218 @@ function dataURLtoFile(dataurl: string, filename: string) {
     const bstr = atob(arr[1]);
     let n = bstr.length;
     const u8arr = new Uint8Array(n);
-    while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-    }
+    while (n--) u8arr[n] = bstr.charCodeAt(n);
     return new File([u8arr], filename, { type: mime });
 }
 
+function autoMealType(): string {
+    const hr = new Date().getHours();
+    if (hr < 11) return "Breakfast";
+    if (hr < 16) return "Lunch";
+    if (hr < 22) return "Dinner";
+    return "Snack";
+}
+
+// ── Loading Screen ─────────────────────────────────────────────────────────────
+function LoadingScreen({ bgImage, loadingLineIdx, progress }: {
+    bgImage: string | null;
+    loadingLineIdx: number;
+    progress: number;
+}) {
+    return (
+        <main className="fixed inset-0 bg-[#09090F] flex flex-col items-center justify-center overflow-hidden">
+            {bgImage && (
+                <div
+                    className="absolute inset-0 z-0 scale-110"
+                    style={{
+                        backgroundImage: `url(${bgImage})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        filter: "blur(28px) brightness(0.18) saturate(0.4)",
+                    }}
+                />
+            )}
+            <div className="z-10 flex flex-col items-center text-center">
+                <motion.div
+                    animate={{ scale: [1, 1.06, 1] }}
+                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                    className="mb-8"
+                >
+                    <Chip emotion="thinking" size={130} />
+                </motion.div>
+
+                <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[14px] px-5 py-3 mb-10 shadow-lg min-w-[220px]">
+                    <AnimatePresence mode="wait">
+                        <motion.span
+                            key={loadingLineIdx}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.35 }}
+                            className="text-[14px] text-white font-['DM_Sans'] block"
+                        >
+                            {LOADING_LINES[loadingLineIdx]}
+                        </motion.span>
+                    </AnimatePresence>
+                </div>
+
+                <div className="w-[260px] h-[4px] bg-[#2A2A3D] rounded-full overflow-hidden">
+                    <motion.div
+                        className="h-full bg-gradient-to-r from-[#4F9EFF] to-[#7C6FFF]"
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: progress === 100 ? 0.2 : 5, ease: "easeOut" }}
+                    />
+                </div>
+            </div>
+        </main>
+    );
+}
+
+// ── Error Screen ───────────────────────────────────────────────────────────────
+function ErrorScreen({
+    errorMessage,
+    onLogManually,
+    onRetry,
+}: {
+    errorMessage: string | null;
+    onLogManually: () => void;
+    onRetry: () => void;
+}) {
+    const router = useRouter();
+    const isQuota = errorMessage?.toLowerCase().includes("limit") ?? false;
+
+    return (
+        <main className="min-h-screen bg-[#09090F] flex flex-col items-center justify-center px-5 pb-20">
+            <Chip emotion="sad" size={120} className="drop-shadow-[0_0_24px_rgba(79,158,255,0.2)]" />
+            <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[26px] font-bold text-white text-center tracking-tight">
+                {isQuota ? "Daily AI limit reached" : "Chip couldn't read that one"}
+            </h2>
+            <p className="text-[#9898B3] mb-4 text-center text-[15px] font-['DM_Sans'] max-w-[260px] leading-relaxed">
+                {isQuota
+                    ? "You can still log this meal manually below."
+                    : "Try a clearer photo or describe the meal instead."}
+            </p>
+            {errorMessage && !isQuota && (
+                <p className="text-[#FF6B6B]/80 mb-5 text-center text-[12px] font-['DM_Sans'] max-w-[300px] break-words">
+                    {errorMessage}
+                </p>
+            )}
+
+            <div className="w-full max-w-[320px] space-y-3">
+                <button
+                    onClick={onLogManually}
+                    className="w-full h-[56px] rounded-[16px] bg-[#34D8BC]/15 border border-[#34D8BC]/30 text-[#34D8BC] font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.97] transition-transform"
+                >
+                    Log manually (no AI)
+                </button>
+                <button onClick={onRetry} className="w-full premium-btn">
+                    Try Again
+                </button>
+                <button
+                    onClick={() => router.push("/dashboard")}
+                    className="w-full h-[48px] text-[#56566F] font-['DM_Sans'] text-[14px] active:text-white transition-colors"
+                >
+                    Back to Dashboard
+                </button>
+            </div>
+        </main>
+    );
+}
+
+// ── Log Success Overlay ────────────────────────────────────────────────────────
+function LogSuccessOverlay() {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[200] bg-[#09090F]/95 flex flex-col items-center justify-center pointer-events-none"
+        >
+            <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            >
+                <Chip emotion="hype" size={140} />
+            </motion.div>
+            <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="mt-6 font-['Bricolage_Grotesque'] font-bold text-[28px] text-white"
+            >
+                Logged! 🎉
+            </motion.p>
+            <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-[#9898B3] font-['DM_Sans'] text-[15px] mt-2"
+            >
+                Chip updated your rings.
+            </motion.p>
+        </motion.div>
+    );
+}
+
+// ── Main Result Page ───────────────────────────────────────────────────────────
 export default function ResultPage() {
     const router = useRouter();
 
-    const [status, setStatus] = useState<Status>("loading");
-    const [bgImage, setBgImage] = useState<string | null>(null);
+    const [status, setStatus]           = useState<Status>("loading");
+    const [bgImage, setBgImage]         = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-    // Loading State
     const [loadingLineIdx, setLoadingLineIdx] = useState(0);
-    const [progress, setProgress] = useState(0);
-
-    // Data State
-    const [data, setData] = useState<AnalysisData | null>(null);
-
-    // Success Mode State
-    const [multiplier, setMultiplier] = useState(1);
-    const [isEditing, setIsEditing] = useState(false);
+    const [progress, setProgress]       = useState(0);
+    const [data, setData]               = useState<AnalysisData | null>(null);
+    const [multiplier, setMultiplier]   = useState(1);
+    const [isEditing, setIsEditing]     = useState(false);
     const [manualMacros, setManualMacros] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
-    const [mealType, setMealType] = useState<string>("Lunch");
-    const [isLogging, setIsLogging] = useState(false);
-    const [logSuccess, setLogSuccess] = useState(false);
+    const [mealType, setMealType]       = useState(autoMealType());
+    const [isLogging, setIsLogging]     = useState(false);
+    const [logSuccess, setLogSuccess]   = useState(false);
 
     const logBtnRef = useRef<HTMLButtonElement>(null);
 
-    // Safe sessionStorage accessor (unavailable in private browsing / Capacitor native context)
-    function getSessionItem(key: string): string | null {
-        try {
-            return sessionStorage.getItem(key);
-        } catch {
-            return null;
-        }
-    }
-
-    function removeSessionItem(key: string) {
-        try {
-            sessionStorage.removeItem(key);
-        } catch {
-            // ignore
-        }
-    }
-
-    // Initialize
+    // ── Fetch analysis ──────────────────────────────────────────────────────────
     useEffect(() => {
-        const imgData = getSessionItem("snap_image");
+        const imgData  = getSessionItem("snap_image");
         const textDesc = getSessionItem("snap_description");
 
-        if (!imgData && !textDesc) {
-            router.push("/snap");
-            return;
-        }
+        if (!imgData && !textDesc) { router.push("/snap"); return; }
 
         setBgImage(imgData || null);
-
-        // Start progress animation
-        setProgress(82);
+        setProgress(75);
 
         const txtInt = setInterval(() => {
-            setLoadingLineIdx((prev) => (prev + 1) % LOADING_LINES.length);
+            setLoadingLineIdx(prev => (prev + 1) % LOADING_LINES.length);
         }, 1800);
 
-        const abortController = new AbortController();
-        const timeoutId = setTimeout(() => abortController.abort(), 20000);
+        const abort = new AbortController();
+        const timeout = setTimeout(() => abort.abort(), 20000);
 
-        const performAnalysis = async () => {
+        (async () => {
             try {
-                const formData = new FormData();
+                const fd = new FormData();
                 const finalImage = imgData || TRANSPARENT_PIXEL;
-                const file = dataURLtoFile(finalImage, "upload.jpg");
-                formData.append("image", file);
-                if (textDesc) formData.append("portionHint", textDesc);
+                fd.append("image", dataURLtoFile(finalImage, "upload.jpg"));
+                if (textDesc) fd.append("portionHint", textDesc);
 
                 const res = await fetch(api("/api/analyze"), {
                     method: "POST",
-                    body: formData,
-                    signal: abortController.signal,
+                    body: fd,
+                    signal: abort.signal,
                 });
 
-                clearTimeout(timeoutId);
+                clearTimeout(timeout);
                 const json = await res.json().catch(() => ({}));
 
                 if (!res.ok) {
                     const code = (json as { code?: string }).code;
-                    const rawMsg = (json as { error?: string; details?: string }).error || (json as { details?: string }).details || "Analysis failed";
-                    // Use server message for quota/429; avoid showing long raw API errors
-                    const msg = res.status === 429 || code === "QUOTA_EXCEEDED" || rawMsg.toLowerCase().includes("quota")
-                        ? "Daily AI limit reached. You can still log this meal manually below."
-                        : rawMsg;
+                    const raw  = (json as { error?: string }).error || "Analysis failed";
+                    const msg  =
+                        res.status === 429 || code === "QUOTA_EXCEEDED" || raw.toLowerCase().includes("quota")
+                            ? "Daily AI limit reached. You can still log this meal manually below."
+                            : raw;
                     setErrorMessage(msg);
                     clearInterval(txtInt);
                     setStatus("error");
@@ -149,433 +288,366 @@ export default function ResultPage() {
 
                 clearInterval(txtInt);
                 setProgress(100);
-
                 setTimeout(() => {
                     setData(json);
                     setManualMacros({
                         calories: json.calories ?? 0,
-                        protein: json.protein ?? 0,
-                        carbs: json.carbs ?? 0,
-                        fat: json.fat ?? 0
+                        protein:  json.protein  ?? 0,
+                        carbs:    json.carbs    ?? 0,
+                        fat:      json.fat      ?? 0,
                     });
-
-                    // Auto Meal Type
-                    const hr = new Date().getHours();
-                    if (hr < 11) setMealType("Breakfast");
-                    else if (hr < 16) setMealType("Lunch");
-                    else if (hr < 22) setMealType("Dinner");
-                    else setMealType("Snack");
-
+                    setMealType(autoMealType());
                     setStatus("success");
                 }, 200);
-
             } catch (e) {
-                clearTimeout(timeoutId);
+                clearTimeout(timeout);
                 clearInterval(txtInt);
-                setErrorMessage(e instanceof Error ? e.message : "Network or request failed");
+                setErrorMessage(e instanceof Error ? e.message : "Network error");
                 setStatus("error");
             }
-        };
+        })();
 
-        performAnalysis();
-
-        return () => {
-            clearTimeout(timeoutId);
-            clearInterval(txtInt);
-            abortController.abort();
-        };
+        return () => { clearTimeout(timeout); clearInterval(txtInt); abort.abort(); };
     }, [router]);
 
-    // LOG ACTION
+    // ── Log meal ────────────────────────────────────────────────────────────────
     const handleLogMeal = async () => {
         if (!data) return;
         setIsLogging(true);
         try {
-            const finalPayload = {
-                food_name: data.food_name,
-                calories: Math.round(manualMacros.calories * multiplier),
-                protein: Math.round(manualMacros.protein * multiplier),
-                carbs: Math.round(manualMacros.carbs * multiplier),
-                fat: Math.round(manualMacros.fat * multiplier),
-            };
-
             const res = await fetch(api("/api/log"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(finalPayload),
+                body: JSON.stringify({
+                    food_name: data.food_name,
+                    calories:  Math.round(manualMacros.calories * multiplier),
+                    protein:   Math.round(manualMacros.protein  * multiplier),
+                    carbs:     Math.round(manualMacros.carbs    * multiplier),
+                    fat:       Math.round(manualMacros.fat      * multiplier),
+                    meal_type: mealType.toLowerCase(),
+                }),
             });
-
             if (!res.ok) throw new Error("Log failed");
 
-            setLogSuccess(true);
-            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
 
+            // Confetti burst
             if (logBtnRef.current) {
                 const rect = logBtnRef.current.getBoundingClientRect();
-                const x = (rect.left + rect.width / 2) / window.innerWidth;
-                const y = (rect.top + rect.height / 2) / window.innerHeight;
-                confetti({
-                    particleCount: 20,
-                    spread: 60,
-                    origin: { x, y },
-                    colors: ["#3B8BF7", "#2DD4BF", "#6C63FF", "#FBBF24"]
-                });
+                const x = (rect.left + rect.width  / 2) / window.innerWidth;
+                const y = (rect.top  + rect.height / 2) / window.innerHeight;
+                confetti({ particleCount: 80, spread: 70, origin: { x, y }, colors: ["#4F9EFF", "#7C6FFF", "#34D8BC", "#FFC84A"] });
+                setTimeout(() => confetti({ particleCount: 40, spread: 50, origin: { x, y: y - 0.1 }, colors: ["#4F9EFF", "#FFC84A"] }), 200);
             }
 
+            setLogSuccess(true);
             setTimeout(() => {
                 removeSessionItem("snap_image");
                 removeSessionItem("snap_description");
                 router.push("/dashboard");
-            }, 1200);
-
-        } catch (e) {
-            console.error(e);
+            }, 1600);
+        } catch {
             setIsLogging(false);
         }
     };
 
-    if (status === "loading") {
-        return (
-            <main className="fixed inset-0 bg-[#0F0F14] flex flex-col items-center justify-center overflow-hidden">
-                {bgImage && (
-                    <div
-                        className="absolute inset-0 z-0 scale-110"
-                        style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(24px) brightness(0.2) saturate(0.5)' }}
-                    />
-                )}
-                <div className="z-10 flex flex-col items-center justify-center text-center">
-                    <motion.div
-                        animate={{ scale: [1, 1.06, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                        className="mb-8"
-                    >
-                        <Chip emotion="thinking" size={130} />
-                    </motion.div>
-
-                    <div className="bg-[#22222F] border border-[#2A2A3A] rounded-[14px] px-4 py-2 mb-12 shadow-[0_8px_32px_rgba(0,0,0,0.50)] min-w-[200px]">
-                        <AnimatePresence mode="wait">
-                            <motion.span
-                                key={loadingLineIdx}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.4 }}
-                                className="text-[14px] text-white font-['DM_Sans'] inline-block w-full"
-                            >
-                                {LOADING_LINES[loadingLineIdx]}
-                            </motion.span>
-                        </AnimatePresence>
-                    </div>
-
-                    <div className="w-[260px] h-[5px] bg-white/15 rounded-full overflow-hidden">
-                        <motion.div
-                            className="h-full bg-gradient-to-r from-[#3B8BF7] to-[#5B9EF8]"
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: progress === 100 ? 0.2 : 4.5, ease: "easeOut" }}
-                        />
-                    </div>
-                </div>
-            </main>
-        );
-    }
-
+    // ── Manual log fallback ─────────────────────────────────────────────────────
     const handleLogManually = () => {
         const desc = getSessionItem("snap_description") || "My meal";
+        const defaults = { calories: 400, protein: 25, carbs: 50, fat: 15 };
         setData({
             food_name: desc.slice(0, 40) || "My meal",
-            calories: 400,
-            protein: 25,
-            carbs: 50,
-            fat: 15,
+            ...defaults,
             confidence: "medium",
             reasoning: "Entered manually — edit macros below if needed.",
         });
-        setManualMacros({ calories: 400, protein: 25, carbs: 50, fat: 15 });
-        const hr = new Date().getHours();
-        if (hr < 11) setMealType("Breakfast");
-        else if (hr < 16) setMealType("Lunch");
-        else if (hr < 22) setMealType("Dinner");
-        else setMealType("Snack");
+        setManualMacros(defaults);
+        setMealType(autoMealType());
         setStatus("success");
     };
 
-    const isQuotaError = errorMessage?.toLowerCase().includes("limit") ?? false;
+    // ── Renders ─────────────────────────────────────────────────────────────────
+    if (status === "loading") {
+        return <LoadingScreen bgImage={bgImage} loadingLineIdx={loadingLineIdx} progress={progress} />;
+    }
+
     if (status === "error") {
         return (
-            <main className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center px-[20px] pb-[72px]">
-                <Chip emotion="sad" size={120} className="drop-shadow-[0_0_20px_rgba(59,139,247,0.2)]" />
-                <h2 className="mt-8 mb-3 font-['Bricolage_Grotesque'] text-[28px] font-bold text-white text-center tracking-tight">
-                    {isQuotaError ? "Daily AI limit reached" : "Chip couldn't figure that one out."}
-                </h2>
-                <p className="text-[#A0A0B8] mb-4 text-center text-[15px] font-['DM_Sans'] px-4 max-w-[280px]">
-                    {isQuotaError ? "You can still log this meal manually below." : "Try a clearer photo or describe the meal."}
-                </p>
-                {errorMessage && !isQuotaError && (
-                    <p className="text-[#F87171]/90 mb-6 text-center text-[13px] font-['DM_Sans'] px-4 max-w-[320px] break-words">
-                        {errorMessage}
-                    </p>
-                )}
-
-                <div className="w-full max-w-[320px] space-y-3">
-                    <button
-                        onClick={handleLogManually}
-                        className="w-full h-[56px] rounded-[16px] bg-[#2DD4BF]/20 border border-[#2DD4BF]/50 text-[#2DD4BF] font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.98] transition-transform"
-                    >
-                        Log meal manually (no AI)
-                    </button>
-                    <button
-                        onClick={() => router.push("/snap")}
-                        className="w-full premium-btn"
-                    >
-                        Try Again
-                    </button>
-                    <button
-                        onClick={() => router.push("/snap?describe=1")}
-                        className="w-full h-[56px] rounded-[16px] bg-[#22222F] border border-[#2A2A3A] text-white font-['DM_Sans'] font-semibold text-[16px] active:scale-[0.98] transition-transform"
-                    >
-                        Describe Instead
-                    </button>
-                </div>
-            </main>
+            <ErrorScreen
+                errorMessage={errorMessage}
+                onLogManually={handleLogManually}
+                onRetry={() => router.push("/snap")}
+            />
         );
     }
 
-    // SUCCESS STATE
     if (!data) return null;
 
+    const chipEmotion = logSuccess ? "hype" : (data.chip_reaction ?? (manualMacros.calories * multiplier > 900 ? "shocked" : "happy"));
+
     return (
-        <main className="min-h-screen bg-[#0F0F14] flex flex-col relative text-white">
-            {/* Ring Flash Overlay on Success */}
-            <AnimatePresence>
-                {logSuccess && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: [0, 1, 0], scale: [0.8, 1.1, 1.2] }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center border-[8px] border-[#3B8BF7] rounded-full opacity-0"
-                        style={{ width: '200vw', height: '200vw', top: '50%', left: '50%', x: '-50%', y: '-50%' }}
-                    />
-                )}
-            </AnimatePresence>
+        <>
+            <AnimatePresence>{logSuccess && <LogSuccessOverlay />}</AnimatePresence>
 
-            {/* Photo Panel (Top 45%) */}
-            <div className="relative h-[45vh] w-full">
-                {bgImage ? (
-                    <Image src={bgImage} fill className="object-cover" alt="Meal scan" unoptimized priority />
-                ) : (
-                    <div className="w-full h-full bg-[#1A1A24] flex items-center justify-center">
-                        <span className="text-[#60607A] font-['Bricolage_Grotesque'] font-bold text-xl uppercase tracking-widest">Described Meal</span>
-                    </div>
-                )}
-                {/* Detected Items Overlay */}
-                <div className="absolute bottom-6 left-4 right-4 z-20 flex flex-wrap gap-2">
-                    {data.detected_items?.slice(0, 3).map((item, i) => (
-                        <motion.span
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 + i * 0.06 }}
-                            className="bg-black/70 text-white text-[12px] px-3 py-1.5 rounded-[8px] font-['DM_Sans'] backdrop-blur-sm"
-                        >
-                            {item}
-                        </motion.span>
-                    ))}
-                </div>
-                {/* Gradient into card */}
-                <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#1A1A24] to-transparent z-10" />
-            </div>
+            <main className="min-h-screen bg-[#09090F] flex flex-col text-white">
 
-            {/* Result Card (Bottom 65% Overlapping) */}
-            <div className="relative -mt-[10vh] bg-[#1A1A24] rounded-t-[28px] flex-grow shadow-[0_-12px_40px_rgba(0,0,0,0.60)] z-20 px-[20px] pt-3 pb-8 flex flex-col">
-                {/* Drag handle */}
-                <div className="w-[40px] h-[4px] bg-[#2A2A3A] rounded-full mx-auto mb-6" />
-
-                {/* Title & Badge */}
-                <div className="flex justify-between items-start mb-2">
-                    <h2 className="font-['Bricolage_Grotesque'] text-[36px] tracking-[-1px] leading-tight font-bold w-[60%]">
-                        {data.food_name}
-                    </h2>
-                    <div className={cn(
-                        "flex items-center gap-1.5 py-1 px-3 rounded-full shrink-0 mt-3 font-['DM_Sans'] text-[12px] font-medium",
-                        data.confidence === "high" ? "bg-[#2DD4BF]/10 border border-[#2DD4BF]/20 text-[#2DD4BF]" :
-                            data.confidence === "medium" ? "bg-[#FBBF24]/10 border border-[#FBBF24]/20 text-[#FBBF24]" :
-                                "bg-[#F87171]/10 border border-[#F87171]/20 text-[#F87171]"
-                    )}>
-                        {data.confidence === "high" ? <><CheckCircle size={13} /> Confident</> :
-                            data.confidence === "medium" ? <><HelpCircle size={13} /> Best Guess</> :
-                                <><AlertCircle size={13} /> Unsure</>}
-                    </div>
-                </div>
-
-                {/* Fun Note */}
-                <p className="text-[14px] text-[#A0A0B8] italic mb-6 font-['DM_Sans']">
-                    {data.reasoning}
-                </p>
-
-                {/* Macro Grid */}
-                <div className="grid grid-cols-2 gap-[10px] mb-4">
-                    {/* Cal */}
-                    <div className="bg-[#3B8BF7]/10 border border-[#3B8BF7]/25 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Calories 🔥</span>
-                        {isEditing ? (
-                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.calories} onChange={e => setManualMacros({ ...manualMacros, calories: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
-                        ) : (
-                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.calories * multiplier)} />
+                {/* ── Photo panel ── */}
+                <div className="relative h-[42vh] w-full flex-shrink-0">
+                    {bgImage ? (
+                        <>
+                            {/* Blurred backdrop */}
+                            <div
+                                className="absolute inset-0"
+                                style={{
+                                    backgroundImage: `url(${bgImage})`,
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                    filter: "blur(0px) brightness(0.7)",
+                                }}
+                            />
+                            {/* Sharp center image */}
+                            <Image
+                                src={bgImage}
+                                fill
+                                className="object-contain z-10 relative"
+                                alt="Meal photo"
+                                unoptimized
+                                priority
+                            />
+                        </>
+                    ) : (
+                        <div className="w-full h-full bg-[#1C1C28] flex items-center justify-center">
+                            <span className="text-[#56566F] font-['Bricolage_Grotesque'] font-bold text-xl tracking-widest uppercase">
+                                Described Meal
                             </span>
-                        )}
-                    </div>
-                    {/* Pro */}
-                    <div className="bg-[#6C63FF]/10 border border-[#6C63FF]/25 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Protein 💜</span>
-                        {isEditing ? (
-                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.protein} onChange={e => setManualMacros({ ...manualMacros, protein: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
-                        ) : (
-                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.protein * multiplier)} />g
-                            </span>
-                        )}
-                    </div>
-                    {/* Car */}
-                    <div className="bg-[#2DD4BF]/10 border border-[#2DD4BF]/25 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Carbs 💚</span>
-                        {isEditing ? (
-                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.carbs} onChange={e => setManualMacros({ ...manualMacros, carbs: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
-                        ) : (
-                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.carbs * multiplier)} />g
-                            </span>
-                        )}
-                    </div>
-                    {/* Fat */}
-                    <div className="bg-[#FBBF24]/10 border border-[#FBBF24]/25 rounded-[16px] p-4 flex flex-col">
-                        <span className="text-white/60 font-['DM_Sans'] text-[11px] font-bold uppercase tracking-wider mb-2">Fat 🟡</span>
-                        {isEditing ? (
-                            <input type="number" inputMode="numeric" pattern="[0-9]*" value={manualMacros.fat} onChange={e => setManualMacros({ ...manualMacros, fat: Number(e.target.value) })} className="bg-transparent text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white outline-none w-full" />
-                        ) : (
-                            <span className="text-[44px] leading-none font-['Bricolage_Grotesque'] font-bold text-white">
-                                <CountUp preserveValue duration={0.3} end={Math.round(manualMacros.fat * multiplier)} />g
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                {/* Secondary Macros (Fiber & Sugar) */}
-                {(data.fiber !== undefined || data.sugar !== undefined) && (
-                    <div className="flex gap-2 mb-6">
-                        {data.fiber !== undefined && (
-                            <div className="bg-black/30 rounded-full px-3 py-1.5 flex items-center gap-2 border border-white/5">
-                                <span className="text-[12px] text-[#A0A0B8] uppercase font-bold tracking-wider">Fiber</span>
-                                <span className="text-[13px] text-white font-medium">{Math.round(data.fiber * multiplier)}g</span>
-                            </div>
-                        )}
-                        {data.sugar !== undefined && (
-                            <div className="bg-black/30 rounded-full px-3 py-1.5 flex items-center gap-2 border border-white/5">
-                                <span className="text-[12px] text-[#A0A0B8] uppercase font-bold tracking-wider">Sugar</span>
-                                <span className="text-[13px] text-white font-medium">{Math.round(data.sugar * multiplier)}g</span>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Portion Size */}
-                {!isEditing && (
-                    <div className="mb-6">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[#A0A0B8] text-[11px] font-bold uppercase">PORTION SIZE</span>
-                            <span className="text-[#60607A] text-[13px] italic">1 serving (est. ~450g)</span>
                         </div>
+                    )}
+
+                    {/* Back button */}
+                    <button
+                        onClick={() => router.push("/snap")}
+                        className="absolute top-[max(env(safe-area-inset-top),16px)] left-4 z-20 w-[40px] h-[40px] rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/10"
+                        aria-label="Back"
+                    >
+                        <ChevronLeft size={20} className="text-white" />
+                    </button>
+
+                    {/* Detected items */}
+                    {data.detected_items && data.detected_items.length > 0 && (
+                        <div className="absolute bottom-14 left-4 right-4 z-20 flex flex-wrap gap-2">
+                            {data.detected_items.slice(0, 3).map((item, i) => (
+                                <motion.span
+                                    key={i}
+                                    initial={{ opacity: 0, x: -8 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 + i * 0.06 }}
+                                    className="bg-black/60 backdrop-blur-sm text-white text-[12px] px-3 py-1.5 rounded-[8px] font-['DM_Sans']"
+                                >
+                                    {item}
+                                </motion.span>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Gradient overlap */}
+                    <div className="absolute bottom-0 left-0 right-0 h-20 z-10"
+                        style={{ background: "linear-gradient(to top, #09090F 0%, transparent 100%)" }} />
+                </div>
+
+                {/* ── Result card ── */}
+                <div className="relative -mt-6 bg-[#09090F] rounded-t-[28px] flex-grow z-20 px-5 pt-5 pb-10">
+                    {/* Drag handle */}
+                    <div className="w-10 h-1 bg-[#2A2A3D] rounded-full mx-auto mb-5" />
+
+                    {/* Title + confidence badge */}
+                    <div className="flex items-start justify-between mb-3">
+                        <motion.h2
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="font-['Bricolage_Grotesque'] text-[30px] leading-tight font-bold w-[62%] tracking-tight"
+                        >
+                            {data.food_name}
+                        </motion.h2>
+                        <div className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-full shrink-0 mt-1 font-['DM_Sans'] text-[12px] font-semibold border",
+                            data.confidence === "high"
+                                ? "bg-[#34D8BC]/10 border-[#34D8BC]/25 text-[#34D8BC]"
+                                : data.confidence === "medium"
+                                    ? "bg-[#FFC84A]/10 border-[#FFC84A]/25 text-[#FFC84A]"
+                                    : "bg-[#FF6B6B]/10 border-[#FF6B6B]/25 text-[#FF6B6B]"
+                        )}>
+                            {data.confidence === "high"
+                                ? <><CheckCircle size={12} /> Confident</>
+                                : data.confidence === "medium"
+                                    ? <><HelpCircle size={12} /> Best Guess</>
+                                    : <><AlertCircle size={12} /> Unsure</>}
+                        </div>
+                    </div>
+
+                    <p className="text-[13px] text-[#56566F] italic mb-5 font-['DM_Sans'] leading-snug">
+                        {data.reasoning}
+                    </p>
+
+                    {/* ── Macro pills (horizontal scroll) ── */}
+                    <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-5 px-5 mb-5">
+                        <div className="flex gap-3 pb-1" style={{ minWidth: "max-content" }}>
+                            {MACRO_PILLS.map((m) => {
+                                const raw = manualMacros[m.key];
+                                const display = Math.round(raw * multiplier);
+                                return (
+                                    <div
+                                        key={m.key}
+                                        className="flex flex-col items-center rounded-[18px] px-5 py-4 min-w-[90px] border"
+                                        style={{ backgroundColor: m.bg, borderColor: m.border }}
+                                    >
+                                        <span className="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: m.color }}>
+                                            {m.label}
+                                        </span>
+                                        {isEditing ? (
+                                            <input
+                                                type="number"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                value={raw}
+                                                onChange={e => setManualMacros(prev => ({ ...prev, [m.key]: Number(e.target.value) }))}
+                                                className="bg-transparent text-[28px] font-['Bricolage_Grotesque'] font-bold text-white outline-none w-[70px] text-center"
+                                            />
+                                        ) : (
+                                            <span className="text-[28px] font-['Bricolage_Grotesque'] font-bold text-white leading-none">
+                                                <CountUp preserveValue duration={0.3} end={display} />
+                                                {m.unit}
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+
+                            {/* Fiber & sugar bonus pills */}
+                            {data.fiber !== undefined && (
+                                <div className="flex flex-col items-center rounded-[18px] px-4 py-4 min-w-[80px] border bg-white/[0.04] border-white/[0.08]">
+                                    <span className="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest text-[#56566F] mb-2">Fiber</span>
+                                    <span className="text-[22px] font-['Bricolage_Grotesque'] font-bold text-white/70 leading-none">
+                                        {Math.round(data.fiber * multiplier)}g
+                                    </span>
+                                </div>
+                            )}
+                            {data.sugar !== undefined && (
+                                <div className="flex flex-col items-center rounded-[18px] px-4 py-4 min-w-[80px] border bg-white/[0.04] border-white/[0.08]">
+                                    <span className="font-['DM_Sans'] text-[10px] font-bold uppercase tracking-widest text-[#56566F] mb-2">Sugar</span>
+                                    <span className="text-[22px] font-['Bricolage_Grotesque'] font-bold text-white/70 leading-none">
+                                        {Math.round(data.sugar * multiplier)}g
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* ── Portion slider ── */}
+                    {!isEditing && (
+                        <div className="mb-6">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="font-['DM_Sans'] text-[11px] font-bold uppercase tracking-widest text-[#56566F]">
+                                    Portion
+                                </span>
+                                <span className="font-['DM_Sans'] text-[13px] font-bold text-white">
+                                    {multiplier === 0.25 ? "¼" : multiplier === 0.5 ? "½" : multiplier === 0.75 ? "¾" : multiplier === 1.5 ? "1½" : multiplier === 1.75 ? "1¾" : multiplier}×
+                                </span>
+                            </div>
+                            <input
+                                type="range"
+                                min={0.25}
+                                max={3}
+                                step={0.25}
+                                value={multiplier}
+                                onChange={e => setMultiplier(parseFloat(e.target.value))}
+                                className="w-full accent-[#4F9EFF] cursor-pointer"
+                                style={{ height: "4px" }}
+                            />
+                            <div className="flex justify-between mt-1">
+                                <span className="text-[10px] text-[#56566F] font-['DM_Sans']">¼×</span>
+                                <span className="text-[10px] text-[#56566F] font-['DM_Sans']">3×</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ── Chip reaction row ── */}
+                    <div className="flex items-center gap-3 bg-[#13131C] border border-[#2A2A3D] rounded-[20px] p-4 mb-6">
+                        <Chip emotion={chipEmotion} size={72} />
+                        <div className="flex-1 bg-[#09090F] rounded-[14px] p-3 border border-[#2A2A3D] relative">
+                            <div className="absolute top-1/2 -left-[7px] -translate-y-1/2 w-3 h-3 bg-[#09090F] border-l border-b border-[#2A2A3D] rotate-45" />
+                            <p className="text-[13px] text-[#9898B3] font-['DM_Sans'] italic leading-snug relative z-10">
+                                {logSuccess
+                                    ? "Logged! The rings are getting fed."
+                                    : manualMacros.calories * multiplier > 900
+                                        ? "That&apos;s a hefty one. No judgment."
+                                        : "Solid choice. Chip approves."}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* ── Meal type selector ── */}
+                    <div className="mb-6">
+                        <span className="font-['DM_Sans'] text-[11px] font-bold uppercase tracking-widest text-[#56566F] mb-3 block">
+                            Add to
+                        </span>
                         <div className="flex gap-2">
-                            {[0.5, 1, 1.5, 2].map((m) => (
+                            {MEAL_TYPES.map(({ label, emoji }) => (
                                 <button
-                                    key={m}
-                                    onClick={() => setMultiplier(m)}
+                                    key={label}
+                                    onClick={() => setMealType(label)}
                                     className={cn(
-                                        "flex-1 py-2 rounded-[12px] font-['DM_Sans'] text-[14px] font-semibold border transition-colors",
-                                        multiplier === m
-                                            ? "bg-[#3B8BF7] border-[#3B8BF7] text-white shadow-[0_0_24px_rgba(59,139,247,0.35)]"
-                                            : "bg-[#22222F] border-[#2A2A3A] text-[#A0A0B8] hover:bg-[#2A2A3A]"
+                                        "flex-1 py-2.5 rounded-[14px] font-['DM_Sans'] text-[12px] font-semibold border transition-all flex flex-col items-center gap-1",
+                                        mealType === label
+                                            ? "bg-[#4F9EFF]/15 border-[#4F9EFF]/40 text-[#4F9EFF]"
+                                            : "bg-[#13131C] border-[#2A2A3D] text-[#56566F]"
                                     )}
                                 >
-                                    {m === 0.5 ? "½" : m === 1.5 ? "1½" : m} ×
+                                    <span>{emoji}</span>
+                                    <span>{label}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
-                )}
 
-                {/* Chip Reaction Row */}
-                <div className="flex items-center gap-4 bg-[#22222F] rounded-[20px] p-4 mb-6 relative overflow-hidden ring-1 ring-[#2A2A3A]">
-                    <Chip emotion={logSuccess ? "hype" : (data.chip_reaction || (data.calories * multiplier > 900 ? "shocked" : "hype"))} size={80} />
-                    <div className="flex-1 bg-[#1A1A24] rounded-[14px] p-3 border border-[#2A2A3A] relative">
-                        <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-4 bg-[#1A1A24] border-l border-b border-[#2A2A3A] rotate-45" />
-                        <p className="text-[14px] text-[#FFFFFF] font-['DM_Sans'] relative z-10 leading-snug">
-                            {logSuccess
-                                ? "LOGGED! The rings are happy."
-                                : (data.calories * multiplier > 900 ? "Wait, are you sure?" : "Perfect addition to the rings.")}
-                        </p>
+                    {/* ── AI disclaimer ── */}
+                    <p className="text-[11px] text-[#56566F] font-['DM_Sans'] text-center leading-relaxed mb-4">
+                        Estimates generated by AI · for informational use only · not medical advice
+                    </p>
+
+                    {/* ── Actions ── */}
+                    <div className="flex flex-col gap-3">
+                        {logSuccess ? (
+                            <motion.div
+                                initial={{ scale: 0.9 }}
+                                animate={{ scale: 1 }}
+                                className="h-[56px] bg-[#34D8BC] rounded-[16px] flex items-center justify-center shadow-[0_4px_20px_rgba(52,216,188,0.3)]"
+                            >
+                                <Check size={28} className="text-[#09090F]" />
+                            </motion.div>
+                        ) : (
+                            <motion.button
+                                ref={logBtnRef}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={isEditing ? () => setIsEditing(false) : handleLogMeal}
+                                disabled={isLogging}
+                                className="w-full premium-btn"
+                            >
+                                {isLogging ? "Logging..." : isEditing ? "Save Changes" : "Log This Meal 🍽️"}
+                            </motion.button>
+                        )}
+
+                        {!logSuccess && !isEditing && (
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                disabled={isLogging}
+                                className="w-full h-[44px] rounded-[14px] text-[#56566F] hover:text-white font-['DM_Sans'] text-[14px] font-medium flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <Edit2 size={14} /> Edit Macros
+                            </button>
+                        )}
                     </div>
                 </div>
-
-                {/* Meal Type Scroll */}
-                <div className="mb-2">
-                    <span className="text-[#A0A0B8] text-[11px] font-bold uppercase tracking-wider mb-2 block">ADD TO</span>
-                </div>
-                <div className="pb-6 w-full overflow-x-auto select-none [&::-webkit-scrollbar]:hidden">
-                    <div className="flex gap-6 px-1">
-                        {["🌅 Breakfast", "☀️ Lunch", "🌙 Dinner", "🍎 Snack"].map((opt) => {
-                            const baseOpt = opt.split(" ")[1];
-                            const isActive = mealType === baseOpt;
-                            return (
-                                <button
-                                    key={opt}
-                                    onClick={() => setMealType(baseOpt)}
-                                    className={cn(
-                                        "whitespace-nowrap pb-2 text-[16px] font-['DM_Sans'] transition-all",
-                                        isActive ? "text-[#3B8BF7] font-semibold border-b-2 border-[#3B8BF7]" : "text-[#60607A] border-b-2 border-transparent"
-                                    )}
-                                >
-                                    {opt}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex flex-col gap-3 mt-auto">
-                    {logSuccess ? (
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="h-[56px] bg-[#2DD4BF] rounded-[14px] flex items-center justify-center shadow-[0_0_20px_rgba(45,212,191,0.30)]"
-                        >
-                            <Check size={28} className="text-[#0F0F14]" />
-                        </motion.div>
-                    ) : (
-                        <motion.button
-                            ref={logBtnRef}
-                            whileTap={{ scale: 0.97 }}
-                            onClick={isEditing ? () => setIsEditing(false) : handleLogMeal}
-                            disabled={isLogging}
-                            className="w-full premium-btn"
-                        >
-                            {isLogging ? "Logging..." : isEditing ? "Save Changes" : "Log This Meal 🍽️"}
-                        </motion.button>
-                    )}
-
-                    {!logSuccess && !isEditing && (
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            disabled={isLogging}
-                            className="w-full h-[40px] rounded-[14px] text-[#A0A0B8] hover:text-white font-['DM_Sans'] text-[14px] font-medium flex items-center justify-center gap-[6px]"
-                        >
-                            <Edit2 size={14} /> <span>Edit Macros</span>
-                        </button>
-                    )}
-                </div>
-
-            </div>
-        </main>
+            </main>
+        </>
     );
 }
