@@ -123,7 +123,7 @@ afterEach(() => {
 describe("POST /api/log — streak calculation", () => {
     it("starts streak at 1 for very first log (no existing profile)", async () => {
         const mock = buildSupabaseMock({ profile: null });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         const body = await res.json();
@@ -140,7 +140,7 @@ describe("POST /api/log — streak calculation", () => {
                 last_log_date: YESTERDAY,
             },
         });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         const body = await res.json();
@@ -157,7 +157,7 @@ describe("POST /api/log — streak calculation", () => {
                 last_log_date: TWO_DAYS_AGO,
             },
         });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         const body = await res.json();
@@ -174,7 +174,7 @@ describe("POST /api/log — streak calculation", () => {
                 last_log_date: TODAY,
             },
         });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         const body = await res.json();
@@ -191,7 +191,7 @@ describe("POST /api/log — streak calculation", () => {
                 last_log_date: YESTERDAY,
             },
         });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         const body = await res.json();
@@ -211,7 +211,7 @@ describe("POST /api/log — streak calculation", () => {
                 last_log_date: TWO_DAYS_AGO,
             },
         });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         const body = await res.json();
@@ -229,7 +229,7 @@ describe("POST /api/log — validation", () => {
             data: { user: null },
             error: new Error("Not authenticated"),
         });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest());
         expect(res.status).toBe(401);
@@ -237,7 +237,7 @@ describe("POST /api/log — validation", () => {
 
     it("returns 400 for invalid payload (negative calories)", async () => {
         const mock = buildSupabaseMock({ profile: null });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest({ calories: -100 }));
         expect(res.status).toBe(400);
@@ -245,7 +245,7 @@ describe("POST /api/log — validation", () => {
 
     it("returns 400 when food_name is empty", async () => {
         const mock = buildSupabaseMock({ profile: null });
-        mockCreateClient.mockResolvedValue(mock as ReturnType<typeof createClient>);
+        mockCreateClient.mockResolvedValue(mock as unknown as ReturnType<typeof createClient>);
 
         const res = await POST(makeRequest({ food_name: "" }));
         expect(res.status).toBe(400);
