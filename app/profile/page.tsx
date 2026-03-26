@@ -14,7 +14,7 @@ interface UserData {
     [key: string]: unknown;
 }
 import { AppShell } from "@/components/AppShell";
-import { LogOut, ChevronRight, Bell, Target, Edit3, Info, Trash2, Shield, type LucideIcon } from "lucide-react";
+import { LogOut, ChevronRight, Bell, Target, Edit3, Info, Trash2, Shield, Download, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
@@ -234,6 +234,13 @@ export default function ProfilePage() {
                     <div>
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Data &amp; Privacy</p>
                         <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
+                            <SettingRow
+                                icon={Download}
+                                label="Export My Data"
+                                onClick={() => {
+                                    window.open(api("/api/export"), "_blank");
+                                }}
+                            />
                             <SettingRow icon={Shield} label="Privacy Policy" onClick={() => router.push("/privacy")} />
                             <SettingRow icon={Info} label="Terms of Service" onClick={() => router.push("/terms")} />
                         </div>
