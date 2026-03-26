@@ -35,9 +35,13 @@ function SatelliteRing({ label, current, target, color, delay, animate }: Satell
     const isOver = current > safeTarget;
 
     return (
-        <div className="flex flex-col items-center gap-1">
+        <div
+            className="flex flex-col items-center gap-1"
+            role="img"
+            aria-label={`${label}: ${current}g of ${target}g`}
+        >
             <div className="relative" style={{ width: size, height: size }}>
-                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]" aria-hidden="true">
                     {/* Track */}
                     <circle
                         cx={size / 2} cy={size / 2} r={radius}
@@ -120,25 +124,32 @@ export const MacroRings = React.memo(function MacroRings({
 
     return (
         <div className={`flex flex-col items-center gap-5 ${className}`}>
-            {/* Milestone toast */}
-            <AnimatePresence>
-                {milestones.map((m, i) => (
-                    <motion.div
-                        key={`${m.label}-${i}`}
-                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                        className="absolute top-0 z-50 whitespace-nowrap rounded-full px-4 py-2 font-bold font-['DM_Sans'] text-[13px] shadow-lg flex items-center gap-2 border"
-                        style={{ backgroundColor: "#13131C", borderColor: m.color, color: m.color }}
-                    >
-                        {m.label} goal hit! 💥
-                    </motion.div>
-                ))}
-            </AnimatePresence>
+            {/* Milestone toast — aria-live announces goal hits to screen readers */}
+            <div aria-live="polite" aria-atomic="false" className="absolute top-0 z-50">
+                <AnimatePresence>
+                    {milestones.map((m, i) => (
+                        <motion.div
+                            key={`${m.label}-${i}`}
+                            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                            className="whitespace-nowrap rounded-full px-4 py-2 font-bold font-['DM_Sans'] text-[13px] shadow-lg flex items-center gap-2 border"
+                            style={{ backgroundColor: "#13131C", borderColor: m.color, color: m.color }}
+                        >
+                            {m.label} goal hit! 💥
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
 
             {/* Hero calorie ring */}
-            <div className="relative" style={{ width: size, height: size }}>
-                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
+            <div
+                className="relative"
+                style={{ width: size, height: size }}
+                role="img"
+                aria-label={`Calories: ${calories.current} of ${calories.target}`}
+            >
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]" aria-hidden="true">
                     {/* Glow filter */}
                     <defs>
                         <filter id="calGlow">
