@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 
 interface DailySummary {
     date: string;
@@ -35,7 +36,7 @@ export default function ProgressPage() {
 
     const fetchProgress = async () => {
         try {
-            const res = await fetch("/api/progress?days=7");
+            const res = await fetch(api("/api/progress?days=7"));
             if (!res.ok) throw new Error("Failed to fetch");
             const json = await res.json();
             setData(json);
@@ -75,7 +76,7 @@ export default function ProgressPage() {
     const handleGenerateRoast = async () => {
         setIsGenerating(true);
         try {
-            const res = await fetch("/api/roast", { method: "POST" });
+            const res = await fetch(api("/api/roast"), { method: "POST" });
             if (!res.ok) {
                 const err = await res.json();
                 alert(err.error || "Generation failed");
