@@ -1,23 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SplashScreen() {
   const router = useRouter();
-  const [showBubble, setShowBubble] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
-    // Show speech bubble at 900ms
-    const bubbleTimer = setTimeout(() => {
-      setShowBubble(true);
-    }, 900);
-
-    // Route logic at 1200ms
+    // Route after 1s — Chip icon fades up, wordmark fades in, done
     const routeTimer = setTimeout(async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -38,71 +32,53 @@ export default function SplashScreen() {
         } else {
           router.replace("/onboarding");
         }
-      } catch (err) {
-        console.error("Auth routing error:", err);
+      } catch {
         router.replace("/login");
       }
-    }, 1200);
+    }, 1000);
 
-    return () => {
-      clearTimeout(bubbleTimer);
-      clearTimeout(routeTimer);
-    };
+    return () => clearTimeout(routeTimer);
   }, [router, supabase]);
 
   return (
-    <div className="min-h-screen bg-[#0F0F14] flex flex-col items-center justify-center relative overflow-hidden">
-      {/* 150ms: Snap word fades in */}
+    <div className="min-h-screen bg-[#09090F] flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Ambient glow */}
+      <div
+        className="absolute w-[300px] h-[300px] pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at center, rgba(79,158,255,0.10) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Chip icon fades up */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15, duration: 0.4 }}
-        className="flex items-center gap-1 z-10"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-10 mb-6"
       >
-        <span className="text-white font-heading font-bold text-[32px]">Snap</span>
-        {/* 300ms: Macros word fades in */}
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="text-[#3B8BF7] font-heading font-bold text-[32px]"
-        >
-          Macros
-        </motion.span>
+        <Chip emotion="happy" size={96} />
       </motion.div>
 
-      {/* 500ms: Tagline fades in */}
-      <motion.p
+      {/* Wordmark fades in after chip */}
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="text-[#A0A0B8] font-body text-[14px] mt-2 z-10"
+        transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+        className="z-10 text-center"
       >
-        Snap. Track. Roast.
-      </motion.p>
-
-      {/* 700ms: Chip bounces up */}
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.7, type: "spring", stiffness: 300, damping: 20 }}
-        className="mt-12 relative z-10"
-      >
-        <Chip emotion="happy" size={90} />
-
-        {/* 900ms: Speech Bubble */}
-        <AnimatePresence>
-          {showBubble && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, x: -10, y: 10 }}
-              animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute -top-12 -right-4 bg-white text-black px-4 py-2 rounded-2xl rounded-bl-sm font-body text-sm font-medium shadow-lg whitespace-nowrap"
-            >
-              Hey! Let&apos;s track something 🥚
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <p className="font-['Bricolage_Grotesque'] font-bold text-[30px] tracking-tight leading-none">
+          <span className="text-white">Snap</span>
+          <span className="text-[#4F9EFF]">Macros</span>
+        </p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.35 }}
+          className="text-[#56566F] font-['DM_Sans'] text-[13px] mt-1"
+        >
+          Snap. Track. Roast.
+        </motion.p>
       </motion.div>
     </div>
   );
