@@ -11,6 +11,7 @@ import { Check, Edit2, CheckCircle, HelpCircle, AlertCircle, ChevronLeft } from 
 import clsx from "clsx";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
+import { writeMealNutrition } from "@/lib/hooks/useHealthKit";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
@@ -330,6 +331,15 @@ export default function ResultPage() {
             if (!res.ok) throw new Error("Log failed");
 
             if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+
+            // Write nutrition to Apple Health (no-op on web or if denied)
+            writeMealNutrition({
+                calories:  Math.round(manualMacros.calories * multiplier),
+                proteinG:  Math.round(manualMacros.protein  * multiplier),
+                carbsG:    Math.round(manualMacros.carbs    * multiplier),
+                fatG:      Math.round(manualMacros.fat      * multiplier),
+                mealName:  data.food_name,
+            });
 
             // Confetti burst
             if (logBtnRef.current) {
