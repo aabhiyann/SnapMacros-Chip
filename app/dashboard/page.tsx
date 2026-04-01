@@ -9,6 +9,7 @@ import { MealTimeline } from "@/components/MealTimeline";
 import { motion } from "framer-motion";
 import { Flame, Camera, UtensilsCrossed } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 
 interface DashboardLog {
     id: string;
@@ -116,6 +117,7 @@ export default function DashboardPage() {
     const router = useRouter();
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    usePushNotifications(); // request permission + register APNs token on first launch
     const [error, setError] = useState<string | null>(null);
     const [showDemoBanner, setShowDemoBanner] = useState(true);
 
