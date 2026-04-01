@@ -79,13 +79,40 @@ export default function LoginPage() {
         setUiState("apple-loading");
         try {
             const supabase = createClient();
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: "apple",
-                options: {
-                    redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback`,
-                },
-            });
-            if (error) throw error;
+            const isNative = typeof window !== "undefined" &&
+                !!(window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } })
+                    .Capacitor?.isNativePlatform?.();
+
+            if (isNative) {
+                // Native iOS: use the system Sign in with Apple sheet
+                const { SignInWithApple } = await import("@capacitor-community/apple-sign-in");
+                const result = await SignInWithApple.authorize({
+                    clientId: "com.snapmacros.app",
+                    redirectURI: "https://snapmacros.app/auth/callback",
+                    scopes: "email name",
+                    state: crypto.randomUUID(),
+                    nonce: crypto.randomUUID(),
+                });
+                const { error } = await supabase.auth.signInWithIdToken({
+                    provider: "apple",
+                    token: result.response.identityToken,
+                    nonce: result.response.authorizationCode,
+                });
+                if (error) throw error;
+            } else {
+                // Web fallback: redirect-based OAuth
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: "apple",
+                    options: {
+                        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback`,
+                    },
+                });
+                if (error) throw error;
+            }
+
+            setUiState("success");
+            await new Promise(r => setTimeout(r, 600));
+            router.push("/dashboard");
         } catch (err: unknown) {
             handleAuthError(err instanceof Error ? err.message : "Apple sign-in failed");
         }
