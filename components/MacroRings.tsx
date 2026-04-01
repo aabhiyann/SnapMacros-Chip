@@ -4,24 +4,77 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CountUp } from "@/components/rings/CountUp";
 
-interface RingData {
-    label: string;
-    current: number;
-    target: number;
-    color: string;
-    radius: number;
-}
-
 export interface MacroRingsProps {
     calories: { current: number; target: number };
     protein: { current: number; target: number };
     carbs: { current: number; target: number };
     fat: { current: number; target: number };
     size?: number;
-    strokeWidth?: number;
-    className?: string;
     animate?: boolean;
     children?: React.ReactNode;
+    className?: string;
+}
+
+interface SatelliteRingProps {
+    label: string;
+    current: number;
+    target: number;
+    color: string;
+    delay: number;
+    animate: boolean;
+}
+
+function SatelliteRing({ label, current, target, color, delay, animate }: SatelliteRingProps) {
+    const size = 72;
+    const strokeWidth = 7;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const safeTarget = target > 0 ? target : 1;
+    const percent = Math.min(current / safeTarget, 1);
+    const offset = circumference - percent * circumference;
+    const isOver = current > safeTarget;
+
+    return (
+        <div
+            className="flex flex-col items-center gap-1"
+            role="img"
+            aria-label={`${label}: ${current}g of ${target}g`}
+        >
+            <div className="relative" style={{ width: size, height: size }}>
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]" aria-hidden="true">
+                    {/* Track */}
+                    <circle
+                        cx={size / 2} cy={size / 2} r={radius}
+                        fill="none" stroke={color} strokeWidth={strokeWidth} strokeOpacity={0.15}
+                        strokeLinecap="round"
+                    />
+                    {/* Progress */}
+                    <motion.circle
+                        cx={size / 2} cy={size / 2} r={radius}
+                        fill="none"
+                        stroke={isOver ? "#FF6B6B" : color}
+                        strokeWidth={strokeWidth}
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset: isOver ? 0 : offset }}
+                        transition={{ duration: 0.7, ease: "easeOut", delay: animate ? delay : 0 }}
+                        style={{ filter: percent >= 1 ? `drop-shadow(0 0 5px ${isOver ? "#FF6B6B" : color})` : "none" }}
+                    />
+                </svg>
+                {/* Center value */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="font-['Bricolage_Grotesque'] font-bold text-[13px] text-white leading-none">
+                        {current}
+                    </span>
+                    <span className="font-['DM_Sans'] text-[9px] leading-none mt-0.5" style={{ color }}>g</span>
+                </div>
+            </div>
+            <span className="font-['DM_Sans'] text-[10px] font-semibold uppercase tracking-wider" style={{ color }}>
+                {label}
+            </span>
+        </div>
+    );
 }
 
 export const MacroRings = React.memo(function MacroRings({
@@ -29,119 +82,142 @@ export const MacroRings = React.memo(function MacroRings({
     protein,
     carbs,
     fat,
-    size = 280, // Default to spec size
-    strokeWidth = 16, // Thicker default relative to 280
-    className = "",
+    size = 200,
     animate = true,
-    children
+    children,
+    className = "",
 }: MacroRingsProps) {
-    const center = size / 2;
-    // Reduce radius by strokeWidth for each inner ring
-    const ringGap = strokeWidth + 6; // slightly larger gap for 280
+    const heroStroke = 18;
+    const heroRadius = (size - heroStroke) / 2;
+    const heroCircumference = 2 * Math.PI * heroRadius;
+    const safeCalTarget = calories.target > 0 ? calories.target : 1;
+    const calPercent = Math.min(calories.current / safeCalTarget, 1);
+    const calOffset = heroCircumference - calPercent * heroCircumference;
+    const isCalOver = calories.current > safeCalTarget;
 
-    const rings: RingData[] = [
-        { label: "Calories", ...calories, color: "#3B8BF7", radius: center - strokeWidth },
-        { label: "Protein", ...protein, color: "#2DD4BF", radius: center - strokeWidth - ringGap },
-        { label: "Carbs", ...carbs, color: "#FBBF24", radius: center - strokeWidth - ringGap * 2 },
-        { label: "Fat", ...fat, color: "#F87171", radius: center - strokeWidth - ringGap * 3 },
+    const [milestones, setMilestones] = useState<{ label: string; color: string }[]>([]);
+    const prevHit = useRef<Set<string>>(new Set());
+
+    const macros = [
+        { label: "Protein", color: "#7C6FFF", ...protein },
+        { label: "Carbs",   color: "#34D8BC", ...carbs },
+        { label: "Fat",     color: "#FFC84A", ...fat },
     ];
 
-    const [milestonesInfo, setMilestonesInfo] = useState<{ label: string, color: string }[]>([]);
-    const previouslyHit = useRef<Set<string>>(new Set());
-
     useEffect(() => {
-        const newHits: { label: string, color: string }[] = [];
-        rings.forEach(ring => {
-            const safeTarget = ring.target > 0 ? ring.target : 1;
-            if (ring.current >= safeTarget && safeTarget > 0) {
-                if (!previouslyHit.current.has(ring.label)) {
-                    previouslyHit.current.add(ring.label);
-                    newHits.push({ label: ring.label, color: ring.color });
-                    if (typeof navigator !== "undefined" && navigator.vibrate) {
-                        navigator.vibrate([80, 40, 80]);
-                    }
+        const newHits: { label: string; color: string }[] = [];
+        [...macros, { label: "Calories", color: "#4F9EFF", ...calories }].forEach(m => {
+            const safe = m.target > 0 ? m.target : 1;
+            if (m.current >= safe && !prevHit.current.has(m.label)) {
+                prevHit.current.add(m.label);
+                newHits.push({ label: m.label, color: m.color });
+                if (typeof navigator !== "undefined" && navigator.vibrate) {
+                    navigator.vibrate([80, 40, 80]);
                 }
             }
         });
-
         if (newHits.length > 0) {
-            setMilestonesInfo(prev => [...prev, ...newHits]);
-            newHits.forEach(hit => {
-                setTimeout(() => {
-                    setMilestonesInfo(current => current.filter(m => m.label !== hit.label));
-                }, 2500); // 1.5s display + margin
-            });
+            setMilestones(prev => [...prev, ...newHits]);
+            newHits.forEach(h => setTimeout(() => setMilestones(c => c.filter(m => m.label !== h.label)), 2500));
         }
-    }, [calories.current, protein.current, carbs.current, fat.current]);
+    }, [calories.current, protein.current, carbs.current, fat.current]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className={`relative inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
+        <div className={`flex flex-col items-center gap-5 ${className}`}>
+            {/* Milestone toast — aria-live announces goal hits to screen readers */}
+            <div aria-live="polite" aria-atomic="false" className="absolute top-0 z-50">
+                <AnimatePresence>
+                    {milestones.map((m, i) => (
+                        <motion.div
+                            key={`${m.label}-${i}`}
+                            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                            className="whitespace-nowrap rounded-full px-4 py-2 font-bold font-['DM_Sans'] text-[13px] shadow-lg flex items-center gap-2 border"
+                            style={{ backgroundColor: "#13131C", borderColor: m.color, color: m.color }}
+                        >
+                            {m.label} goal hit! 💥
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
 
-            <AnimatePresence>
-                {milestonesInfo.map((m, idx) => (
-                    <motion.div
-                        key={`${m.label}-${idx}`}
-                        initial={{ opacity: 0, y: -40, scale: 0.9 }}
-                        animate={{ opacity: 1, y: -size / 2 - 40 - (idx * 40), scale: 1 }}
-                        exit={{ opacity: 0, y: -size / 2 - 60, scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="absolute z-50 whitespace-nowrap rounded-full px-4 py-2 font-bold font-['DM_Sans'] text-[14px] shadow-lg flex items-center gap-2 border"
-                        style={{ backgroundColor: "#1A1A24", borderColor: m.color, color: m.color }}
-                    >
-                        {m.label} goal hit! 💥
-                    </motion.div>
+            {/* Hero calorie ring */}
+            <div
+                className="relative"
+                style={{ width: size, height: size }}
+                role="img"
+                aria-label={`Calories: ${calories.current} of ${calories.target}`}
+            >
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]" aria-hidden="true">
+                    {/* Glow filter */}
+                    <defs>
+                        <filter id="calGlow">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                        </filter>
+                    </defs>
+                    {/* Track */}
+                    <circle
+                        cx={size / 2} cy={size / 2} r={heroRadius}
+                        fill="none" stroke="#4F9EFF" strokeWidth={heroStroke} strokeOpacity={0.12}
+                        strokeLinecap="round"
+                    />
+                    {/* Progress */}
+                    <motion.circle
+                        cx={size / 2} cy={size / 2} r={heroRadius}
+                        fill="none"
+                        stroke={isCalOver ? "#FF6B6B" : "#4F9EFF"}
+                        strokeWidth={heroStroke}
+                        strokeLinecap="round"
+                        strokeDasharray={heroCircumference}
+                        initial={{ strokeDashoffset: heroCircumference }}
+                        animate={{ strokeDashoffset: isCalOver ? 0 : calOffset }}
+                        transition={{ duration: 1.0, ease: "easeOut", delay: animate ? 0.3 : 0 }}
+                        filter={calPercent >= 1 ? "url(#calGlow)" : undefined}
+                    />
+                </svg>
+
+                {/* Center content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    {children || (
+                        <>
+                            <CountUp
+                                value={calories.current}
+                                className="text-[42px] font-['Bricolage_Grotesque'] font-[800] tracking-[-2px] text-white leading-none"
+                                delay={animate ? 0.4 : 0}
+                                duration={0.7}
+                            />
+                            <span className="text-[12px] text-[#56566F] font-['DM_Sans'] font-medium mt-1">
+                                / {calories.target} cal
+                            </span>
+                            <div className={`mt-2 px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wide font-bold font-['DM_Sans'] ${
+                                isCalOver
+                                    ? "bg-[#FF6B6B]/20 border border-[#FF6B6B]/30 text-[#FF6B6B]"
+                                    : "bg-[#34D8BC]/15 border border-[#34D8BC]/25 text-[#34D8BC]"
+                            }`}>
+                                {isCalOver
+                                    ? `${calories.current - calories.target} over`
+                                    : `${calories.target - calories.current} left`}
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Satellite rings row */}
+            <div className="flex items-center justify-center gap-6">
+                {macros.map((m, i) => (
+                    <SatelliteRing
+                        key={m.label}
+                        label={m.label}
+                        current={m.current}
+                        target={m.target}
+                        color={m.color}
+                        delay={0.5 + i * 0.1}
+                        animate={animate}
+                    />
                 ))}
-            </AnimatePresence>
-
-            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
-                {rings.map((ring, i) => {
-                    const circumference = 2 * Math.PI * ring.radius;
-                    const safeTarget = ring.target > 0 ? ring.target : 1;
-                    const percent = Math.min(ring.current / safeTarget, 1);
-                    const offset = circumference - percent * circumference;
-
-                    return (
-                        <g key={ring.label}>
-                            {/* Background ring */}
-                            <circle
-                                cx={center}
-                                cy={center}
-                                r={ring.radius}
-                                fill="none"
-                                stroke={ring.color}
-                                strokeWidth={strokeWidth}
-                                strokeOpacity={0.15}
-                                strokeLinecap="round"
-                            />
-                            {/* Progress ring */}
-                            <motion.circle
-                                cx={center}
-                                cy={center}
-                                r={ring.radius}
-                                fill="none"
-                                stroke={ring.current > safeTarget ? "#EF4444" : ring.color}
-                                strokeWidth={strokeWidth}
-                                strokeLinecap="round"
-                                strokeDasharray={circumference}
-                                initial={{ strokeDashoffset: circumference }}
-                                animate={{ strokeDashoffset: ring.current > safeTarget ? 0 : offset }}
-                                // Delay starting at 400ms (0.4s), incrementing 100ms per ring. 800ms duration.
-                                transition={{ duration: 0.8, ease: "easeOut", delay: animate ? 0.4 + (i * 0.1) : 0 }}
-                                style={{
-                                    filter: ring.current >= safeTarget ? `drop-shadow(0 0 8px ${ring.current > safeTarget ? '#EF4444' : ring.color})` : "none",
-                                }}
-                            />
-                        </g>
-                    );
-                })}
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-text">
-                {children || (
-                    <>
-                        <CountUp value={calories.current} className="text-2xl font-heading font-bold" delay={animate ? 0.5 : 0} duration={animate ? 0.6 : 0.01} />
-                        <span className="text-xs text-text-secondary">kcal</span>
-                    </>
-                )}
             </div>
         </div>
     );

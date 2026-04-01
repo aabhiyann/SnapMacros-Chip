@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, type Part } from '@google/generative-ai';
 import { AnalysisResult } from '@/lib/types';
 import { logger } from '@/lib/logger';
 
@@ -92,18 +92,31 @@ function parseGeminiResponse(rawText: string): AnalysisResult {
     };
 }
 
-// Models available in Google AI Studio (generativelanguage.googleapis.com)
-const MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'];
+// Use GEMINI_MODEL if set (e.g. in Vercel), otherwise try these in order. 404s = wrong model for your key.
+function getModelsToTry(): string[] {
+    const envModel = process.env.GEMINI_MODEL?.trim();
+    if (envModel) return [envModel];
+    return ['gemini-2.0-flash-exp', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-pro'];
+}
+
+function isModelNotFound(err: Error): boolean {
+    const msg = err.message || '';
+    return msg.includes('404') || msg.includes('not found') || msg.includes('Not Found');
+}
+
+function isRateLimited(err: Error): boolean {
+    const msg = err.message || '';
+    return msg.includes('429') || msg.includes('Too Many Requests') || msg.includes('Resource has been exhausted');
+}
 
 export async function analyzeFood(
     imageBase64: string,
     mediaType: 'image/jpeg' | 'image/png' | 'image/webp',
     portionHint?: string,
-    maxRetries = 2
+    maxRetries = 1
 ): Promise<AnalysisResult> {
     const startTime = Date.now();
     const isTextOnly = !!portionHint && imageBase64.length < 500;
-    console.log("Vision agent called, textOnly:", isTextOnly, "portionHint:", !!portionHint);
 
     const genAI = getGenAI();
     const userPrompt = `${SYSTEM_PROMPT}
@@ -114,15 +127,14 @@ ${isTextOnly ? 'Estimate macros from this description. ' : ''}
 
 ${JSON_SCHEMA_PROMPT}`;
 
+    const modelsToTry = getModelsToTry();
     let lastError: Error | null = null;
 
-    for (let modelIdx = 0; modelIdx < MODELS.length; modelIdx++) {
-        const modelName = MODELS[modelIdx];
+    for (const modelName of modelsToTry) {
         const model = genAI.getGenerativeModel({ model: modelName });
-
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             try {
-                const content: Array<{ inlineData?: { data: string; mimeType: string }; text?: string }> = [];
+                const content: Part[] = [];
                 if (!isTextOnly) {
                     content.push({
                         inlineData: { data: imageBase64, mimeType: mediaType },
@@ -149,8 +161,12 @@ ${JSON_SCHEMA_PROMPT}`;
             } catch (err) {
                 lastError = err instanceof Error ? err : new Error(String(err));
                 logger.error(`Vision agent ${modelName} attempt ${attempt + 1} failed`, lastError);
+                // Don't retry on 404 — model doesn't exist, try next model
+                if (isModelNotFound(lastError)) break;
                 if (attempt < maxRetries) {
-                    await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+                    // 429 = rate limit: wait longer so quota can reset, then one retry
+                    const delayMs = isRateLimited(lastError) ? 5000 : 800 * (attempt + 1);
+                    await new Promise(r => setTimeout(r, delayMs));
                 }
             }
         }

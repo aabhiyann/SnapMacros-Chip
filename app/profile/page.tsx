@@ -1,12 +1,21 @@
 "use client";
+import React, { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { TapButton } from "@/components/ui/TapButton";
 
-import { useEffect, useState } from "react";
+interface UserData {
+    name: string;
+    goal: string;
+    joined: string;
+    mealsLogged: number;
+    bestStreak: number;
+    roastsReceived: number;
+    targets: { cal: number; pro: number; carb: number; fat: number };
+    [key: string]: unknown;
+}
 import { AppShell } from "@/components/AppShell";
-import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, Settings, Award, ChevronRight, User as UserIcon, Bell, Target, Edit3, Info } from "lucide-react";
+import { LogOut, ChevronRight, Bell, Target, Edit3, Info, Trash2, Shield, Download, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Chip } from "@/components/Chip";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,7 +28,7 @@ const StatCard = ({ label, value }: { label: string, value: string | number }) =
     </div>
 );
 
-const SettingRow = ({ icon: Icon, label, value, rightElement, onClick, isDanger }: any) => (
+const SettingRow = ({ icon: Icon, label, value, rightElement, onClick, isDanger }: { icon: LucideIcon; label: string; value?: string; rightElement?: JSX.Element; onClick?: () => void; isDanger?: boolean }) => (
     <TapButton
         onClick={onClick}
         className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
@@ -45,11 +54,13 @@ export default function ProfilePage() {
     const router = useRouter();
     const supabase = createClient();
     const [showSignOutConf, setShowSignOutConf] = useState(false);
-    const [userData, setUserData] = useState<any>(null);
+    const [showDeleteConf, setShowDeleteConf] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [userData, setUserData] = useState<UserData | null>(null);
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await fetch("/api/profile");
+                const res = await fetch(api("/api/profile"));
                 if (!res.ok) throw new Error("Failed to fetch profile");
                 const data = await res.json();
                 setUserData(data);
@@ -72,6 +83,19 @@ export default function ProfilePage() {
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         router.push("/login");
+    };
+
+    const handleDeleteAccount = async () => {
+        setIsDeleting(true);
+        try {
+            const res = await fetch(api("/api/account"), { method: "DELETE" });
+            if (!res.ok) throw new Error("Deletion failed");
+            await supabase.auth.signOut();
+            router.push("/login");
+        } catch {
+            setIsDeleting(false);
+            setShowDeleteConf(false);
+        }
     };
 
     function ProfileSkeleton() {
@@ -181,18 +205,68 @@ export default function ProfilePage() {
                 </div>
 
                 {/* SETTINGS LIST */}
-                <div className="px-5">
-                    <div className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[24px] overflow-hidden">
-                        <SettingRow icon={Edit3} label="Edit Profile" />
-                        <SettingRow icon={Target} label="Change Goal" value={userData.goal} onClick={() => router.push('/onboarding?step=1')} />
-                        <SettingRow icon={Bell} label="Notifications" rightElement={<Switch defaultChecked />} />
-                        <SettingRow icon={Info} label="About SnapMacros" value="v1.0.0" />
-                        <SettingRow
-                            icon={LogOut}
-                            label="Sign Out"
-                            isDanger
-                            onClick={() => setShowSignOutConf(true)}
-                        />
+                <div className="px-5 space-y-4">
+                    {/* Account section */}
+                    <div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Account</p>
+                        <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
+                            <SettingRow icon={Edit3} label="Edit Profile" />
+                            <SettingRow icon={Target} label="Change Goal" value={userData.goal} onClick={() => router.push("/onboarding?step=1")} />
+                            <SettingRow
+                                icon={LogOut}
+                                label="Sign Out"
+                                isDanger
+                                onClick={() => setShowSignOutConf(true)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Preferences */}
+                    <div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Preferences</p>
+                        <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
+                            <SettingRow icon={Bell} label="Notifications" rightElement={<Switch defaultChecked />} />
+                            <SettingRow icon={Info} label="About SnapMacros" value="v0.2.0" />
+                        </div>
+                    </div>
+
+                    {/* Data & Privacy */}
+                    <div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Data &amp; Privacy</p>
+                        <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
+                            <SettingRow
+                                icon={Download}
+                                label="Export My Data"
+                                onClick={() => {
+                                    window.open(api("/api/export"), "_blank");
+                                }}
+                            />
+                            <SettingRow icon={Shield} label="Privacy Policy" onClick={() => router.push("/privacy")} />
+                            <SettingRow icon={Info} label="Terms of Service" onClick={() => router.push("/terms")} />
+                        </div>
+                    </div>
+
+                    {/* Danger zone */}
+                    <div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Danger Zone</p>
+                        <div className="bg-[#13131C] border border-[#FF6B6B]/20 rounded-[24px] overflow-hidden">
+                            <SettingRow
+                                icon={Trash2}
+                                label="Delete Account"
+                                isDanger
+                                onClick={() => setShowDeleteConf(true)}
+                            />
+                        </div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[11px] mt-2 px-2">
+                            Permanently deletes all your data. This cannot be undone.
+                        </p>
+                    </div>
+
+                    {/* AI disclaimer */}
+                    <div className="bg-[#1C1C28] border border-[#2A2A3D] rounded-[16px] p-4 mt-2">
+                        <p className="text-[#9898B3] font-['DM_Sans'] text-[12px] leading-relaxed">
+                            ⚕️ Nutrition estimates are generated by AI and may not be fully accurate. SnapMacros is for informational purposes only and is not a substitute for professional nutritional or medical advice.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -210,7 +284,7 @@ export default function ProfilePage() {
                     </div>
                     <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Sign out?</h3>
                     <p className="text-[#A0A0B8] font-['DM_Sans'] text-[15px] mb-8">
-                        You'll lose your streak reminder notifications.
+                        You&apos;ll lose your streak reminder notifications.
                     </p>
 
                     <div className="flex gap-3">
@@ -225,6 +299,40 @@ export default function ProfilePage() {
                             className="flex-1 py-4 rounded-xl bg-[#EF4444] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(239,68,68,0.3)]"
                         >
                             Sign Out
+                        </TapButton>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* DELETE ACCOUNT CONFIRMATION MODAL */}
+            <Dialog open={showDeleteConf} onOpenChange={setShowDeleteConf}>
+                <DialogContent className="bg-[#13131C] border-[#2A2A3D] sm:rounded-[32px] rounded-[32px] p-6 text-center max-w-[340px] [&>button]:hidden">
+                    <DialogHeader className="hidden">
+                        <DialogTitle>Delete Account</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex justify-center mb-4 mt-2">
+                        <div className="w-16 h-16 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center text-[#FF6B6B]">
+                            <Trash2 size={32} />
+                        </div>
+                    </div>
+                    <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[24px] mb-2">Delete account?</h3>
+                    <p className="text-[#9898B3] font-['DM_Sans'] text-[15px] mb-8">
+                        This will permanently delete all your meals, streaks, and account data. This cannot be undone.
+                    </p>
+                    <div className="flex gap-3">
+                        <TapButton
+                            onClick={() => setShowDeleteConf(false)}
+                            disabled={isDeleting}
+                            className="flex-1 py-4 rounded-xl bg-transparent border border-[#56566F] text-white font-bold font-['DM_Sans']"
+                        >
+                            Cancel
+                        </TapButton>
+                        <TapButton
+                            onClick={handleDeleteAccount}
+                            disabled={isDeleting}
+                            className="flex-1 py-4 rounded-xl bg-[#FF6B6B] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(255,107,107,0.3)]"
+                        >
+                            {isDeleting ? "Deleting..." : "Delete"}
                         </TapButton>
                     </div>
                 </DialogContent>

@@ -71,7 +71,7 @@ export function ShareableRoast({ roast, isVisible, onClose }: { roast: WeeklyRoa
 
                         {/* Title */}
                         <h2 className="text-[#FFFFFF] text-[28px] font-black font-['Bricolage_Grotesque'] leading-tight mb-4 text-center italic uppercase">
-                            "{roast.roast_title}"
+                            &quot;{roast.roast_title}&quot;
                         </h2>
 
                         {/* Body */}

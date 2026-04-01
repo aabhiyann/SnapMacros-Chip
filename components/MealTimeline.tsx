@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import { FoodCard, FoodLog } from "./FoodCard";
-import { Chip } from "@/components/Chip";
-import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface MealTimelineProps {
     logs: FoodLog[];
@@ -12,138 +11,155 @@ interface MealTimelineProps {
     onDeleteLog: (id: string) => void;
 }
 
-function SkeletonCard() {
+// AM = before 3pm (hour < 15), PM = 3pm onwards
+const AM_TYPES = ["breakfast", "lunch"];
+const PM_TYPES = ["dinner", "snack", "other"];
+
+const MEAL_EMOJIS: Record<string, string> = {
+    breakfast: "🌅",
+    lunch:     "☀️",
+    dinner:    "🌙",
+    snack:     "🍎",
+    other:     "☕",
+};
+
+function inferMealType(log: FoodLog): string {
+    if (log.meal_type) return log.meal_type.toLowerCase();
+    const hr = new Date(log.created_at).getHours();
+    if (hr < 11) return "breakfast";
+    if (hr < 15) return "lunch";
+    if (hr < 21) return "dinner";
+    return "snack";
+}
+
+function SectionHeader({ label, totalCal }: { label: string; totalCal: number }) {
     return (
-        <div className="flex items-center p-4 bg-[#1A1A24] rounded-2xl mb-3 shadow-[0_2px_12px_rgba(0,0,0,0.30)] w-full">
-            <div className="w-[48px] h-[48px] rounded-[14px] bg-[#2A2A3A] shrink-0 mr-4 animate-pulse" />
-            <div className="flex-1 pr-4">
-                <div className="h-4 bg-[#2A2A3A] rounded-full w-3/4 mb-2 animate-pulse" />
-                <div className="h-3 bg-[#2A2A3A] rounded-full w-1/2 animate-pulse" />
+        <div className="flex items-center justify-between mb-3 mt-1">
+            <div className="flex items-center gap-2">
+                <div className="h-px flex-1 w-8 bg-[#2A2A3D]" />
+                <span className="font-['DM_Sans'] text-[11px] font-bold uppercase tracking-widest text-[#56566F]">
+                    {label}
+                </span>
+                <div className="h-px flex-1 w-8 bg-[#2A2A3D]" />
             </div>
-            <div className="w-10 h-6 bg-[#2A2A3A] rounded-md animate-pulse" />
+            <span className="font-['DM_Sans'] text-[12px] text-[#56566F] ml-3">
+                {Math.round(totalCal)} cal
+            </span>
         </div>
     );
 }
 
-const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
-const MEAL_EMOJIS: Record<string, string> = {
-    breakfast: "🍳",
-    lunch: "🥗",
-    dinner: "🍽️",
-    snack: "🍎",
-    other: "☕"
-};
+function MealTypeChip({ type }: { type: string }) {
+    const label = type.charAt(0).toUpperCase() + type.slice(1);
+    const emoji = MEAL_EMOJIS[type] ?? "🍽️";
+    return (
+        <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#56566F] font-['DM_Sans'] mb-1">
+            {emoji} {label}
+        </span>
+    );
+}
+
+function SkeletonCard() {
+    return (
+        <div className="flex items-center p-4 bg-[#13131C] rounded-2xl mb-3 border border-[#2A2A3D]">
+            <div className="w-12 h-12 rounded-[14px] bg-[#1C1C28] shrink-0 mr-4 animate-pulse" />
+            <div className="flex-1">
+                <div className="h-4 bg-[#1C1C28] rounded-full w-3/4 mb-2 animate-pulse" />
+                <div className="h-3 bg-[#1C1C28] rounded-full w-1/2 animate-pulse" />
+            </div>
+        </div>
+    );
+}
 
 export function MealTimeline({ logs, isLoading, onDeleteLog }: MealTimelineProps) {
     const router = useRouter();
 
     if (isLoading) {
         return (
-            <div className="mt-8 px-[20px] pb-12">
-                <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] mb-4 border-l-[3px] border-[#3B8BF7] pl-3">Today's Meals</h3>
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
+            <div className="px-5 pb-12">
+                <div className="h-[1px] bg-[#2A2A3D] mb-5" />
+                <SkeletonCard /><SkeletonCard /><SkeletonCard />
             </div>
         );
     }
 
-    if (!logs || logs.length === 0) {
-        return (
-            <div className="mt-8 px-[20px] pb-12">
-                <div className="flex items-center justify-between mb-6 sticky top-0 bg-[#0F0F14]/90 backdrop-blur-md z-30 py-3">
-                    <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] border-l-[3px] border-[#3B8BF7] pl-3">Today's Meals</h3>
-                    <button
-                        onClick={() => router.push("/snap")}
-                        className="w-[44px] h-[44px] rounded-full bg-[#3B8BF7] flex items-center justify-center text-white shadow-md shadow-[#3B8BF7]/30 transition-transform active:scale-95"
-                    >
-                        <Plus size={24} />
-                    </button>
-                </div>
+    if (!logs || logs.length === 0) return null; // empty state handled by dashboard
 
-                <div className="flex flex-col items-center justify-center pt-[40px] pb-[80px]">
-                    <Chip emotion="happy" size={80} />
-                    <p className="mt-4 text-[16px] font-['DM_Sans'] text-[#A0A0B8] mb-1 font-semibold">No meals logged yet.</p>
-                    <p className="text-[14px] font-['DM_Sans'] text-[#60607A] mb-8">Tap the snap button below to get started</p>
+    // Assign types and bucket into AM / PM
+    const tagged = logs.map(l => ({ ...l, _type: inferMealType(l) }));
+    const amLogs = tagged.filter(l => AM_TYPES.includes(l._type));
+    const pmLogs = tagged.filter(l => PM_TYPES.includes(l._type));
 
-                    <motion.svg
-                        width="24" height="40" viewBox="0 0 24 40"
-                        fill="none" stroke="#3B8BF7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.5 }}
-                    >
-                        <motion.path
-                            d="M12 4 L12 36 M6 30 L12 36 L18 30"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ delay: 0.8, duration: 1, repeat: Infinity, repeatType: "loop", repeatDelay: 1 }}
-                        />
-                    </motion.svg>
-                </div>
-            </div>
-        );
-    }
+    const amCalories = amLogs.reduce((s, l) => s + l.calories, 0);
+    const pmCalories = pmLogs.reduce((s, l) => s + l.calories, 0);
 
-    // Group logs by meal type
-    const groupedLogs = logs.reduce((acc, log) => {
-        const type = log.meal_type || "other";
-        if (!acc[type]) {
-            acc[type] = { logs: [], totalCal: 0 };
-        }
-        acc[type]!.logs.push(log);
-        acc[type]!.totalCal += log.calories;
-        return acc;
-    }, {} as Record<string, { logs: FoodLog[], totalCal: number }>);
-
-    let globalIndexOffset = 0; // For staggered cascading animation
+    let globalIdx = 0;
 
     return (
-        <div className="mt-4 px-[20px] pb-[80px]">
-            <div className="sticky top-0 bg-[#0F0F14]/90 backdrop-blur-md z-30 py-3 flex items-center justify-between mb-4">
-                <h3 className="text-[18px] font-['Bricolage_Grotesque'] font-bold text-[#FFFFFF] border-l-[3px] border-[#3B8BF7] pl-3">Today&apos;s Meals</h3>
+        <div className="px-5 pb-[100px]">
+            {/* Section header */}
+            <div className="sticky top-[88px] z-30 bg-[rgba(9,9,15,0.92)] backdrop-blur-md py-3 flex items-center justify-between mb-2">
+                <h3 className="font-['Bricolage_Grotesque'] text-[18px] font-bold text-white">
+                    Today&apos;s Meals
+                </h3>
                 <button
                     onClick={() => router.push("/snap")}
-                    className="w-[44px] h-[44px] rounded-full bg-[#3B8BF7] flex items-center justify-center text-white shadow-md shadow-[#3B8BF7]/30 transition-transform active:scale-95"
+                    className="w-[40px] h-[40px] rounded-full bg-[#4F9EFF] flex items-center justify-center text-white shadow-[0_4px_16px_rgba(79,158,255,0.35)] active:scale-95 transition-transform"
+                    aria-label="Log a meal"
                 >
-                    <Plus size={24} />
+                    <Plus size={22} />
                 </button>
             </div>
 
-            <div className="flex flex-col gap-6">
-                {MEAL_ORDER.map(mealType => {
-                    const group = groupedLogs[mealType];
-                    if (!group || group.logs.length === 0) return null;
+            <div className="space-y-1">
+                {/* AM section */}
+                {amLogs.length > 0 && (
+                    <div>
+                        <SectionHeader label="Morning" totalCal={amCalories} />
+                        {amLogs.map(log => {
+                            const idx = globalIdx++;
+                            return (
+                                <div key={log.id}>
+                                    <MealTypeChip type={log._type} />
+                                    <FoodCard log={log} index={idx} onDelete={onDeleteLog} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
 
-                    const title = mealType.charAt(0).toUpperCase() + mealType.slice(1);
-                    const emoji = MEAL_EMOJIS[mealType] || "🍽️";
-
-                    return (
-                        <div key={mealType} className="flex flex-col">
-                            <div className="flex justify-between items-center mb-3">
-                                <h4 className="text-[14px] font-semibold text-[#A0A0B8] font-['DM_Sans']">
-                                    {emoji} {title}
-                                </h4>
-                                <span className="text-[13px] text-[#60607A] font-['DM_Sans']">
-                                    {Math.round(group.totalCal)} cal
-                                </span>
-                            </div>
-                            {group.logs.map((log) => {
-                                const currentIndex = globalIndexOffset;
-                                globalIndexOffset++;
-                                return (
-                                    <FoodCard
-                                        key={log.id}
-                                        log={log}
-                                        index={currentIndex}
-                                        onDelete={onDeleteLog}
-                                    />
-                                );
-                            })}
-                        </div>
-                    );
-                })}
+                {/* PM section */}
+                {pmLogs.length > 0 && (
+                    <div className={amLogs.length > 0 ? "mt-5" : ""}>
+                        <SectionHeader label="Afternoon & Evening" totalCal={pmCalories} />
+                        {pmLogs.map(log => {
+                            const idx = globalIdx++;
+                            return (
+                                <div key={log.id}>
+                                    <MealTypeChip type={log._type} />
+                                    <FoodCard log={log} index={idx} onDelete={onDeleteLog} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
+
+            {/* Log more CTA */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="pt-6 flex justify-center"
+            >
+                <button
+                    onClick={() => router.push("/snap")}
+                    className="flex items-center gap-2 text-[#4F9EFF] font-['DM_Sans'] text-[14px] font-semibold hover:opacity-80 transition-opacity"
+                >
+                    <Plus size={16} />
+                    Log another meal
+                </button>
+            </motion.div>
         </div>
     );
 }

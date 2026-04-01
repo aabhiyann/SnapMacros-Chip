@@ -30,11 +30,11 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.4 }}
-                    className="mt-6 bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.50)] relative"
+                    className="mt-6 bg-[#13131C] border border-[#2A2A3D] rounded-[16px] px-5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.50)] relative"
                 >
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1A1A24] border-t border-l border-[#2A2A3A] rotate-45" />
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#13131C] border-t border-l border-[#2A2A3D] rotate-45" />
                     <p className="font-['DM_Sans'] text-[15px] font-medium text-white relative z-10 leading-relaxed text-center">
-                        Hey! I'm Chip. 🥚<br /><span className="text-[#A0A0B8]">Your nutrition best friend.</span>
+                        Hey! I&apos;m Chip. 🥚<br /><span className="text-[#9898B3]">Your nutrition best friend.</span>
                     </p>
                 </motion.div>
             </div>
@@ -45,7 +45,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8, duration: 0.4 }}
-                    className="font-['Bricolage_Grotesque'] text-[40px] font-bold leading-[1.1] mb-4 bg-gradient-to-b from-white to-[#A0A0B8] text-transparent bg-clip-text"
+                    className="font-['Bricolage_Grotesque'] text-[40px] font-bold leading-[1.1] mb-4 bg-gradient-to-b from-white to-[#9898B3] text-transparent bg-clip-text"
                 >
                     Snap. Track.<br />Roast.
                 </motion.h1>
@@ -54,9 +54,9 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.0, duration: 0.4 }}
-                    className="font-['DM_Sans'] text-[#A0A0B8] text-[15px] leading-relaxed max-w-[300px] mb-8"
+                    className="font-['DM_Sans'] text-[#9898B3] text-[15px] leading-relaxed max-w-[300px] mb-8"
                 >
-                    Photograph your food for instant macro analysis. Set goals. Get roasted by me. Let's go.
+                    Photograph your food for instant macro analysis. Set goals. Get roasted by me. Let&apos;s go.
                 </motion.p>
 
                 <div className="flex flex-wrap justify-center gap-3">
@@ -64,7 +64,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.2, type: "spring", stiffness: 300, damping: 25 }}
-                        className="bg-[#3B8BF7]/10 border border-[#3B8BF7]/30 text-[#3B8BF7] px-4 py-2 rounded-full font-['DM_Sans'] font-bold text-[14px]"
+                        className="bg-[#4F9EFF]/10 border border-[#4F9EFF]/30 text-[#4F9EFF] px-4 py-2 rounded-full font-['DM_Sans'] font-bold text-[14px]"
                     >
                         📷 Snap Food
                     </motion.div>
@@ -88,7 +88,7 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
             </div>
 
             {/* 3. Action (1.4s, 1.6s) */}
-            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0F0F14] via-[#0F0F14] to-transparent z-50 flex flex-col items-center">
+            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-gradient-to-t from-[#09090F] via-[#09090F] to-transparent z-50 flex flex-col items-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -99,20 +99,20 @@ export function WelcomeStep({ onNext }: { onNext: () => void }) {
                         onClick={onNext}
                         className="w-full premium-btn mb-4"
                     >
-                        Let's Get Started &rarr;
+                        Let&apos;s Get Started &rarr;
                     </TapButton>
                 </motion.div>
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.6, duration: 0.4 }}
-                    className="font-['DM_Sans'] text-[13px] text-[#A0A0B8] tracking-wide bg-[#0F0F14] px-4"
+                    className="font-['DM_Sans'] text-[13px] text-[#9898B3] tracking-wide bg-[#09090F] px-4"
                 >
                     Less than 60 seconds <span className="mx-2 font-black">·</span> Free
                 </motion.p>
                 <button
                     onClick={handleSignOut}
-                    className="mt-3 font-['DM_Sans'] text-[12px] text-[#60607A] hover:text-[#A0A0B8] transition-colors"
+                    className="mt-3 font-['DM_Sans'] text-[12px] text-[#56566F] hover:text-[#9898B3] transition-colors"
                 >
                     Sign out
                 </button>

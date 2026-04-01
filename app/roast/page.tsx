@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { RoastSkeleton } from "@/components/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
@@ -14,7 +15,7 @@ export default function RoastPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/roast");
+      const res = await fetch(api("/api/roast"));
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error((data as { error?: string }).error ?? "Failed to load roast");

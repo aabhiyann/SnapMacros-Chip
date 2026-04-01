@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_USER_ID } from "@/lib/auth"; // Mock ID
 import { z } from "zod";
 
 const FoodLogSchema = z.object({
@@ -132,7 +131,7 @@ export async function DELETE(request: Request) {
 }
 
 // GET is existing (fetching history)
-export async function GET(request: Request) {
+export async function GET() {
     try {
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -149,7 +148,7 @@ export async function GET(request: Request) {
 
         if (error) throw error;
         return NextResponse.json(data);
-    } catch (err) {
+    } catch {
         return NextResponse.json({ error: "Failed to get history", code: "LOG_FETCH_ERROR" }, { status: 500 });
     }
 }

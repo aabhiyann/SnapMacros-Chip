@@ -41,11 +41,11 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, x: 20 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
-                        className="bg-[#1A1A24] border border-[#2A2A3A] rounded-[16px] p-3 shadow-xl max-w-[180px] mt-2 relative mr-2"
+                        className="bg-[#13131C] border border-[#2A2A3D] rounded-[16px] p-3 shadow-xl max-w-[180px] mt-2 relative mr-2"
                     >
-                        <div className="absolute -top-2 right-6 w-4 h-4 bg-[#1A1A24] border-t border-l border-[#2A2A3A] rotate-45" />
+                        <div className="absolute -top-2 right-6 w-4 h-4 bg-[#13131C] border-t border-l border-[#2A2A3D] rotate-45" />
                         <p className="text-[#FFFFFF] text-[12px] font-medium font-['DM_Sans'] relative z-10 text-center">
-                            Be honest. I won't judge. Much. 👀
+                            Be honest. I won&apos;t judge. Much. 👀
                         </p>
                     </motion.div>
                 </AnimatePresence>
@@ -64,31 +64,31 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                     return (
                         <TapButton
                             key={act.id}
-                            onClick={() => updateData({ activityLevel: act.id as any })}
-                            className={`flex items-center h-[72px] rounded-[16px] border-l-[4px] border border-y-[#2A2A3A] border-r-[#2A2A3A] transition-all duration-200 relative overflow-hidden ${isSelected
-                                ? "bg-[rgba(59,139,247,0.08)] border-l-[#3B8BF7] border-y-[#3B8BF7] border-r-[#3B8BF7] border-y-2 border-r-2 shadow-[0_0_24px_rgba(59,139,247,0.15)]"
-                                : "bg-[#1A1A24] border-l-transparent hover:bg-[#22222F]"
+                            onClick={() => updateData({ activityLevel: act.id as OnboardingData["activityLevel"] })}
+                            className={`flex items-center h-[72px] rounded-[16px] border-l-[4px] border border-y-[#2A2A3D] border-r-[#2A2A3D] transition-all duration-200 relative overflow-hidden ${isSelected
+                                ? "bg-[rgba(59,139,247,0.08)] border-l-[#4F9EFF] border-y-[#4F9EFF] border-r-[#4F9EFF] border-y-2 border-r-2 shadow-[0_0_24px_rgba(59,139,247,0.15)]"
+                                : "bg-[#13131C] border-l-transparent hover:bg-[#22222F]"
                                 }`}
                         >
                             {/* Icon */}
                             <div className="pl-[16px] flex items-center justify-center">
-                                <act.icon size={26} stroke={isSelected ? '#3B8BF7' : '#A0A0B8'} strokeWidth={2.5} />
+                                <act.icon size={26} stroke={isSelected ? '#4F9EFF' : '#9898B3'} strokeWidth={2.5} />
                             </div>
 
                             {/* Content */}
                             <div className="text-left flex-1 pl-4 pr-3">
-                                <h3 className={`text-[16px] font-[600] font-['DM_Sans'] ${isSelected ? "text-[#3B8BF7]" : "text-white"}`}>
+                                <h3 className={`text-[16px] font-[600] font-['DM_Sans'] ${isSelected ? "text-[#4F9EFF]" : "text-white"}`}>
                                     {act.title}
                                 </h3>
-                                <p className="text-[#A0A0B8] text-[13px] font-['DM_Sans'] mt-0.5">
+                                <p className="text-[#9898B3] text-[13px] font-['DM_Sans'] mt-0.5">
                                     {act.desc}
                                 </p>
                             </div>
 
                             {/* Indicator */}
                             <div className="pr-4 flex items-center justify-center">
-                                <div className={`w-[16px] h-[16px] rounded-full border-2 transition-colors duration-200 flex items-center justify-center ${isSelected ? "border-[#3B8BF7]" : "border-[#60607A]"}`}>
-                                    {isSelected && <div className="w-2 h-2 rounded-full bg-[#3B8BF7]" />}
+                                <div className={`w-[16px] h-[16px] rounded-full border-2 transition-colors duration-200 flex items-center justify-center ${isSelected ? "border-[#4F9EFF]" : "border-[#56566F]"}`}>
+                                    {isSelected && <div className="w-2 h-2 rounded-full bg-[#4F9EFF]" />}
                                 </div>
                             </div>
                         </TapButton>
@@ -96,7 +96,7 @@ export function ActivityStep({ data, updateData, onNext }: ActivityStepProps) {
                 })}
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#0F0F14] z-50 flex flex-col border-t border-[#1A1A24]">
+            <div className="fixed bottom-0 left-0 w-full p-[20px] pb-[max(20px,env(safe-area-inset-bottom))] bg-[#09090F] z-50 flex flex-col border-t border-[#13131C]">
                 <TapButton
                     onClick={onNext}
                     disabled={!data.activityLevel}
