@@ -65,6 +65,30 @@ SnapMacros is for informational use only and is not a substitute for professiona
 
 ---
 
+---
+
+## Screenshot Specifications
+
+Required sizes for iPhone (App Store Connect):
+
+| Device             | Size (px)     | Slot |
+|--------------------|---------------|------|
+| iPhone 6.9"        | 1320 × 2868   | 1–3  |
+| iPhone 6.5"        | 1242 × 2688   | 1–3  |
+| iPhone 5.5"        | 1242 × 2208   | 1–3  |
+
+### Recommended Screenshot Scenes (in order)
+
+1. **Snap → result** — camera viewfinder → Chip analysis result card showing a meal with macro pills
+2. **Dashboard rings** — daily progress rings partially filled, weekly chart below
+3. **Streak + profile** — profile page with streak count and best streak badge
+4. **Weekly roast** — Chip delivering a weekly nutrition roast in a modal
+5. **Onboarding TDEE** — goal selection + calculated targets screen
+
+All screenshots: dark background `#09090F`, portrait orientation only.
+
+---
+
 ## What's New (Version 1.0.0)
 
 Initial release of SnapMacros.
