@@ -203,7 +203,7 @@ export default function ProfilePage() {
                     <div className="bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A] p-5">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Daily Targets</h3>
-                            <TapButton className="text-[#3B8BF7] text-[14px] font-bold font-['DM_Sans']">
+                            <TapButton onClick={openEditTargets} className="text-[#3B8BF7] text-[14px] font-bold font-['DM_Sans']">
                                 Edit
                             </TapButton>
                         </div>
