@@ -63,6 +63,7 @@ export default function ProfilePage() {
     const [showEditTargets, setShowEditTargets] = useState(false);
     const [draftTargets, setDraftTargets] = useState({ cal: 0, pro: 0, carb: 0, fat: 0 });
     const [isSavingTargets, setIsSavingTargets] = useState(false);
+    const { isEnabled: notifEnabled, isReady: notifReady, toggle: toggleNotif } = usePushNotifications();
     const [userData, setUserData] = useState<UserData | null>(null);
 
     const fetchProfile = async () => {
@@ -263,7 +264,7 @@ export default function ProfilePage() {
                     <div>
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Preferences</p>
                         <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
-                            <SettingRow icon={Bell} label="Notifications" rightElement={<Switch defaultChecked />} />
+                            <SettingRow icon={Bell} label="Notifications" rightElement={<Switch checked={notifEnabled} disabled={!notifReady} onCheckedChange={toggleNotif} />} />
                             <SettingRow icon={Settings} label="App Settings" onClick={() => router.push("/settings")} />
                         </div>
                     </div>
