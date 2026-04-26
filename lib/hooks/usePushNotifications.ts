@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+
+const ALLOWED_ROUTES = new Set(["/dashboard", "/snap", "/progress", "/profile"]);
 
 function isNative(): boolean {
     try {
@@ -12,6 +15,7 @@ function isNative(): boolean {
 }
 
 export function usePushNotifications() {
+    const router = useRouter();
     const [isEnabled, setIsEnabled] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const tokenRef = useRef<string | null>(null);
