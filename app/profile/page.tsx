@@ -57,28 +57,28 @@ export default function ProfilePage() {
     const [showDeleteConf, setShowDeleteConf] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [userData, setUserData] = useState<UserData | null>(null);
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await fetch(api("/api/profile"));
-                if (!res.ok) throw new Error("Failed to fetch profile");
-                const data = await res.json();
-                setUserData(data);
-            } catch (err) {
-                console.error(err);
-                setUserData({
-                    name: "User",
-                    goal: "Maintain",
-                    joined: "—",
-                    mealsLogged: 0,
-                    bestStreak: 0,
-                    roastsReceived: 0,
-                    targets: { cal: 2000, pro: 150, carb: 250, fat: 65 },
-                });
-            }
-        };
-        fetchProfile();
-    }, []);
+
+    const fetchProfile = async () => {
+        try {
+            const res = await fetch(api("/api/profile"));
+            if (!res.ok) throw new Error("Failed to fetch profile");
+            const data = await res.json();
+            setUserData(data);
+        } catch (err) {
+            console.error(err);
+            setUserData({
+                name: "User",
+                goal: "Maintain",
+                joined: "—",
+                mealsLogged: 0,
+                bestStreak: 0,
+                roastsReceived: 0,
+                targets: { cal: 2000, pro: 150, carb: 250, fat: 65 },
+            });
+        }
+    };
+
+    useEffect(() => { fetchProfile(); }, []);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
