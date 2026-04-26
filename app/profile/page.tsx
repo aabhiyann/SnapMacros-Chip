@@ -59,6 +59,9 @@ export default function ProfilePage() {
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [draftName, setDraftName] = useState("");
     const [isSavingProfile, setIsSavingProfile] = useState(false);
+    const [showEditTargets, setShowEditTargets] = useState(false);
+    const [draftTargets, setDraftTargets] = useState({ cal: 0, pro: 0, carb: 0, fat: 0 });
+    const [isSavingTargets, setIsSavingTargets] = useState(false);
     const [userData, setUserData] = useState<UserData | null>(null);
 
     const fetchProfile = async () => {
