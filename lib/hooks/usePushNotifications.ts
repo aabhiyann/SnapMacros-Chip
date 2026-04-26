@@ -43,5 +43,28 @@ export function usePushNotifications() {
         } finally { setIsReady(true); }
     }
 
-    return { isEnabled, isReady, toggle: async () => {} };
+    async function enable() {
+        if (!isNative()) return;
+        try {
+            const { PushNotifications } = await import("@capacitor/push-notifications");
+            let status = await PushNotifications.checkPermissions();
+            if (status.receive === "prompt") status = await PushNotifications.requestPermissions();
+            if (status.receive !== "granted") return;
+            await PushNotifications.register();
+            setIsEnabled(true);
+        } catch (err) { console.warn("[PushNotifications] Enable failed:", err); }
+    }
+
+    async function disable() {
+        if (!isNative()) return;
+        try {
+            if (tokenRef.current) {
+                await fetch(api("/api/push-token"), { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: tokenRef.current }) });
+                tokenRef.current = null;
+            }
+            setIsEnabled(false);
+        } catch (err) { console.warn("[PushNotifications] Disable failed:", err); }
+    }
+
+    return { isEnabled, isReady, toggle: async () => { if (isEnabled) await disable(); else await enable(); } };
 }
