@@ -14,6 +14,8 @@ function isNative(): boolean {
 export function usePushNotifications() {
     const [isEnabled, setIsEnabled] = useState(false);
     const [isReady, setIsReady] = useState(false);
+    const tokenRef = useRef<string | null>(null);
+    const listenersAdded = useRef(false);
 
     useEffect(() => {
         if (!isNative()) { setIsReady(true); return; }
