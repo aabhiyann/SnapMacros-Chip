@@ -229,7 +229,7 @@ export default function ProfilePage() {
                     <div>
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Account</p>
                         <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
-                            <SettingRow icon={Edit3} label="Edit Profile" />
+                            <SettingRow icon={Edit3} label="Edit Profile" onClick={openEditProfile} />
                             <SettingRow icon={Target} label="Change Goal" value={userData.goal} onClick={() => router.push("/onboarding?step=1")} />
                             <SettingRow
                                 icon={LogOut}
