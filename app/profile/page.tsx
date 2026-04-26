@@ -14,7 +14,7 @@ interface UserData {
     [key: string]: unknown;
 }
 import { AppShell } from "@/components/AppShell";
-import { LogOut, ChevronRight, Bell, Target, Edit3, Info, Trash2, Shield, Download, type LucideIcon } from "lucide-react";
+import { LogOut, ChevronRight, Bell, Target, Edit3, Settings, Trash2, Download, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
