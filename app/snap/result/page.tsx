@@ -74,6 +74,18 @@ function dataURLtoFile(dataurl: string, filename: string) {
     return new File([u8arr], filename, { type: mime });
 }
 
+async function uploadMealImage(dataUrl: string): Promise<string | null> {
+    try {
+        const supabase = createClient();
+        const file = dataURLtoFile(dataUrl, `meal_${Date.now()}.jpg`);
+        const path = `public/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+        const { error } = await supabase.storage.from("meal_images").upload(path, file, { contentType: "image/jpeg", upsert: false });
+        if (error) return null;
+        const { data } = supabase.storage.from("meal_images").getPublicUrl(path);
+        return data.publicUrl;
+    } catch { return null; }
+}
+
 function autoMealType(): string {
     const hr = new Date().getHours();
     if (hr < 11) return "Breakfast";
