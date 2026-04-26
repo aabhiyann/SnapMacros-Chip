@@ -39,6 +39,10 @@ export function usePushNotifications() {
                 });
                 await PushNotifications.addListener("registrationError", (err) => { console.warn("[PushNotifications] Registration error:", err); });
                 await PushNotifications.addListener("pushNotificationReceived", (n) => { console.log("[PushNotifications] Received:", n.title); });
+                await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+                    const route = (action.notification.data as Record<string, string> | undefined)?.route;
+                    if (typeof route === "string" && ALLOWED_ROUTES.has(route)) router.push(route);
+                });
             }
             const status = await PushNotifications.checkPermissions();
             if (status.receive === "granted") { setIsEnabled(true); await PushNotifications.register(); }
