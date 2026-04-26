@@ -9,6 +9,7 @@ const FoodLogSchema = z.object({
     protein: z.number().nonnegative(),
     carbs: z.number().nonnegative(),
     fat: z.number().nonnegative(),
+    image_url: z.string().url().optional(),
 });
 
 export async function POST(request: Request) {
