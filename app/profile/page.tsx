@@ -306,6 +306,44 @@ export default function ProfilePage() {
                 </div>
             </div>
 
+            {/* EDIT TARGETS MODAL */}
+            <Dialog open={showEditTargets} onOpenChange={setShowEditTargets}>
+                <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 max-w-[340px] [&>button]:hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-white font-['Bricolage_Grotesque'] font-bold text-[22px] mb-1">Daily Targets</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-[#A0A0B8] font-['DM_Sans'] text-[13px] mb-4">Set your own targets, or use Change Goal to recalculate from your stats.</p>
+                    <div className="space-y-3">
+                        {([
+                            { key: "cal",  label: "Calories",      unit: "kcal", color: "#3B8BF7" },
+                            { key: "pro",  label: "Protein",       unit: "g",    color: "#6C63FF" },
+                            { key: "carb", label: "Carbohydrates", unit: "g",    color: "#2DD4BF" },
+                            { key: "fat",  label: "Fat",           unit: "g",    color: "#FBBF24" },
+                        ] as const).map(({ key, label, unit, color }) => (
+                            <div key={key}>
+                                <label className="flex items-center gap-2 text-[#A0A0B8] font-['DM_Sans'] text-[13px] font-medium mb-1">
+                                    <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: color }} />{label}
+                                </label>
+                                <div className="relative">
+                                    <input type="number" inputMode="numeric"
+                                        className="w-full bg-[#0F0F14] border border-[#2A2A3A] rounded-[14px] px-4 py-3 pr-14 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
+                                        value={draftTargets[key] || ""}
+                                        onChange={e => setDraftTargets(prev => ({ ...prev, [key]: Number(e.target.value) }))}
+                                    />
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-['DM_Sans'] text-[14px]">{unit}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex gap-3 pt-4">
+                        <TapButton onClick={() => setShowEditTargets(false)} className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']">Cancel</TapButton>
+                        <TapButton onClick={handleSaveTargets} disabled={isSavingTargets} className="flex-1 py-4 rounded-xl bg-[#3B8BF7] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(59,139,247,0.3)] disabled:opacity-50">
+                            {isSavingTargets ? "Saving…" : "Save"}
+                        </TapButton>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {/* EDIT PROFILE MODAL */}
             <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
                 <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 max-w-[340px] [&>button]:hidden">
