@@ -241,8 +241,6 @@ export default function ProfilePage() {
                                     window.open(api("/api/export"), "_blank");
                                 }}
                             />
-                            <SettingRow icon={Shield} label="Privacy Policy" onClick={() => router.push("/privacy")} />
-                            <SettingRow icon={Info} label="Terms of Service" onClick={() => router.push("/terms")} />
                         </div>
                     </div>
 
