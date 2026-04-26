@@ -49,8 +49,6 @@
 	<string>SnapMacros may save analyzed meal photos to your library.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>SnapMacros reads your activity data to personalize calorie targets.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>SnapMacros logs your nutrition data to Apple Health.</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>SnapMacros sends daily meal reminders and weekly nutrition insights.</string>
 </dict>
