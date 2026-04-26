@@ -226,7 +226,7 @@ export default function ProfilePage() {
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Preferences</p>
                         <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
                             <SettingRow icon={Bell} label="Notifications" rightElement={<Switch defaultChecked />} />
-                            <SettingRow icon={Info} label="About SnapMacros" value="v0.2.0" />
+                            <SettingRow icon={Settings} label="App Settings" onClick={() => router.push("/settings")} />
                         </div>
                     </div>
 
