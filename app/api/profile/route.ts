@@ -60,6 +60,11 @@ export async function PATCH(request: Request) {
         }
         const body = await request.json() as Record<string, unknown>;
         const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+        if (typeof body.name === "string") patch.name = body.name.trim().slice(0, 50) || "User";
+        if (typeof body.target_calories === "number") patch.target_calories = Math.max(500,  Math.min(10000, Math.round(body.target_calories)));
+        if (typeof body.target_protein  === "number") patch.target_protein  = Math.max(0,    Math.min(500,   Math.round(body.target_protein)));
+        if (typeof body.target_carbs    === "number") patch.target_carbs    = Math.max(0,    Math.min(1000,  Math.round(body.target_carbs)));
+        if (typeof body.target_fat      === "number") patch.target_fat      = Math.max(0,    Math.min(300,   Math.round(body.target_fat)));
         const { error } = await supabase.from("profiles").update(patch).eq("user_id", user.id);
         if (error) throw new Error(error.message);
         return NextResponse.json({ ok: true });
