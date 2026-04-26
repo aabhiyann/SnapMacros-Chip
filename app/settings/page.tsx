@@ -37,6 +37,19 @@ function SettingRow({
 
 export default function SettingsPage() {
     const router = useRouter();
+    const [units, setUnits] = useState<UnitSystem>("metric");
+
+    useEffect(() => {
+        const stored = localStorage.getItem(UNITS_KEY);
+        if (stored === "metric" || stored === "imperial") setUnits(stored);
+    }, []);
+
+    function toggleUnits(checked: boolean) {
+        const next: UnitSystem = checked ? "imperial" : "metric";
+        setUnits(next);
+        localStorage.setItem(UNITS_KEY, next);
+    }
+
     return (
         <AppShell>
             <div className="relative pb-[120px]">
