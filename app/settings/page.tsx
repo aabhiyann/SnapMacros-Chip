@@ -63,6 +63,7 @@ export default function SettingsPage() {
                     <h1 className="text-[22px] font-black font-['Bricolage_Grotesque'] text-white tracking-tight">
                         Settings
                     </h1>
+                </div>
                 <div className="px-5 space-y-4">
                     <div>
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Display</p>
