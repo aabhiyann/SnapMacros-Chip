@@ -83,6 +83,22 @@ export default function ProfilePage() {
 
     useEffect(() => { fetchProfile(); }, []);
 
+    const openEditProfile = () => { setDraftName(userData?.name ?? ""); setShowEditProfile(true); };
+
+    const handleSaveProfile = async () => {
+        if (!draftName.trim()) return;
+        setIsSavingProfile(true);
+        try {
+            await fetch(api("/api/profile"), {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: draftName.trim() }),
+            });
+            await fetchProfile();
+            setShowEditProfile(false);
+        } finally { setIsSavingProfile(false); }
+    };
+
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         router.push("/login");
