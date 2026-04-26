@@ -56,6 +56,9 @@ export default function ProfilePage() {
     const [showSignOutConf, setShowSignOutConf] = useState(false);
     const [showDeleteConf, setShowDeleteConf] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showEditProfile, setShowEditProfile] = useState(false);
+    const [draftName, setDraftName] = useState("");
+    const [isSavingProfile, setIsSavingProfile] = useState(false);
     const [userData, setUserData] = useState<UserData | null>(null);
 
     const fetchProfile = async () => {
