@@ -329,6 +329,7 @@ export default function ResultPage() {
         if (!data) return;
         setIsLogging(true);
         try {
+            const imageUrl = bgImage ? await uploadMealImage(bgImage) : null;
             const res = await fetch(api("/api/log"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -339,6 +340,7 @@ export default function ResultPage() {
                     carbs:     Math.round(manualMacros.carbs    * multiplier),
                     fat:       Math.round(manualMacros.fat      * multiplier),
                     meal_type: mealType.toLowerCase(),
+                    ...(imageUrl ? { image_url: imageUrl } : {}),
                 }),
             });
             if (!res.ok) throw new Error("Log failed");
