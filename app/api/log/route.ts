@@ -36,6 +36,7 @@ export async function POST(request: Request) {
                 protein: parsed.data.protein,
                 carbs: parsed.data.carbs,
                 fat: parsed.data.fat,
+                ...(parsed.data.image_url ? { image_url: parsed.data.image_url } : {}),
             })
             .select()
             .single();
