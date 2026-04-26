@@ -288,6 +288,32 @@ export default function ProfilePage() {
                 </div>
             </div>
 
+            {/* EDIT PROFILE MODAL */}
+            <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
+                <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 max-w-[340px] [&>button]:hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-white font-['Bricolage_Grotesque'] font-bold text-[22px] mb-1">Edit Profile</DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-2 space-y-4">
+                        <div>
+                            <label className="text-[#A0A0B8] font-['DM_Sans'] text-[13px] font-medium mb-2 block">Display name</label>
+                            <input
+                                className="w-full bg-[#0F0F14] border border-[#2A2A3A] rounded-[14px] px-4 py-3 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
+                                value={draftName} maxLength={50} autoFocus
+                                onChange={e => setDraftName(e.target.value)}
+                                onKeyDown={e => e.key === "Enter" && handleSaveProfile()}
+                            />
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <TapButton onClick={() => setShowEditProfile(false)} className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']">Cancel</TapButton>
+                            <TapButton onClick={handleSaveProfile} disabled={isSavingProfile || !draftName.trim()} className="flex-1 py-4 rounded-xl bg-[#3B8BF7] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(59,139,247,0.3)] disabled:opacity-50">
+                                {isSavingProfile ? "Saving…" : "Save"}
+                            </TapButton>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {/* SIGN OUT CONFIRMATION MODAL */}
             <Dialog open={showSignOutConf} onOpenChange={setShowSignOutConf}>
                 <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 text-center max-w-[340px] [&>button]:hidden">
