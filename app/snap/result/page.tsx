@@ -11,7 +11,7 @@ import { Check, Edit2, CheckCircle, HelpCircle, AlertCircle, ChevronLeft } from 
 import clsx from "clsx";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
-import { writeMealNutrition } from "@/lib/hooks/useHealthKit";
+import { createClient } from "@/lib/supabase/client";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
@@ -71,6 +71,18 @@ function dataURLtoFile(dataurl: string, filename: string) {
     const u8arr = new Uint8Array(n);
     while (n--) u8arr[n] = bstr.charCodeAt(n);
     return new File([u8arr], filename, { type: mime });
+}
+
+async function uploadMealImage(dataUrl: string): Promise<string | null> {
+    try {
+        const supabase = createClient();
+        const file = dataURLtoFile(dataUrl, `meal_${Date.now()}.jpg`);
+        const path = `public/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+        const { error } = await supabase.storage.from("meal_images").upload(path, file, { contentType: "image/jpeg", upsert: false });
+        if (error) return null;
+        const { data } = supabase.storage.from("meal_images").getPublicUrl(path);
+        return data.publicUrl;
+    } catch { return null; }
 }
 
 function autoMealType(): string {
@@ -316,6 +328,7 @@ export default function ResultPage() {
         if (!data) return;
         setIsLogging(true);
         try {
+            const imageUrl = bgImage ? await uploadMealImage(bgImage) : null;
             const res = await fetch(api("/api/log"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -326,20 +339,12 @@ export default function ResultPage() {
                     carbs:     Math.round(manualMacros.carbs    * multiplier),
                     fat:       Math.round(manualMacros.fat      * multiplier),
                     meal_type: mealType.toLowerCase(),
+                    ...(imageUrl ? { image_url: imageUrl } : {}),
                 }),
             });
             if (!res.ok) throw new Error("Log failed");
 
             if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
-
-            // Write nutrition to Apple Health (no-op on web or if denied)
-            writeMealNutrition({
-                calories:  Math.round(manualMacros.calories * multiplier),
-                proteinG:  Math.round(manualMacros.protein  * multiplier),
-                carbsG:    Math.round(manualMacros.carbs    * multiplier),
-                fatG:      Math.round(manualMacros.fat      * multiplier),
-                mealName:  data.food_name,
-            });
 
             // Confetti burst
             if (logBtnRef.current) {

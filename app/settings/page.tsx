@@ -1,10 +1,100 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { AppShell } from "@/components/AppShell";
+import { TapButton } from "@/components/ui/TapButton";
+import { Switch } from "@/components/ui/switch";
+import { ChevronLeft, Ruler, Info, FileText, Shield, type LucideIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+const APP_VERSION = "1.0.0";
+const UNITS_KEY = "snapmacros_units";
+type UnitSystem = "metric" | "imperial";
+
+function SettingRow({
+    icon: Icon, label, value, rightElement, onClick,
+}: {
+    icon: LucideIcon; label: string; value?: string;
+    rightElement?: React.ReactNode; onClick?: () => void;
+}) {
+    return (
+        <TapButton
+            onClick={onClick}
+            className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
+        >
+            <div className="flex items-center gap-4 text-left">
+                <div className="w-[36px] h-[36px] rounded-[10px] bg-[#2A2A3A] text-white flex items-center justify-center shrink-0">
+                    <Icon size={18} strokeWidth={2.5} />
+                </div>
+                <span className="font-['DM_Sans'] font-medium text-[16px] text-white">{label}</span>
+            </div>
+            <div className="flex items-center gap-3">
+                {rightElement ?? (value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>)}
+            </div>
+        </TapButton>
+    );
+}
+
 export default function SettingsPage() {
-  return (
-    <div className="p-4">
-      <h2 className="font-heading text-xl font-bold text-text mb-4">Settings</h2>
-      <div className="rounded-xl bg-card border border-elevated p-6 space-y-4">
-        <p className="text-text-secondary text-sm">Profile, preferences, and API keys (env) will go here.</p>
-      </div>
-    </div>
-  );
+    const router = useRouter();
+    const [units, setUnits] = useState<UnitSystem>("metric");
+
+    useEffect(() => {
+        const stored = localStorage.getItem(UNITS_KEY);
+        if (stored === "metric" || stored === "imperial") setUnits(stored);
+    }, []);
+
+    function toggleUnits(checked: boolean) {
+        const next: UnitSystem = checked ? "imperial" : "metric";
+        setUnits(next);
+        localStorage.setItem(UNITS_KEY, next);
+    }
+
+    return (
+        <AppShell>
+            <div className="relative pb-[120px]">
+                <div className="flex items-center gap-3 px-5 pt-5 pb-6">
+                    <TapButton
+                        onClick={() => router.back()}
+                        className="w-[36px] h-[36px] rounded-full bg-[#1A1A24] border border-[#2A2A3A] flex items-center justify-center"
+                    >
+                        <ChevronLeft size={20} className="text-white" />
+                    </TapButton>
+                    <h1 className="text-[22px] font-black font-['Bricolage_Grotesque'] text-white tracking-tight">
+                        Settings
+                    </h1>
+                </div>
+                <div className="px-5 space-y-4">
+                    <div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Display</p>
+                        <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
+                            <SettingRow
+                                icon={Ruler}
+                                label="Imperial units"
+                                rightElement={<Switch checked={units === "imperial"} onCheckedChange={toggleUnits} />}
+                            />
+                        </div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[11px] mt-2 px-2">
+                            {units === "metric" ? "Showing weight in kg and height in cm." : "Showing weight in lbs and height in ft/in."}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">About</p>
+                        <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
+                            <SettingRow icon={Info} label="Version" value={`v${APP_VERSION}`} />
+                            <SettingRow icon={Shield} label="Privacy Policy" onClick={() => router.push("/privacy")} />
+                            <SettingRow icon={FileText} label="Terms of Service" onClick={() => router.push("/terms")} />
+                        </div>
+                    </div>
+
+                    <div className="bg-[#1C1C28] border border-[#2A2A3D] rounded-[16px] p-4 mt-2">
+                        <p className="text-[#9898B3] font-['DM_Sans'] text-[12px] leading-relaxed">
+                            ⚕️ Nutrition estimates are generated by AI and may not be fully accurate. SnapMacros is for informational purposes only and is not a substitute for professional nutritional or medical advice.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </AppShell>
+    );
 }

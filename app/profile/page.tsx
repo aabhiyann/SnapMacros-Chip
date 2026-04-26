@@ -14,11 +14,12 @@ interface UserData {
     [key: string]: unknown;
 }
 import { AppShell } from "@/components/AppShell";
-import { LogOut, ChevronRight, Bell, Target, Edit3, Info, Trash2, Shield, Download, type LucideIcon } from "lucide-react";
+import { LogOut, ChevronRight, Bell, Target, Edit3, Settings, Trash2, Download, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 
 // Mock out our components for the UI shell building phase
 const StatCard = ({ label, value }: { label: string, value: string | number }) => (
@@ -56,29 +57,67 @@ export default function ProfilePage() {
     const [showSignOutConf, setShowSignOutConf] = useState(false);
     const [showDeleteConf, setShowDeleteConf] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showEditProfile, setShowEditProfile] = useState(false);
+    const [draftName, setDraftName] = useState("");
+    const [isSavingProfile, setIsSavingProfile] = useState(false);
+    const [showEditTargets, setShowEditTargets] = useState(false);
+    const [draftTargets, setDraftTargets] = useState({ cal: 0, pro: 0, carb: 0, fat: 0 });
+    const [isSavingTargets, setIsSavingTargets] = useState(false);
+    const { isEnabled: notifEnabled, isReady: notifReady, toggle: toggleNotif } = usePushNotifications();
     const [userData, setUserData] = useState<UserData | null>(null);
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await fetch(api("/api/profile"));
-                if (!res.ok) throw new Error("Failed to fetch profile");
-                const data = await res.json();
-                setUserData(data);
-            } catch (err) {
-                console.error(err);
-                setUserData({
-                    name: "User",
-                    goal: "Maintain",
-                    joined: "—",
-                    mealsLogged: 0,
-                    bestStreak: 0,
-                    roastsReceived: 0,
-                    targets: { cal: 2000, pro: 150, carb: 250, fat: 65 },
-                });
-            }
-        };
-        fetchProfile();
-    }, []);
+
+    const fetchProfile = async () => {
+        try {
+            const res = await fetch(api("/api/profile"));
+            if (!res.ok) throw new Error("Failed to fetch profile");
+            const data = await res.json();
+            setUserData(data);
+        } catch (err) {
+            console.error(err);
+            setUserData({
+                name: "User",
+                goal: "Maintain",
+                joined: "—",
+                mealsLogged: 0,
+                bestStreak: 0,
+                roastsReceived: 0,
+                targets: { cal: 2000, pro: 150, carb: 250, fat: 65 },
+            });
+        }
+    };
+
+    useEffect(() => { fetchProfile(); }, []);
+
+    const openEditTargets = () => { if (!userData) return; setDraftTargets({ ...userData.targets }); setShowEditTargets(true); };
+
+    const handleSaveTargets = async () => {
+        setIsSavingTargets(true);
+        try {
+            await fetch(api("/api/profile"), {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target_calories: draftTargets.cal, target_protein: draftTargets.pro, target_carbs: draftTargets.carb, target_fat: draftTargets.fat }),
+            });
+            await fetchProfile();
+            setShowEditTargets(false);
+        } finally { setIsSavingTargets(false); }
+    };
+
+    const openEditProfile = () => { setDraftName(userData?.name ?? ""); setShowEditProfile(true); };
+
+    const handleSaveProfile = async () => {
+        if (!draftName.trim()) return;
+        setIsSavingProfile(true);
+        try {
+            await fetch(api("/api/profile"), {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: draftName.trim() }),
+            });
+            await fetchProfile();
+            setShowEditProfile(false);
+        } finally { setIsSavingProfile(false); }
+    };
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -166,7 +205,7 @@ export default function ProfilePage() {
                     <div className="bg-[#1A1A24] rounded-[24px] border border-[#2A2A3A] p-5">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-white font-['Bricolage_Grotesque'] font-bold text-[18px]">Daily Targets</h3>
-                            <TapButton className="text-[#3B8BF7] text-[14px] font-bold font-['DM_Sans']">
+                            <TapButton onClick={openEditTargets} className="text-[#3B8BF7] text-[14px] font-bold font-['DM_Sans']">
                                 Edit
                             </TapButton>
                         </div>
@@ -210,7 +249,7 @@ export default function ProfilePage() {
                     <div>
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Account</p>
                         <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
-                            <SettingRow icon={Edit3} label="Edit Profile" />
+                            <SettingRow icon={Edit3} label="Edit Profile" onClick={openEditProfile} />
                             <SettingRow icon={Target} label="Change Goal" value={userData.goal} onClick={() => router.push("/onboarding?step=1")} />
                             <SettingRow
                                 icon={LogOut}
@@ -225,8 +264,8 @@ export default function ProfilePage() {
                     <div>
                         <p className="text-[#56566F] font-['DM_Sans'] text-[12px] font-bold uppercase tracking-wider mb-2 px-2">Preferences</p>
                         <div className="bg-[#13131C] border border-[#2A2A3D] rounded-[24px] overflow-hidden">
-                            <SettingRow icon={Bell} label="Notifications" rightElement={<Switch defaultChecked />} />
-                            <SettingRow icon={Info} label="About SnapMacros" value="v0.2.0" />
+                            <SettingRow icon={Bell} label="Notifications" rightElement={<Switch checked={notifEnabled} disabled={!notifReady} onCheckedChange={toggleNotif} />} />
+                            <SettingRow icon={Settings} label="App Settings" onClick={() => router.push("/settings")} />
                         </div>
                     </div>
 
@@ -241,8 +280,6 @@ export default function ProfilePage() {
                                     window.open(api("/api/export"), "_blank");
                                 }}
                             />
-                            <SettingRow icon={Shield} label="Privacy Policy" onClick={() => router.push("/privacy")} />
-                            <SettingRow icon={Info} label="Terms of Service" onClick={() => router.push("/terms")} />
                         </div>
                     </div>
 
@@ -270,6 +307,70 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+
+            {/* EDIT TARGETS MODAL */}
+            <Dialog open={showEditTargets} onOpenChange={setShowEditTargets}>
+                <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 max-w-[340px] [&>button]:hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-white font-['Bricolage_Grotesque'] font-bold text-[22px] mb-1">Daily Targets</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-[#A0A0B8] font-['DM_Sans'] text-[13px] mb-4">Set your own targets, or use Change Goal to recalculate from your stats.</p>
+                    <div className="space-y-3">
+                        {([
+                            { key: "cal",  label: "Calories",      unit: "kcal", color: "#3B8BF7" },
+                            { key: "pro",  label: "Protein",       unit: "g",    color: "#6C63FF" },
+                            { key: "carb", label: "Carbohydrates", unit: "g",    color: "#2DD4BF" },
+                            { key: "fat",  label: "Fat",           unit: "g",    color: "#FBBF24" },
+                        ] as const).map(({ key, label, unit, color }) => (
+                            <div key={key}>
+                                <label className="flex items-center gap-2 text-[#A0A0B8] font-['DM_Sans'] text-[13px] font-medium mb-1">
+                                    <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: color }} />{label}
+                                </label>
+                                <div className="relative">
+                                    <input type="number" inputMode="numeric"
+                                        className="w-full bg-[#0F0F14] border border-[#2A2A3A] rounded-[14px] px-4 py-3 pr-14 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
+                                        value={draftTargets[key] || ""}
+                                        onChange={e => setDraftTargets(prev => ({ ...prev, [key]: Number(e.target.value) }))}
+                                    />
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#60607A] font-['DM_Sans'] text-[14px]">{unit}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex gap-3 pt-4">
+                        <TapButton onClick={() => setShowEditTargets(false)} className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']">Cancel</TapButton>
+                        <TapButton onClick={handleSaveTargets} disabled={isSavingTargets} className="flex-1 py-4 rounded-xl bg-[#3B8BF7] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(59,139,247,0.3)] disabled:opacity-50">
+                            {isSavingTargets ? "Saving…" : "Save"}
+                        </TapButton>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* EDIT PROFILE MODAL */}
+            <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
+                <DialogContent className="bg-[#1A1A24] border-[#2A2A3A] sm:rounded-[32px] rounded-[32px] p-6 max-w-[340px] [&>button]:hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-white font-['Bricolage_Grotesque'] font-bold text-[22px] mb-1">Edit Profile</DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-2 space-y-4">
+                        <div>
+                            <label className="text-[#A0A0B8] font-['DM_Sans'] text-[13px] font-medium mb-2 block">Display name</label>
+                            <input
+                                className="w-full bg-[#0F0F14] border border-[#2A2A3A] rounded-[14px] px-4 py-3 text-white font-['DM_Sans'] text-[16px] focus:outline-none focus:border-[#3B8BF7] transition-colors"
+                                value={draftName} maxLength={50} autoFocus
+                                onChange={e => setDraftName(e.target.value)}
+                                onKeyDown={e => e.key === "Enter" && handleSaveProfile()}
+                            />
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <TapButton onClick={() => setShowEditProfile(false)} className="flex-1 py-4 rounded-xl bg-transparent border border-[#60607A] text-white font-bold font-['DM_Sans']">Cancel</TapButton>
+                            <TapButton onClick={handleSaveProfile} disabled={isSavingProfile || !draftName.trim()} className="flex-1 py-4 rounded-xl bg-[#3B8BF7] text-white font-bold font-['DM_Sans'] shadow-[0_4px_20px_rgba(59,139,247,0.3)] disabled:opacity-50">
+                                {isSavingProfile ? "Saving…" : "Save"}
+                            </TapButton>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* SIGN OUT CONFIRMATION MODAL */}
             <Dialog open={showSignOutConf} onOpenChange={setShowSignOutConf}>
