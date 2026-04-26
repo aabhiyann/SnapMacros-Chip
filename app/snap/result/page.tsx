@@ -347,15 +347,6 @@ export default function ResultPage() {
 
             if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
 
-            // Write nutrition to Apple Health (no-op on web or if denied)
-            writeMealNutrition({
-                calories:  Math.round(manualMacros.calories * multiplier),
-                proteinG:  Math.round(manualMacros.protein  * multiplier),
-                carbsG:    Math.round(manualMacros.carbs    * multiplier),
-                fatG:      Math.round(manualMacros.fat      * multiplier),
-                mealName:  data.food_name,
-            });
-
             // Confetti burst
             if (logBtnRef.current) {
                 const rect = logBtnRef.current.getBoundingClientRect();
