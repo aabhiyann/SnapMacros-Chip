@@ -12,6 +12,22 @@
 
 ---
 
+## Keywords (max 100 characters, comma-separated)
+
+```
+macro tracker,calorie counter,food diary,AI nutrition,meal logger,protein tracker,TDEE,fitness
+```
+
+## URLs
+
+| Field             | URL                                      |
+|-------------------|------------------------------------------|
+| Support URL       | https://snapmacros.app/support           |
+| Marketing URL     | https://snapmacros.app                   |
+| Privacy Policy URL| https://snapmacros.app/privacy           |
+
+---
+
 ## Description (App Store — max 4,000 characters)
 
 **Snap it. Track it. Own it.**
