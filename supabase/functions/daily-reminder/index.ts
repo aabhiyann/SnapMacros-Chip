@@ -48,7 +48,7 @@ Deno.serve(async () => {
                     user_id,
                     title: "SnapMacros",
                     body,
-                    data: { type: "daily_reminder" },
+                    data: { type: "daily_reminder", route: "/snap" },
                 }),
             });
             const json = await res.json() as { sent?: number };
