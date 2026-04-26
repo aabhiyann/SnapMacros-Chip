@@ -51,6 +51,24 @@ export async function GET() {
     }
 }
 
+export async function PATCH(request: Request) {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+        }
+        const body = await request.json() as Record<string, unknown>;
+        const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+        const { error } = await supabase.from("profiles").update(patch).eq("user_id", user.id);
+        if (error) throw new Error(error.message);
+        return NextResponse.json({ ok: true });
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        return NextResponse.json({ error: msg, code: "PROFILE_PATCH_ERROR" }, { status: 500 });
+    }
+}
+
 export async function POST(request: Request) {
     try {
         const supabase = await createClient();
