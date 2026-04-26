@@ -7,6 +7,34 @@ import { Switch } from "@/components/ui/switch";
 import { ChevronLeft, Ruler, Info, FileText, Shield, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+const APP_VERSION = "1.0.0";
+const UNITS_KEY = "snapmacros_units";
+type UnitSystem = "metric" | "imperial";
+
+function SettingRow({
+    icon: Icon, label, value, rightElement, onClick,
+}: {
+    icon: LucideIcon; label: string; value?: string;
+    rightElement?: React.ReactNode; onClick?: () => void;
+}) {
+    return (
+        <TapButton
+            onClick={onClick}
+            className="w-full flex items-center justify-between py-4 border-b border-[#2A2A3A] last:border-0 hover:bg-[#2A2A3A]/50 transition-colors px-2 rounded-xl"
+        >
+            <div className="flex items-center gap-4 text-left">
+                <div className="w-[36px] h-[36px] rounded-[10px] bg-[#2A2A3A] text-white flex items-center justify-center shrink-0">
+                    <Icon size={18} strokeWidth={2.5} />
+                </div>
+                <span className="font-['DM_Sans'] font-medium text-[16px] text-white">{label}</span>
+            </div>
+            <div className="flex items-center gap-3">
+                {rightElement ?? (value && <span className="text-[#A0A0B8] text-[14px] font-['DM_Sans']">{value}</span>)}
+            </div>
+        </TapButton>
+    );
+}
+
 export default function SettingsPage() {
     const router = useRouter();
     return (
