@@ -86,6 +86,21 @@ export default function ProfilePage() {
 
     useEffect(() => { fetchProfile(); }, []);
 
+    const openEditTargets = () => { if (!userData) return; setDraftTargets({ ...userData.targets }); setShowEditTargets(true); };
+
+    const handleSaveTargets = async () => {
+        setIsSavingTargets(true);
+        try {
+            await fetch(api("/api/profile"), {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target_calories: draftTargets.cal, target_protein: draftTargets.pro, target_carbs: draftTargets.carb, target_fat: draftTargets.fat }),
+            });
+            await fetchProfile();
+            setShowEditTargets(false);
+        } finally { setIsSavingTargets(false); }
+    };
+
     const openEditProfile = () => { setDraftName(userData?.name ?? ""); setShowEditProfile(true); };
 
     const handleSaveProfile = async () => {
