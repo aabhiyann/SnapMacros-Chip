@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 
 // Mock out our components for the UI shell building phase
 const StatCard = ({ label, value }: { label: string, value: string | number }) => (
