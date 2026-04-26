@@ -23,14 +23,6 @@ export interface ActivityData {
     activeEnergyKcal: number;
 }
 
-export interface MealNutrition {
-    calories:  number;
-    proteinG:  number;
-    carbsG:    number;
-    fatG:      number;
-    mealName?: string;
-}
-
 /**
  * Requests HealthKit READ_ACTIVE_CALORIES permission and returns
  * today's total active energy burned. Returns null on web or if denied.
