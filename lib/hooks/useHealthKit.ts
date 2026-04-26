@@ -4,11 +4,8 @@
  * HealthKit integration via capacitor-health.
  *
  * - readTodayActivity(): reads today's active energy burned (kcal)
- * - writeMealNutrition(): writes dietary nutrition to Apple Health
- *   (stubbed — capacitor-health v8 read-only; dietary writes require a
- *    future native Swift plugin. The stub is a no-op until then.)
  *
- * Both functions are safe to call on web — they silently return null/void.
+ * Safe to call on web — silently returns null.
  */
 
 function isNative(): boolean {
@@ -57,19 +54,3 @@ export async function readTodayActivity(): Promise<ActivityData | null> {
     }
 }
 
-/**
- * Writes a dietary nutrition sample to Apple Health.
- *
- * NOTE: capacitor-health v8 does not yet expose dietary write APIs.
- * This function is a documented stub — it will become functional once
- * a custom native Swift plugin is added to the Xcode project that
- * calls HKHealthStore.save() with HKQuantitySample types for:
- *   - HKQuantityTypeIdentifierDietaryEnergyConsumed
- *   - HKQuantityTypeIdentifierDietaryProtein
- *   - HKQuantityTypeIdentifierDietaryCarbohydrates
- *   - HKQuantityTypeIdentifierDietaryFatTotal
- */
-export async function writeMealNutrition(_meal: MealNutrition): Promise<void> {
-    // No-op until native dietary write plugin is added
-    // Native Swift extension required: see docs/healthkit-dietary-writes.md
-}
